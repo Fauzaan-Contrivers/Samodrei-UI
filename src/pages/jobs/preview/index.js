@@ -47,7 +47,7 @@ const Preview = ({ id, invoiceData }) => {
   }))
 
   useEffect(() => {
-    let flag = store.jobs.data.filter(val => val.SalesforceId == id)
+    let flag = store.jobs.data.filter(val => val.Id == id)
     if (flag) setData(flag[0])
   }, [id, store.jobs.data])
 
@@ -67,7 +67,7 @@ const Preview = ({ id, invoiceData }) => {
                       </MUITableCell>
                       <MUITableCell>
                         <Typography variant='body2' sx={{ fontWeight: 600 }}>
-                          {data.SalesforceId}
+                          {data.Id}
                         </Typography>
                       </MUITableCell>
                     </TableRow>
@@ -95,7 +95,7 @@ const Preview = ({ id, invoiceData }) => {
                       </MUITableCell>
                       <MUITableCell>
                         <Typography variant='body2' sx={{ fontWeight: 600 }}>
-                          <Link href={`/prescribers/preview/${data.prescriber.SalesforceId}`} passHref>
+                          <Link href={`/prescribers/preview/${data.prescriber.Id}`} passHref>
                             <StyledLink>{data.prescriber.Name}</StyledLink>
                           </Link>
                         </Typography>
@@ -107,7 +107,7 @@ const Preview = ({ id, invoiceData }) => {
                       </MUITableCell>
                       <MUITableCell>
                         <Typography variant='body2' sx={{ fontWeight: 600 }}>
-                          <Link href={`/product_advocates/preview/${data.product_advocate.SalesforceId}`} passHref>
+                          <Link href={`/product_advocates/preview/${data.product_advocate.Id}`} passHref>
                             <StyledLink>{data.product_advocate.Name}</StyledLink>
                           </Link>
                         </Typography>

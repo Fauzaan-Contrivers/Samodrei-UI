@@ -19,7 +19,7 @@ const Preview = ({ id }) => {
   const [data, setData] = useState(null)
 
   useEffect(() => {
-    let flag = store.samples.data.filter(val => val.SalesforceId == id)
+    let flag = store.samples.data.filter(val => val.Id == id)
     if (flag) setData(flag[0])
   }, [id, store.samples.data])
 

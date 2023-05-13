@@ -78,7 +78,7 @@ const PrescriberEditDialog = ({ prescriber, open, handleClose, onPrescriberUpdat
   const onUpdateAddressHandler = async () => {
     const result = await geocodeByAddress(value)
     let d = await getLocationData(result[0])
-    d['prescriber_id'] = prescriber.SalesforceId
+    d['prescriber_id'] = prescriber.Id
     dispatch(updatePrescriberAddress(d))
     onPrescriberUpdate()
   }

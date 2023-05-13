@@ -60,7 +60,7 @@ const Preview = ({ id, invoiceData }) => {
       </Grid>
     )
   } else if (data) {
-    console.log('DATA', data?.samplesDistributed.result)
+    console.log('DATA', data?.samplesDistributed?.result)
     return (
       <Grid container spacing={6}>
         <Grid item xs={12} md={5} lg={4}>

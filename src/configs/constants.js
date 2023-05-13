@@ -11,12 +11,12 @@ const StyledLink = styled('a')(({ theme }) => ({
 
 export const jobsListViewColumns = [
   {
-    field: 'SalesforceId',
+    field: 'ID',
     minWidth: 200,
-    headerName: 'Salesforce Id',
+    headerName: 'Id',
     renderCell: ({ row }) => (
-      <Link href={`/jobs/preview/${row.SalesforceId}`} passHref>
-        <StyledLink>{`${row.SalesforceId}`}</StyledLink>
+      <Link href={`/jobs/preview/${row.Job_Id}`} passHref>
+        <StyledLink>{`${row.Job_Id}`}</StyledLink>
       </Link>
     )
   },
@@ -36,15 +36,14 @@ export const jobsListViewColumns = [
     minWidth: 300,
     headerName: 'Prescriber',
     renderCell: ({ row }) => {
-      console.log(row.prescriber)
       return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Link href={`/prescribers/preview/${row?.prescriber?.SalesforceId}`} passHref>
-              <StyledLink>{row?.Name}</StyledLink>
+            <Link href={`/prescribers/preview/${row?.PrescriberId}`} passHref>
+              <StyledLink>{row?.Prescriber_Name}</StyledLink>
             </Link>
             <Typography noWrap variant='caption'>
-              {row?.Street_Address}
+              {row?.Prescriber_Address}
             </Typography>
           </Box>
         </Box>
@@ -60,11 +59,11 @@ export const jobsListViewColumns = [
       return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Link href={`/product_advocates/preview/${row?.product_advocate[0]?.ProductAdvocateId}`} passHref>
-              <StyledLink>{row?.product_advocate[0]?.ProductAdvocateName}</StyledLink>
+            <Link href={`/product_advocates/preview/${row?.ProductAdvocateId}`} passHref>
+              <StyledLink>{row?.Product_Advocate_Name}</StyledLink>
             </Link>
             <Typography noWrap variant='caption'>
-              {row?.product_advocate[0]?.ProductAdvocateEmail}
+              {row?.Product_Advocate_Email}
             </Typography>
           </Box>
         </Box>

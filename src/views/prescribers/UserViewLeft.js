@@ -87,18 +87,18 @@ const UserViewLeft = ({ data }) => {
 
   useEffect(() => {
     let flagCountSubmitted = store.jobs.data.filter(
-      val => val.prescriber.SalesforceId == data.SalesforceId && val.job_stage == 'Feedback completed'
+      val => val.prescriber.Id == data.Id && val.Status == 'Feedback completed'
     )
     let flagCountSubmittedInRadius = store.jobs.data.filter(
       val =>
-        val.prescriber.SalesforceId == data.SalesforceId &&
+        val.prescriber.Id == data.Id &&
         val.Status == 'Feedback completed' &&
         parseFloat(val.difference_location_doctor) < 1 &&
         parseFloat(val.difference_location_doctor) > 0
     )
     setJobsSubmitted(flagCountSubmitted.length)
     setJobsSubmittedInRadius(flagCountSubmittedInRadius.length)
-  }, [data.SalesforceId, store.jobs.data])
+  }, [data.Id, store.jobs.data])
 
   const renderUserAvatar = () => {
     if (true) {
@@ -200,7 +200,12 @@ const UserViewLeft = ({ data }) => {
                 </Box>
                 <Box sx={{ display: 'flex' }}>
                   <Typography sx={{ marginRight: 2, fontWeight: 500, fontSize: '0.875rem' }}>Address:</Typography>
-                  <Typography variant='body2'>{data?.Street_Address}</Typography>
+                  <Typography variant='body2'>
+                    {`${data?.Street_Address},
+                      ${data?.City},
+                      ${data?.State},
+                      ${data?.Zip}`}
+                  </Typography>
                 </Box>
               </Box>
             </CardContent>

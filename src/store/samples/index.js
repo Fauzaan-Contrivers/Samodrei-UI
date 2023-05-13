@@ -54,7 +54,7 @@ export const samplesSlice = createSlice({
       state.filter[action.payload.filter] = action.payload.value
     },
     onSampleCancelHandler(state, action) {
-      state.data = action.payload.result
+      state.data = action.payload
     }
   },
   extraReducers: builder => {
