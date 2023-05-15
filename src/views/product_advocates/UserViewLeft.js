@@ -104,12 +104,11 @@ const UserViewLeft = ({ data, jobsData, samplesData }) => {
   useEffect(() => {
     let flagCountSubmitted = jobsData.filter(
       (val) =>
-        val.Product_Advocate == data.SalesforceId &&
-        val.Status == "Feedback completed"
+        val.Product_Advocate_Id == data.Id && val.Status == "Feedback completed"
     );
     let flagCountSubmittedInRadius = jobsData.filter(
       (val) =>
-        val.Product_Advocate == data.SalesforceId &&
+        val.Product_Advocate_Id == data.Id &&
         val.Status == "Feedback completed" &&
         parseFloat(val.difference_location_doctor) < 1 &&
         parseFloat(val.difference_location_doctor) > 0
@@ -118,17 +117,16 @@ const UserViewLeft = ({ data, jobsData, samplesData }) => {
     setJobsSubmittedInRadius(flagCountSubmittedInRadius.length);
     setSample20Mg(fetch20mgSampleDetail(data));
     setSample60Mg(fetch60mgSampleDetail(data));
-  }, [data.SalesforceId, store.jobs.data]);
+  }, [data.Id, store.jobs.data]);
 
   useEffect(() => {
-    if (data.SalesforceId) {
+    if (data.Id) {
       const temp = jobsData.filter(
-        (val) =>
-          val.Product_Advocate == data.SalesforceId && Boolean(val.question_1)
+        (val) => val.Product_Advocate_Id == data.Id && Boolean(val.question_1)
       );
       setLunches(temp.length);
     }
-  }, [data.SalesforceId, store.jobs.data]);
+  }, [data.Id, store.jobs.data]);
 
   const fetch20mgSampleDetail = (data) => {
     const total = !Boolean(data?.Stock_20) ? 0 : parseInt(data.Stock_20);
