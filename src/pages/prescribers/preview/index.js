@@ -69,7 +69,7 @@ const Preview = ({ id, invoiceData }) => {
     return (
       <Grid container spacing={6}>
         <Grid item xs={12} md={5} lg={4}>
-          <UserViewLeft data={data.result[0]} />
+          <UserViewLeft data={data?.result[0]} />
         </Grid>
         <Grid item xs={12} md={7} lg={8}>
           <UserViewRight data={data} />
