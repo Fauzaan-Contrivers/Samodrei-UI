@@ -1,97 +1,110 @@
-import Link from 'next/link'
-import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
-import { styled } from '@mui/material/styles'
-import { convertDateToReadableFormat } from 'src/configs/utils'
+import Link from "next/link";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import { styled } from "@mui/material/styles";
+import { convertDateToReadableFormat } from "src/configs/utils";
 
-const StyledLink = styled('a')(({ theme }) => ({
-  textDecoration: 'none',
-  color: theme.palette.primary.main
-}))
+const StyledLink = styled("a")(({ theme }) => ({
+  textDecoration: "none",
+  color: theme.palette.primary.main,
+}));
 
 export const jobsListViewColumns = [
   {
-    field: 'ID',
+    field: "Job_Id",
     minWidth: 200,
-    headerName: 'Id',
+    headerName: "Id",
     renderCell: ({ row }) => (
       <Link href={`/jobs/preview/${row.Job_Id}`} passHref>
         <StyledLink>{`${row.Job_Id}`}</StyledLink>
       </Link>
-    )
+    ),
   },
   {
     minWidth: 160,
-    field: 'Status',
-    headerName: 'Status',
+    field: "Status",
+    headerName: "Status",
     renderCell: ({ row }) => {
-      ;<Typography variant='caption' sx={{ color: 'common.white', fontWeight: 600 }}>
+      <Typography
+        variant="caption"
+        sx={{ color: "common.white", fontWeight: 600 }}
+      >
         {row.Status}
-      </Typography>
-    }
+      </Typography>;
+    },
   },
   {
     flex: 0.5,
-    field: 'Prescriber',
+    field: "Prescriber",
     minWidth: 300,
-    headerName: 'Prescriber',
+    headerName: "Prescriber",
     renderCell: ({ row }) => {
       return (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
             <Link href={`/prescribers/preview/${row?.PrescriberId}`} passHref>
               <StyledLink>{row?.Prescriber_Name}</StyledLink>
             </Link>
-            <Typography noWrap variant='caption'>
+            <Typography noWrap variant="caption">
               {row?.Prescriber_Address}
             </Typography>
           </Box>
         </Box>
-      )
-    }
+      );
+    },
   },
   {
     flex: 0.5,
-    field: 'product_advocate_name',
+    field: "product_advocate_name",
     minWidth: 200,
-    headerName: 'Product Advocate',
+    headerName: "Product Advocate",
     renderCell: ({ row }) => {
       return (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Link href={`/product_advocates/preview/${row?.ProductAdvocateId}`} passHref>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Link
+              href={`/product_advocates/preview/${row?.ProductAdvocateId}`}
+              passHref
+            >
               <StyledLink>{row?.Product_Advocate_Name}</StyledLink>
             </Link>
-            <Typography noWrap variant='caption'>
+            <Typography noWrap variant="caption">
               {row?.Product_Advocate_Email}
             </Typography>
           </Box>
         </Box>
-      )
-    }
+      );
+    },
   },
   {
     flex: 0.2,
     minWidth: 150,
-    field: 'feedback_submitted_at',
-    headerName: 'Feedback Submitted At',
+    field: "feedback_submitted_at",
+    headerName: "Feedback Submitted At",
     renderCell: ({ row }) => (
-      <Typography variant='body2'>{convertDateToReadableFormat(row.feedback_submitted_at) || ''}</Typography>
-    )
+      <Typography variant="body2">
+        {convertDateToReadableFormat(row.feedback_submitted_at) || ""}
+      </Typography>
+    ),
   },
   {
     flex: 0.3,
     minWidth: 70,
-    field: 'difference_location_doctor',
-    headerName: 'Feedback Distance',
+    field: "difference_location_doctor",
+    headerName: "Feedback Distance",
     renderCell: ({ row }) => {
-      var target = parseFloat(row.difference_location_doctor)
+      var target = parseFloat(row.difference_location_doctor);
 
       return (
-        <Typography style={{ color: target ? (target > 0.1 ? 'red' : 'green') : 'initial' }} variant='body2'>
-          {target ? target.toFixed(2) : ''}
+        <Typography
+          style={{
+            color: target ? (target > 0.1 ? "red" : "green") : "initial",
+          }}
+          variant="body2"
+        >
+          {target ? target.toFixed(2) : ""}
         </Typography>
-      )
-    }
-  }
-]
+      );
+    },
+  },
+];
