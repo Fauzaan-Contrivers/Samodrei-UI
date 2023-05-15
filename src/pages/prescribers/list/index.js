@@ -215,7 +215,7 @@ const InvoiceList = () => {
       minWidth: 200,
       headerName: 'Name',
       renderCell: ({ row }) => (
-        <Link href={`/prescribers/preview/${row.SalesforceId}`} passHref>
+        <Link href={`/prescribers/preview/${row.Id}`} passHref>
           <StyledLink>{`${row?.Name}`}</StyledLink>
         </Link>
       )
@@ -383,7 +383,7 @@ const InvoiceList = () => {
             rows={isLoading ? [] : store.prescribers.data}
             columns={columns}
             loading={isLoading}
-            getRowId={row => row?.SalesforceId}
+            getRowId={row => row?.Id}
             rowCount={store.prescribers.totalRecords}
             disableSelectionOnClick
             pageSize={Number(pageSize)}

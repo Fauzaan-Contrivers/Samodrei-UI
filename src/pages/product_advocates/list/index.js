@@ -149,6 +149,14 @@ const InvoiceList = () => {
   }
 
   const handleStatusUpdateHandler = (product_advocate_id, Active) => {
+    console.log(Active)
+
+    if (Active == '0') {
+      console.log('ACTIVE', Active)
+      Active = '1'
+    } else {
+      Active = '0'
+    }
     // Call the update API
     const data = {
       product_advocate_id: product_advocate_id,
@@ -211,12 +219,12 @@ const InvoiceList = () => {
         >
           <MenuItem
             onClick={() => {
-              handleStatusUpdateHandler(row?.SalesforceId, !row?.Active)
+              handleStatusUpdateHandler(row?.Id, row?.Active)
               handleRowOptionsClose()
             }}
           >
-            {!row?.Active ? <Check sx={{ fontSize: '1rem' }} /> : <Close sx={{ fontSize: '1rem' }} />}
-            <span style={{ marginLeft: '4px' }}>{row?.Active ? 'Inactive' : 'Active'}</span>
+            {!row?.Active == '0' ? <Check sx={{ fontSize: '1rem' }} /> : <Close sx={{ fontSize: '1rem' }} />}
+            <span style={{ marginLeft: '4px' }}>{row?.Active == '1' ? 'Inactive' : 'Active'}</span>
           </MenuItem>
           <MenuItem
             onClick={() => {
@@ -237,7 +245,7 @@ const InvoiceList = () => {
       minWidth: 180,
       headerName: 'Name',
       renderCell: ({ row }) => (
-        <Link href={`/product_advocates/preview/${row.SalesforceId}`} passHref>
+        <Link href={`/product_advocates/preview/${row.Id}`} passHref>
           <StyledLink>{`${row?.Name}`}</StyledLink>
         </Link>
       )
@@ -313,7 +321,7 @@ const InvoiceList = () => {
                 fullWidth
                 label='Advocate Preview'
                 onChange={e => {
-                  handlePreview(e, row?.SalesforceId)
+                  handlePreview(e, row?.Id)
                 }}
                 labelId='invoice-status-select'
                 value={row?.Preview || ''}
@@ -341,7 +349,7 @@ const InvoiceList = () => {
                 // sx={{ mr: 4, mb: 2 }}
                 label='Advocate Sub View'
                 onChange={e => {
-                  handleSubView(e, row?.SalesforceId)
+                  handleSubView(e, row?.Id)
                 }}
                 labelId='invoice-status-select'
                 value={
@@ -370,7 +378,7 @@ const InvoiceList = () => {
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Tooltip title='View'>
             <Box>
-              <Link href={`/product_advocates/preview/${row.SalesforceId}`} passHref>
+              <Link href={`/product_advocates/preview/${row.Id}`} passHref>
                 <IconButton size='small' component='a' sx={{ textDecoration: 'none' }}>
                   <EyeOutline fontSize='small' />
                 </IconButton>
@@ -455,7 +463,7 @@ const InvoiceList = () => {
             rows={isLoading ? [] : store.product_advocates.data}
             columns={columns}
             loading={isLoading}
-            getRowId={row => row.SalesforceId}
+            getRowId={row => row.Id}
             // checkboxSelection
             rowCount={store.product_advocates.totalRecords}
             disableSelectionOnClick

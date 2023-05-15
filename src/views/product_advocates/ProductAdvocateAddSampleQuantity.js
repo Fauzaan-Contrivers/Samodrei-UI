@@ -33,11 +33,12 @@ const ProductAdvocateAddSampleQuantity = ({ row, open, handleClose }) => {
     const oldStock_20 = isNaN(row.Stock_20) || !Boolean(row.Stock_20) ? 0 : parseInt(row.Stock_20)
     const oldStock_60 = isNaN(row.Stock_60) || !Boolean(row.Stock_60) ? 0 : parseInt(row.Stock_60)
     const data = {
-      product_advocate_id: row.SalesforceId,
+      product_advocate_id: row.Id,
       Stock_20: oldStock_20 + (isNaN(Stock_20) || !Boolean(Stock_20) ? 0 : parseInt(Stock_20)),
       Stock_60: oldStock_60 + (isNaN(Stock_60) || !Boolean(Stock_60) ? 0 : parseInt(Stock_60))
     }
     try {
+      console.log(data)
       const _ = dispatch(updateProductAdvocateDosage(data))
       // Update the state of the quantity in the store
       var temp = store.product_advocates.data.map(s => Object.assign({}, s))

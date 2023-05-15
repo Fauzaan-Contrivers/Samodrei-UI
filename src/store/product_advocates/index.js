@@ -45,7 +45,7 @@ export const updateProductAdvocateStatus = createAsyncThunk(
 export const updateProductAdvocateDosage = createAsyncThunk(
   'product_advocate/update_product_advocate',
   async params => {
-    let response = await apiCall('POST', 'update_product_advocate', params)
+    let response = await apiCall('POST', 'product_advocate/update_product_advocate', params)
     return response.data.body
   }
 )

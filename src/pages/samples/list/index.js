@@ -126,7 +126,7 @@ const SamplesList = () => {
         if (name.toLowerCase().includes(prescriberText.toLowerCase())) {
           data.push({
             label: name,
-            value: prescriber.SalesforceId
+            value: prescriber.Id
           })
         }
       }
@@ -140,7 +140,7 @@ const SamplesList = () => {
     if (Boolean(productAdvocateValue)) {
       data = data.filter(val => {
         try {
-          return val.Product_Advocate__r.SalesforceId == productAdvocateValue
+          return val.Product_Advocate__r.Id == productAdvocateValue
         } catch (e) {
           return false
         }
@@ -150,7 +150,7 @@ const SamplesList = () => {
     if (selectedPrescriber) {
       data = data.filter(val => {
         try {
-          return val.Prescriber__r.SalesforceId == selectedPrescriber
+          return val.Prescriber__r.Id == selectedPrescriber
         } catch (e) {
           return false
         }
@@ -194,15 +194,15 @@ const SamplesList = () => {
     color: theme.palette.primary.main
   }))
 
-  const cancelSample = async SalesforceId => {
+  const cancelSample = async Id => {
     try {
-      const _ = dispatch(
+      dispatch(
         cancelSampleData({
-          SalesforceId: SalesforceId
+          Id: Id
         })
       )
       let data = store.samples.data.map(row => Object.assign({}, row))
-      const findIndex = data.findIndex(row => row.SalesforceId == SalesforceId)
+      const findIndex = data.findIndex(row => row.Id == Id)
       data[findIndex].Status = 'cancelled'
       dispatch(onSampleCancelHandler(data))
     } catch (e) {
@@ -212,8 +212,6 @@ const SamplesList = () => {
   }
 
   const RowOptions = ({ row }) => {
-    console.log('Sample', row)
-
     // ** State
     const [anchorEl, setAnchorEl] = useState(null)
     const rowOptionsOpen = Boolean(anchorEl)
@@ -248,7 +246,7 @@ const SamplesList = () => {
         >
           <MenuItem
             onClick={() => {
-              cancelSample(row.SalesforceId)
+              cancelSample(row.Id)
               handleRowOptionsClose()
             }}
           >
@@ -261,12 +259,12 @@ const SamplesList = () => {
 
   const jobsListViewColumns = [
     {
-      field: 'SalesforceId',
+      field: 'Id',
       minWidth: 200,
       headerName: 'Id',
       renderCell: ({ row }) => (
-        <Link href={`/samples/preview/${row.SalesforceId}`} passHref>
-          <StyledLink>{`${row.SalesforceId}`}</StyledLink>
+        <Link href={`/samples/preview/${row.Id}`} passHref>
+          <StyledLink>{`${row.Id}`}</StyledLink>
         </Link>
       )
     },
@@ -310,7 +308,7 @@ const SamplesList = () => {
       field: 'feedback_submitted_at',
       headerName: 'Prescriber',
       renderCell: ({ row }) => (
-        <Link href={`/prescribers/preview/${row.Prescriber}`} passHref>
+        <Link href={`/prescribers/preview/${row.Prescriber_Id}`} passHref>
           <StyledLink>{`${row.Prescriber_Name}`}</StyledLink>
         </Link>
       )
@@ -322,7 +320,7 @@ const SamplesList = () => {
       headerName: 'product Advocate',
       renderCell: ({ row }) => {
         return (
-          <Link href={`/product_advocates/preview/${row.Product_Advocate}`} passHref>
+          <Link href={`/product_advocates/preview/${row.Product_Advocate_Id}`} passHref>
             <StyledLink style={{ textTransform: 'uppercase' }}>{`${row?.product_advocate?.Name}`}</StyledLink>
           </Link>
         )
@@ -389,7 +387,7 @@ const SamplesList = () => {
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Tooltip title='View'>
             <Box>
-              <Link href={`/samples/preview/${row.SalesforceId}`} passHref>
+              <Link href={`/samples/preview/${row.Id}`} passHref>
                 <IconButton size='small' component='a' sx={{ textDecoration: 'none' }}>
                   <EyeOutline fontSize='small' />
                 </IconButton>
@@ -414,7 +412,7 @@ const SamplesList = () => {
                 <FormControl fullWidth>
                   <TextField
                     value={store.samples.filter.productAdvocateValue}
-                    SalesforceId='outlined-basic'
+                    Id='outlined-basic'
                     label='Product Advocate'
                     onChange={handleChangeProductAdvocateValue}
                   />
@@ -424,7 +422,7 @@ const SamplesList = () => {
                 <FormControl fullWidth>
                   <TextField
                     value={store.samples.filter.prescriberValue}
-                    SalesforceId='outlined-basic'
+                    Id='outlined-basic'
                     label='Prescriber'
                     onChange={handleChangePrescriberValue}
                   />
@@ -434,7 +432,7 @@ const SamplesList = () => {
             <Grid container spacing={6}>
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth>
-                  <InputLabel SalesforceId='product-advocate-s'>Sample Status</InputLabel>
+                  <InputLabel Id='product-advocate-s'>Sample Status</InputLabel>
                   <Select
                     fullWidth
                     value={store.samples.filter.Status}
@@ -475,12 +473,12 @@ const SamplesList = () => {
           <DataGrid
             autoHeight
             pagination
-            rows={isLoading ? [] : store.samples.data}
+            rows={isLoading ? [] : store?.samples?.data}
             columns={columns}
             loading={isLoading}
-            getRowId={row => row.SalesforceId}
+            getRowId={row => row.Id}
             // checkboxSelection
-            rowCount={store.samples.totalRecords}
+            rowCount={store?.samples?.totalRecords}
             disableSelectionOnClick
             pageSize={Number(pageSize)}
             rowsPerPageOptions={[10, 25, 50]}
