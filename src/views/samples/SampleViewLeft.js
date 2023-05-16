@@ -69,18 +69,18 @@ const SampleViewLeft = ({ data }) => {
   useEffect(() => {
     let flagCountSubmitted = store.jobs.data.filter(
       (val) =>
-        val.prescriber.id == data.id && val.Status == "Feedback completed"
+        val.prescriber.id == data.Id && val.Status == "Feedback completed"
     );
     let flagCountSubmittedInRadius = store.jobs.data.filter(
       (val) =>
-        val.prescriber.id == data.id &&
+        val.prescriber.id == data.Id &&
         val.Status == "Feedback completed" &&
         parseFloat(val.difference_location_doctor) < 1 &&
         parseFloat(val.difference_location_doctor) > 0
     );
     setJobsSubmitted(flagCountSubmitted.length);
     setJobsSubmittedInRadius(flagCountSubmittedInRadius.length);
-  }, [data.id, store.jobs.data]);
+  }, [data.Id, store.jobs.data]);
 
   const renderUserAvatar = () => {
     return (
