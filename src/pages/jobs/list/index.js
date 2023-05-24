@@ -391,12 +391,12 @@ const InvoiceList = () => {
         </IconButton>
         <Menu
           keepMounted
-          disablePortal
+          // disablePortal
           anchorEl={anchorEl}
           open={rowOptionsOpen}
           onClose={handleRowOptionsClose}
           anchorOrigin={{
-            vertical: "bottom",
+            vertical: "top",
             horizontal: "right",
           }}
           transformOrigin={{
@@ -420,7 +420,7 @@ const InvoiceList = () => {
   const jobsListViewColumns = [
     {
       field: "ID",
-      minWidth: 200,
+      minWidth: 40,
       headerName: "id",
       renderCell: ({ row }) => (
         <Link href={`/jobs/preview/${row.Id}`} passHref>
@@ -439,7 +439,7 @@ const InvoiceList = () => {
     {
       flex: 0.5,
       field: "prescriber_name",
-      minWidth: 300,
+      minWidth: 250,
       headerName: "Prescriber",
       renderCell: ({ row }) => {
         const { prescriber } = row;
@@ -461,7 +461,7 @@ const InvoiceList = () => {
     {
       flex: 0.5,
       field: "product_advocate_name",
-      minWidth: 200,
+      minWidth: 250,
       headerName: "Product Advocate",
       renderCell: ({ row }) => {
         const { product_advocate } = row;
@@ -484,8 +484,8 @@ const InvoiceList = () => {
       },
     },
     {
-      flex: 0.2,
-      minWidth: 150,
+      flex: 0.5,
+      minWidth: 450,
       field: "feedback_submitted_at",
       headerName: "Feedback Submitted At",
       renderCell: ({ row }) => (
@@ -496,7 +496,7 @@ const InvoiceList = () => {
     },
     {
       flex: 0.2,
-      minWidth: 150,
+      minWidth: 190,
       field: "feedback_submitted_at",
       headerName: "Feedback Submitted At",
       renderCell: ({ row }) => (
@@ -507,7 +507,7 @@ const InvoiceList = () => {
     },
     {
       flex: 0.2,
-      minWidth: 150,
+      minWidth: 170,
       field: "Distance_To_Doctor",
       headerName: "Distance to Doctor",
       renderCell: ({ row }) => (
@@ -524,7 +524,7 @@ const InvoiceList = () => {
     },
     {
       flex: 0.2,
-      minWidth: 150,
+      minWidth: 170,
       field: "Time_Spent_At_Job",
       headerName: "Time Spent (Minutes)",
       renderCell: ({ row }) => (
@@ -537,7 +537,7 @@ const InvoiceList = () => {
     },
     {
       flex: 0.3,
-      minWidth: 70,
+      minWidth: 160,
       field: "difference_location_doctor",
       headerName: "Feedback Distance",
       renderCell: ({ row }) => {
@@ -571,7 +571,7 @@ const InvoiceList = () => {
     },
     {
       flex: 0.2,
-      minWidth: 130,
+      minWidth: 90,
       sortable: false,
       field: "actions",
       headerName: "Actions",

@@ -1,61 +1,68 @@
 // ** Icon imports
-import Table from 'mdi-material-ui/Table'
-import ChartDonut from 'mdi-material-ui/ChartDonut'
-import FormSelect from 'mdi-material-ui/FormSelect'
-import CubeOutline from 'mdi-material-ui/CubeOutline'
-import LockOutline from 'mdi-material-ui/LockOutline'
-import HomeOutline from 'mdi-material-ui/HomeOutline'
-import EmailOutline from 'mdi-material-ui/EmailOutline'
-import ShieldOutline from 'mdi-material-ui/ShieldOutline'
-import AccountOutline from 'mdi-material-ui/AccountOutline'
-import ArchiveOutline from 'mdi-material-ui/ArchiveOutline'
-import DotsHorizontal from 'mdi-material-ui/DotsHorizontal'
-import MessageOutline from 'mdi-material-ui/MessageOutline'
-import FormatLetterCase from 'mdi-material-ui/FormatLetterCase'
-import CreditCardOutline from 'mdi-material-ui/CreditCardOutline'
-import VectorArrangeBelow from 'mdi-material-ui/VectorArrangeBelow'
-import FileDocumentOutline from 'mdi-material-ui/FileDocumentOutline'
-import CalendarBlankOutline from 'mdi-material-ui/CalendarBlankOutline'
-import PackageVariantClosed from 'mdi-material-ui/PackageVariantClosed'
-import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
-import CheckboxMarkedCircleOutline from 'mdi-material-ui/CheckboxMarkedCircleOutline'
+import Table from "mdi-material-ui/Table";
+import ChartDonut from "mdi-material-ui/ChartDonut";
+import FormSelect from "mdi-material-ui/FormSelect";
+import CubeOutline from "mdi-material-ui/CubeOutline";
+import LockOutline from "mdi-material-ui/LockOutline";
+import HomeOutline from "mdi-material-ui/HomeOutline";
+import EmailOutline from "mdi-material-ui/EmailOutline";
+import ShieldOutline from "mdi-material-ui/ShieldOutline";
+import AccountOutline from "mdi-material-ui/AccountOutline";
+import ArchiveOutline from "mdi-material-ui/ArchiveOutline";
+import DotsHorizontal from "mdi-material-ui/DotsHorizontal";
+import MessageOutline from "mdi-material-ui/MessageOutline";
+import FormatLetterCase from "mdi-material-ui/FormatLetterCase";
+import CreditCardOutline from "mdi-material-ui/CreditCardOutline";
+import VectorArrangeBelow from "mdi-material-ui/VectorArrangeBelow";
+import FileDocumentOutline from "mdi-material-ui/FileDocumentOutline";
+import CalendarBlankOutline from "mdi-material-ui/CalendarBlankOutline";
+import PackageVariantClosed from "mdi-material-ui/PackageVariantClosed";
+import GoogleCirclesExtended from "mdi-material-ui/GoogleCirclesExtended";
+import CheckboxMarkedCircleOutline from "mdi-material-ui/CheckboxMarkedCircleOutline";
 
 const navigation = () => {
   return [
     {
-      path: '/dashboard',
-      action: 'read',
-      subject: 'acl-page',
+      path: "/dashboard",
+      action: "read",
+      subject: "acl-page",
       icon: ShieldOutline,
-      title: 'Dashboard'
+      title: "Dashboard",
     },
     {
-      path: '/jobs/list',
-      action: 'read',
-      subject: 'acl-page',
+      path: "/jobs/list",
+      action: "read",
+      subject: "acl-page",
       icon: ShieldOutline,
-      title: 'Jobs'
+      title: "Jobs",
     },
     {
-      path: '/prescribers/list',
-      action: 'read',
-      subject: 'acl-page',
+      path: "/prescribers/list",
+      action: "read",
+      subject: "acl-page",
       icon: ShieldOutline,
-      title: 'Prescribers'
+      title: "Prescribers",
     },
     {
-      path: '/product_advocates/list',
-      action: 'read',
-      subject: 'acl-page',
+      path: "/product_advocates/list",
+      action: "read",
+      subject: "acl-page",
       icon: ShieldOutline,
-      title: 'Product Advocates'
+      title: "Product Advocates",
     },
     {
-      path: '/samples/list',
-      action: 'read',
-      subject: 'acl-page',
+      path: "/samples/list",
+      action: "read",
+      subject: "acl-page",
       icon: ShieldOutline,
-      title: 'Samples'
+      title: "Samples",
+    },
+    {
+      path: "/flagged_addresses",
+      action: "read",
+      subject: "acl-page",
+      icon: ShieldOutline,
+      title: "Flagged Addresses",
     },
     // {
     //   sectionTitle: 'Apps & Pages'
@@ -545,8 +552,8 @@ const navigation = () => {
     //       path: 'https://demos.themeselection.com/marketplace/materio-mui-react-nextjs-admin-template/documentation'
     //     }
     // ]
-   // }
-  ]
-}
+    // }
+  ];
+};
 
-export default navigation
+export default navigation;

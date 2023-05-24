@@ -286,9 +286,9 @@ const SampleViewLeft = ({ data }) => {
                               "," +
                               data.Pre_Sign_Location__Longitude__s +
                               "&daddr=" +
-                              data.Prescriber.Location__Latitude__s +
+                              data.prescriber.Location__Latitude +
                               "," +
-                              data.Prescriber.Location__Longitude__s
+                              data.prescriber.Location__Longitude
                           );
                         } else {
                           alert("location is not available.");
@@ -358,11 +358,10 @@ const SampleViewLeft = ({ data }) => {
                               "," +
                               data.Post_Sign_Location__Longitude__s +
                               "&daddr=" +
-                              data.Prescriber.Location__Latitude__s +
+                              data.prescriber.Location__Latitude +
                               "," +
-                              data.Prescriber.Location__Longitude__s
+                              data.prescriber.Location__Longitude
                           );
-                          // window.open(`https://www.google.com/maps?saddr=${},${}`, '_blank');
                         } else {
                           alert("location is not available.");
                         }
@@ -388,7 +387,8 @@ const SampleViewLeft = ({ data }) => {
                         <b>Post - Sign Date:</b>
                       </Typography>
                       <Typography variant="body2">
-                        {moment(data?.Post_Sign_Date).format("YYYY-MM-DD")}
+                        {moment(data?.Post_Sign_Date).format("YYYY-MM-DD") ||
+                          ""}
                       </Typography>
                     </Box>
                   </Grid>

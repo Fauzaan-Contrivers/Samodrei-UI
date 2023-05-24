@@ -1,30 +1,30 @@
 // ** MUI Imports
-import Box from '@mui/material/Box'
-import { styled } from '@mui/material/styles'
-import TextField from '@mui/material/TextField'
-import IconButton from '@mui/material/IconButton'
-import { GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid'
+import Box from "@mui/material/Box";
+import { styled } from "@mui/material/styles";
+import TextField from "@mui/material/TextField";
+import IconButton from "@mui/material/IconButton";
+import { GridToolbarContainer, GridToolbarExport } from "@mui/x-data-grid";
 
 // ** Icons Imports
-import Close from 'mdi-material-ui/Close'
-import Magnify from 'mdi-material-ui/Magnify'
+import Close from "mdi-material-ui/Close";
+import Magnify from "mdi-material-ui/Magnify";
 
 const StyledGridToolbarContainer = styled(GridToolbarContainer)({
   p: 2,
   pb: 0,
-  display: 'flex',
-  flexWrap: 'wrap',
-  alignItems: 'flex-start',
-  justifyContent: 'space-between'
-})
+  display: "flex",
+  flexWrap: "wrap",
+  alignItems: "flex-start",
+  justifyContent: "space-between",
+});
 
-const ServerSideToolbar = props => {
+const ServerSideToolbar = (props) => {
   return (
     <StyledGridToolbarContainer>
       <Box>
         <GridToolbarExport />
       </Box>
-      <TextField
+      {/* <TextField
         variant='standard'
         value={props.value}
         onChange={props.onChange}
@@ -51,9 +51,9 @@ const ServerSideToolbar = props => {
             borderColor: 'divider'
           }
         }}
-      />
+      /> */}
     </StyledGridToolbarContainer>
-  )
-}
+  );
+};
 
-export default ServerSideToolbar
+export default ServerSideToolbar;
