@@ -285,9 +285,9 @@ const SamplesList = () => {
       ),
     },
     {
-      flex: 0.3,
+      flex: 0.2,
       field: "Quantity_20",
-      minWidth: 5,
+      minWidth: 70,
       headerName: "20 MG",
       renderCell: ({ row }) => {
         return (
@@ -302,9 +302,9 @@ const SamplesList = () => {
       },
     },
     {
-      flex: 0.3,
+      flex: 0.2,
       field: "Quantity_60",
-      minWidth: 5,
+      minWidth: 70,
       headerName: "60 MG",
       renderCell: ({ row }) => {
         return (
@@ -319,8 +319,8 @@ const SamplesList = () => {
       },
     },
     {
-      flex: 0.4,
-      minWidth: 100,
+      flex: 0.2,
+      minWidth: 200,
       field: "Prescriber_Name",
       headerName: "Prescriber",
       renderCell: ({ row }) => (
@@ -330,8 +330,8 @@ const SamplesList = () => {
       ),
     },
     {
-      flex: 0.4,
-      minWidth: 50,
+      flex: 0.2,
+      minWidth: 200,
       field: "Name",
       headerName: "Product Advocate",
       renderCell: ({ row }) => {
@@ -348,8 +348,8 @@ const SamplesList = () => {
       },
     },
     {
-      flex: 0.3,
-      minWidth: 10,
+      flex: 0.2,
+      minWidth: 120,
       field: "Pre_Sign_Date",
       headerName: "Request Date ",
       renderCell: ({ row }) => {
@@ -365,8 +365,8 @@ const SamplesList = () => {
       },
     },
     {
-      flex: 0.3,
-      minWidth: 10,
+      flex: 0.2,
+      minWidth: 120,
       field: "Post_Sign_Date",
       headerName: "Deliver Date",
       renderCell: ({ row }) => {
@@ -385,7 +385,7 @@ const SamplesList = () => {
     },
     {
       flex: 0.2,
-      minWidth: 20,
+      minWidth: 80,
       field: "Status",
       headerName: "Status",
       renderCell: ({ row }) => {
@@ -401,8 +401,8 @@ const SamplesList = () => {
       },
     },
     {
-      flex: 0.1,
-      minWidth: 40,
+      flex: 0.2,
+      minWidth: 90,
       sortable: false,
       field: "actions",
       headerName: "Actions",

@@ -300,7 +300,7 @@ const InvoiceList = () => {
     },
     {
       flex: 0.2,
-      minWidth: 100,
+      minWidth: 110,
       field: "Stock_20",
       headerName: "Total 20 MG",
       renderCell: ({ row }) => (
@@ -309,7 +309,7 @@ const InvoiceList = () => {
     },
     {
       flex: 0.2,
-      minWidth: 100,
+      minWidth: 110,
       field: "Stock_60",
       headerName: "Total 60 MG",
       renderCell: ({ row }) => (
@@ -318,7 +318,7 @@ const InvoiceList = () => {
     },
     {
       flex: 0.2,
-      minWidth: 60,
+      minWidth: 80,
       field: "Active",
       headerName: "Active",
       renderCell: ({ row }) => (
@@ -337,7 +337,7 @@ const InvoiceList = () => {
     },
     {
       flex: 0.2,
-      minWidth: 60,
+      minWidth: 80,
       field: "Admin",
       headerName: "Admin",
       renderCell: ({ row }) => (
@@ -382,7 +382,7 @@ const InvoiceList = () => {
     },
     {
       flex: 0.2,
-      minWidth: 130,
+      minWidth: 250,
       field: "SubView",
       headerName: "Sub View",
       renderCell: ({ row }) => {
@@ -419,7 +419,7 @@ const InvoiceList = () => {
     },
     {
       flex: 0.2,
-      minWidth: 70,
+      minWidth: 90,
       sortable: false,
       field: "actions",
       headerName: "Actions",

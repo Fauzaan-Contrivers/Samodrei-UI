@@ -39,8 +39,8 @@ const FlaggedAddresses = () => {
 
   const columns = [
     {
-      flex: 0.1,
-      minWidth: 10,
+      flex: 0.2,
+      minWidth: 70,
       headerName: "ID",
       field: "Id",
       renderCell: (params) => (
@@ -50,8 +50,8 @@ const FlaggedAddresses = () => {
       ),
     },
     {
-      flex: 0.1,
-      minWidth: 50,
+      flex: 0.2,
+      minWidth: 180,
       headerName: "Name",
       field: "Name",
       renderCell: (params) => (
@@ -72,8 +72,8 @@ const FlaggedAddresses = () => {
       ),
     },
     {
-      flex: 0.1,
-      minWidth: 50,
+      flex: 0.2,
+      minWidth: 60,
       field: "address",
       headerName: "Edit",
       renderCell: ({ row }) => (
