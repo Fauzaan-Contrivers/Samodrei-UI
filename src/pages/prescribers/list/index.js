@@ -362,8 +362,8 @@ const InvoiceList = () => {
                     labelId="meet-with-select"
                   >
                     <MenuItem value="">Select State</MenuItem>
-                    {states &&
-                      states.map((item, index) => (
+                    {store?.prescribers?.states &&
+                      store?.prescribers?.states.map((item, index) => (
                         <MenuItem key={`state-${index}`} value={item}>
                           {item}
                         </MenuItem>

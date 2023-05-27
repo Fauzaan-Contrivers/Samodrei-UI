@@ -274,16 +274,16 @@ const SamplesList = () => {
   };
 
   const jobsListViewColumns = [
-    {
-      field: "Id",
-      minWidth: 20,
-      headerName: "Id",
-      renderCell: ({ row }) => (
-        <Link href={`/samples/preview/${row.Id}`} passHref>
-          <StyledLink>{`${row.Id}`}</StyledLink>
-        </Link>
-      ),
-    },
+    // {
+    //   field: "Id",
+    //   minWidth: 20,
+    //   headerName: "Id",
+    //   renderCell: ({ row }) => (
+    //     <Link href={`/samples/preview/${row.Id}`} passHref>
+    //       <StyledLink>{`${row.Id}`}</StyledLink>
+    //     </Link>
+    //   ),
+    // },
     {
       flex: 0.2,
       field: "Quantity_20",
