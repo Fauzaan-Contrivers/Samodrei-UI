@@ -223,7 +223,7 @@ const SampleViewPrescriber = ({ data }) => {
                     Street:
                   </Typography>
                   <Typography variant="body2">
-                    {data?.Prescriber_Street}
+                    {data?.prescriber.Street_Address}
                   </Typography>
                 </Box>
                 <Box sx={{ display: "flex", marginBottom: 2.7 }}>

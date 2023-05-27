@@ -15,13 +15,10 @@ export const fetchPrescribersData = createAsyncThunk(
       state: params.state,
       is_soaanz_prescriber: params.is_soaanz_prescriber,
     });
-    console.log(
-      "total Prescribers records lenght",
-      response.data.result.records.count
-    );
     return {
       totalRecords: response.data.result.records.count,
       result: response.data.result.records.prescribers,
+      states: response.data.result.states,
     };
   }
 );
@@ -100,6 +97,7 @@ export const prescribersSlice = createSlice({
     jobsData: [],
     dashboardData: [],
     totalRecords: 0,
+    states: [],
     isLoading: false,
     filter: {
       State: "",
@@ -117,7 +115,8 @@ export const prescribersSlice = createSlice({
       console.log("ACTION", action.payload);
       (state.data = action.payload.result),
         (state.isLoading = false),
-        (state.totalRecords = action.payload.totalRecords);
+        (state.totalRecords = action.payload.totalRecords),
+        (state.states = action.payload.states);
     });
     builder.addCase(setPrescribersLoadingTrue.fulfilled, (state, action) => {
       state.isLoading = true;

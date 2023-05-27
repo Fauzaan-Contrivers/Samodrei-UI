@@ -255,7 +255,7 @@ const InvoiceList = () => {
     },
     {
       flex: 0.2,
-      minWidth: 30,
+      minWidth: 140,
       field: "Furosemide_Trx",
       headerName: "Furosemide trx",
       renderCell: ({ row }) => (
@@ -264,7 +264,7 @@ const InvoiceList = () => {
     },
     {
       flex: 0.2,
-      minWidth: 40,
+      minWidth: 155,
       field: "is_soaanz_prescriber",
       headerName: "Is Writing Soaanz",
       renderCell: ({ row }) => (
@@ -288,7 +288,7 @@ const InvoiceList = () => {
     },
     {
       flex: 0.1,
-      minWidth: 10,
+      minWidth: 70,
       field: "market_decile",
       headerName: "Edit",
       renderCell: ({ row }) => (
@@ -362,8 +362,8 @@ const InvoiceList = () => {
                     labelId="meet-with-select"
                   >
                     <MenuItem value="">Select State</MenuItem>
-                    {states &&
-                      states.map((item, index) => (
+                    {store?.prescribers?.states &&
+                      store?.prescribers?.states.map((item, index) => (
                         <MenuItem key={`state-${index}`} value={item}>
                           {item}
                         </MenuItem>

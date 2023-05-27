@@ -12,7 +12,7 @@ const StyledLink = styled("a")(({ theme }) => ({
 export const jobsListViewColumns = [
   {
     field: "Job_Id",
-    minWidth: 200,
+    minWidth: 80,
     headerName: "Id",
     renderCell: ({ row }) => (
       <Link href={`/jobs/preview/${row.Job_Id}`} passHref>
@@ -78,7 +78,7 @@ export const jobsListViewColumns = [
   },
   {
     flex: 0.2,
-    minWidth: 150,
+    minWidth: 190,
     field: "feedback_submitted_at",
     headerName: "Feedback Submitted At",
     renderCell: ({ row }) => (
@@ -88,8 +88,8 @@ export const jobsListViewColumns = [
     ),
   },
   {
-    flex: 0.3,
-    minWidth: 70,
+    flex: 0.2,
+    minWidth: 160,
     field: "difference_location_doctor",
     headerName: "Feedback Distance",
     renderCell: ({ row }) => {
