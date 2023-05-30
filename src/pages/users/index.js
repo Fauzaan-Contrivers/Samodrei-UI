@@ -12,7 +12,6 @@ import CardHeader from "@mui/material/CardHeader";
 import Typography from "@mui/material/Typography";
 import { DataGrid } from "@mui/x-data-grid";
 import Snackbar from "@mui/material/Snackbar";
-import UserTableToolbar from "src/views/table/data-grid/UserTableToolbar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -23,6 +22,7 @@ import TextField from "@mui/material/TextField";
 import toast from "react-hot-toast";
 import Check from "mdi-material-ui/Check";
 import Close from "mdi-material-ui/Close";
+import ServerSideToolbar from "src/views/table/data-grid/ServerSideToolbar";
 
 const RegisteredUsers = () => {
   // ** State
@@ -266,7 +266,7 @@ const RegisteredUsers = () => {
           rowsPerPageOptions={[10, 25, 50]}
           getRowId={(row) => row?.id}
           onPageChange={(newPage) => setPage(newPage)}
-          components={{ Toolbar: UserTableToolbar }}
+          components={{ Toolbar: ServerSideToolbar }}
           onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         />
       </>
