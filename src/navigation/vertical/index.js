@@ -64,6 +64,13 @@ const navigation = () => {
       icon: ShieldOutline,
       title: "Flagged Addresses",
     },
+    {
+      path: "/users",
+      action: "read",
+      subject: "acl-page",
+      icon: ShieldOutline,
+      title: "Registered Users",
+    },
     // {
     //   sectionTitle: 'Apps & Pages'
     // },
