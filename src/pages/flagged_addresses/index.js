@@ -29,6 +29,7 @@ const FlaggedAddresses = () => {
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
   const [snackOpen, setSnackOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   function loadServerRows(currentPage, data) {
     return data.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
@@ -88,6 +89,7 @@ const FlaggedAddresses = () => {
 
   const fetchTableData = useCallback(
     async (sort, column) => {
+      setIsLoading(true);
       await axios
         .post(`${BASE_URL}prescriber/get_prescriber_flagged_address`, {
           params: {
@@ -98,6 +100,7 @@ const FlaggedAddresses = () => {
         .then((res) => {
           setTotal(res.data.prescribers.length);
           setRows(loadServerRows(page, res.data.prescribers));
+          setIsLoading(false);
         });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -151,12 +154,13 @@ const FlaggedAddresses = () => {
         <DataGrid
           autoHeight
           pagination
-          rows={rows}
+          rows={isLoading ? [] : rows}
           rowCount={total}
           columns={columns}
           pageSize={pageSize}
           sortingMode="server"
           paginationMode="server"
+          loading={isLoading}
           onSortModelChange={handleSortModel}
           rowsPerPageOptions={[10, 25, 50]}
           getRowId={(row) => row?.Id}

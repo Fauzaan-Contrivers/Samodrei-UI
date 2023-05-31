@@ -240,7 +240,7 @@ const InvoiceList = () => {
       headerName: "Address",
       renderCell: ({ row }) => (
         <Typography variant="body2">
-          {`${row.Street_Address},${row.City},${row.State}`}
+          {`${row.Street_Address}, ${row.City}, ${row.State}, ${row.Zip}`}
         </Typography>
       ),
     },

@@ -357,7 +357,11 @@ const SamplesList = () => {
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
               <Typography noWrap variant="caption">
-                {moment(row.Pre_Sign_Date).format("YYYY-MM-DD")}
+                <Typography variant="body2">
+                  {row?.Pre_Sign_Date
+                    ? moment(row.Pre_Sign_Date).local().format("YYYY-MM-DD")
+                    : " "}
+                </Typography>
               </Typography>
             </Box>
           </Box>
@@ -374,9 +378,11 @@ const SamplesList = () => {
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
               <Typography noWrap variant="caption">
-                {String(row.Post_Sign_Date) != "null"
-                  ? moment(row.Post_Sign_Date).format("YYYY-MM-DD")
-                  : ""}
+                <Typography variant="body2">
+                  {row?.Post_Sign_Date
+                    ? moment(row.Post_Sign_Date).local().format("YYYY-MM-DD")
+                    : " "}
+                </Typography>
               </Typography>
             </Box>
           </Box>
@@ -392,7 +398,7 @@ const SamplesList = () => {
         return (
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Typography noWrap variant="caption">
+              <Typography noWrap variant="body2">
                 {row.Status || ""}
               </Typography>
             </Box>

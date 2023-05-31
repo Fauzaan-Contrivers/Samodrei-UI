@@ -456,7 +456,6 @@ const InvoiceList = () => {
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth>
                   <InputLabel id="invoice-status-select">Status</InputLabel>
-
                   <Select
                     fullWidth
                     sx={{ mr: 4, mb: 2 }}
