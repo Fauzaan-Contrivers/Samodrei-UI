@@ -23,6 +23,9 @@ import toast from "react-hot-toast";
 import Check from "mdi-material-ui/Check";
 import Close from "mdi-material-ui/Close";
 import ServerSideToolbar from "src/views/table/data-grid/ServerSideToolbar";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 
 const RegisteredUsers = () => {
   // ** State
@@ -35,6 +38,7 @@ const RegisteredUsers = () => {
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
   const [snackOpen, setSnackOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [state, setState] = useState({
     name: "",
     email: "",
@@ -101,6 +105,7 @@ const RegisteredUsers = () => {
 
   const fetchTableData = useCallback(
     async (sort, column) => {
+      setIsLoading(true);
       await axios
         .get(`${BASE_URL}user/users`, {
           body: {
@@ -112,6 +117,7 @@ const RegisteredUsers = () => {
           console.log(res.data);
           setTotal(res.data.length);
           setRows(loadServerRows(page, res.data));
+          setIsLoading(false);
         });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -190,11 +196,11 @@ const RegisteredUsers = () => {
             },
           }}
         >
-          <DialogTitle id="alert-dialog-title">ADD USER</DialogTitle>
+          <DialogTitle id="alert-dialog-title">INVITE USER</DialogTitle>
           <form onSubmit={handleSubmit}>
             <DialogActions className="dialog-actions-dense">
               <FormControl sx={{ width: 550, padding: 5, mb: 1 }}>
-                <FormControl sx={{ width: 500, padding: 5, mb: 1 }}>
+                <FormControl fullWidth>
                   <TextField
                     required
                     type="text"
@@ -205,6 +211,7 @@ const RegisteredUsers = () => {
                     label="Name"
                     placeholder="Enter Name"
                     variant="standard"
+                    sx={{ marginBottom: 5 }}
                   />
                   <TextField
                     required
@@ -216,13 +223,37 @@ const RegisteredUsers = () => {
                     label="Email"
                     placeholder="Enter Email"
                     variant="standard"
+                    sx={{ marginBottom: 5 }}
                   />
                 </FormControl>
+                <FormControl fullWidth>
+                  <InputLabel id="standard-basic">SELECT ROLE</InputLabel>
+                  <Select
+                    fullWidth
+                    required
+                    label="roleId"
+                    id="standard-basic"
+                    onChange={handleChange}
+                    labelId="invoice-status-select"
+                    name="roleId"
+                    value={state.roleId}
+                    variant="standard"
+                  >
+                    <MenuItem value={1}>ADMIN</MenuItem>
+                    {/* <MenuItem value={2}>ROLE 2</MenuItem> */}
+                  </Select>
+                </FormControl>
                 <FormControl sx={{ width: 500, padding: 5, mb: 1 }}>
-                  <Button type="submit" variant="contained">
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    sx={{ mt: 1, mb: 1 }}
+                  >
                     Add
                   </Button>
-                  <Button onClick={handleClose}>Discard</Button>
+                  <Button onClick={handleClose} sx={{ mt: 1, mb: 1 }}>
+                    Discard
+                  </Button>
                 </FormControl>
               </FormControl>
             </DialogActions>
@@ -256,10 +287,11 @@ const RegisteredUsers = () => {
         <DataGrid
           autoHeight
           pagination
-          rows={rows}
+          rows={isLoading ? [] : rows}
           rowCount={total}
           columns={columns}
           pageSize={pageSize}
+          loading={isLoading}
           sortingMode="server"
           paginationMode="server"
           onSortModelChange={handleSortModel}

@@ -451,7 +451,7 @@ const InvoiceList = () => {
                 <StyledLink>{prescriber.Name}</StyledLink>
               </Link>
               <Typography noWrap variant="caption">
-                {prescriber.Street_Address}
+                {`${prescriber.Street_Address}, ${prescriber.City}, ${prescriber.State}, ${prescriber.Zip}`}
               </Typography>
             </Box>
           </Box>
@@ -484,24 +484,17 @@ const InvoiceList = () => {
       },
     },
     {
-      flex: 0.5,
-      minWidth: 450,
-      field: "feedback_submitted_at",
-      headerName: "Feedback Submitted At",
-      renderCell: ({ row }) => (
-        <Typography variant="body2">
-          {convertDateToReadableFormat(row.feedback_submitted_at) || ""}
-        </Typography>
-      ),
-    },
-    {
       flex: 0.2,
       minWidth: 190,
       field: "feedback_submitted_at",
       headerName: "Feedback Submitted At",
       renderCell: ({ row }) => (
         <Typography variant="body2">
-          {convertDateToReadableFormat(row.feedback_submitted_at) || ""}
+          {row?.feedback_submitted_at
+            ? moment(row.feedback_submitted_at)
+                .local()
+                .format("YYYY-MM-DD HH:mm:ss")
+            : " "}
         </Typography>
       ),
     },
@@ -515,7 +508,6 @@ const InvoiceList = () => {
           variant="body2"
           style={{ color: row.selected_far_doctor ? "red" : "green" }}
         >
-          {/* {parseFloat(row.Distance_To_Doctor).toFixed(2)} */}
           {row?.Distance_To_Doctor === null
             ? " "
             : parseFloat(row?.Distance_To_Doctor).toFixed(2)}
@@ -845,28 +837,6 @@ const InvoiceList = () => {
                     value={store.jobs.filter.productAdvocateValue}
                   />
                 </FormControl>
-                {/* <FormControl fullWidth>
-                  <InputLabel id='product-advocate'>Product Advocate</InputLabel>
-                  <Select
-                    fullWidth
-                    value={store.jobs.filter.productAdvocateValue}
-                    sx={{ mr: 4, mb: 2 }}
-                    label='Product Advocate'
-                    onChange={handleProductAdvocateValue}
-                    labelId='product-advocate'
-                  >
-                    <MenuItem value=''>none</MenuItem>
-                    {store.product_advocates.data
-                      .filter(val => val.Active)
-                      .map(val => {
-                        return (
-                          <MenuItem key={val.id} value={val.id}>
-                            {val.name}
-                          </MenuItem>
-                        )
-                      })}
-                  </Select>
-                </FormControl> */}
               </Grid>
               <Grid item xs={12} sm={6}>
                 <DatePickerWrapper>
@@ -893,14 +863,6 @@ const InvoiceList = () => {
                 </DatePickerWrapper>
               </Grid>
               <Grid item xs={12} sm={6}>
-                {/* <FormControl fullWidth>
-                  <TextField
-                    value={meetWith}
-                    id='outlined-basic'
-                    label='Who Did You Meet With'
-                    onChange={e => setMeetWith(e.target.value)}
-                  />
-                </FormControl> */}
                 <FormControl fullWidth>
                   <InputLabel id="status-select">
                     Who Did You Meet With
@@ -929,23 +891,6 @@ const InvoiceList = () => {
                     </MenuItem>
                   </Select>
                 </FormControl>
-                {/* <FormControl fullWidth>
-                  <InputLabel id='status-select'>Who Did You Meet With</InputLabel>
-                  <Select
-                    fullWidth
-                    value={store.jobs.filter.question_2}
-                    sx={{ mr: 4, mb: 2 }}
-                    label='Who Did You Meet With'
-                    onChange={handleWhoDidYouMeetWith}
-                    labelId='meet-with-select'
-                    multiple
-                  >
-                    <MenuItem value=''>Select Who Did You Meet With</MenuItem>
-                    <MenuItem value='Front Desk'>Front Desk</MenuItem>
-                    <MenuItem value='Madical Assistant'>Madical Assistant</MenuItem>
-                    <MenuItem value='Nurse Practitioner (NP)'>Nurse Practitioner (NP)</MenuItem>
-                  </Select>
-                </FormControl> */}
               </Grid>
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth>
@@ -1047,25 +992,12 @@ const InvoiceList = () => {
       <Grid item xs={12}>
         <Card>
           <TableHeader onClick={() => toCSVForm(filteredRows)} />
-          {/* <DataGrid
-            autoHeight
-            pagination
-            rows={filteredRows}
-            rowCount={store.jobs.totalRecords}
-            columns={columns}
-            disableSelectionOnClick
-            pageSize={Number(pageSize)}
-            rowsPerPageOptions={[10, 25, 50]}
-            onPageSizeChange={newPageSize => setPageSize(newPageSize)}
-          /> */}
-
           <DataGrid
             autoHeight
             pagination
             rows={isLoading ? [] : store.jobs.data}
             columns={columns}
             loading={isLoading}
-            // checkboxSelection
             rowCount={store.jobs.totalRecords}
             getRowId={(row) => row?.Id}
             disableSelectionOnClick

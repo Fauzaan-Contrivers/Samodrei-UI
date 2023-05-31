@@ -316,7 +316,6 @@ const ResetPasswordV2 = () => {
                   Email
                 </InputLabel>
                 <OutlinedInput
-                  autoFocus
                   label="Email"
                   value={values.email}
                   id="auth-reset-password-v2-email"
@@ -330,7 +329,6 @@ const ResetPasswordV2 = () => {
                   New Password
                 </InputLabel>
                 <OutlinedInput
-                  autoFocus
                   label="New Password"
                   value={values.password}
                   id="auth-reset-password-v2-new-password"
