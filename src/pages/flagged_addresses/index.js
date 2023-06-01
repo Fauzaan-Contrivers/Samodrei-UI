@@ -68,7 +68,7 @@ const FlaggedAddresses = () => {
       field: "Street_Address",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {`${params.row.Street_Address},${params.row.City},${params.row.State}`}
+          {`${params.row.Street_Address}, ${params.row.City}, ${params.row.State}, ${params.row.Zip}`}
         </Typography>
       ),
     },
