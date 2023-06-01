@@ -39,7 +39,6 @@ const navigation = () => {
     {
       path: "/prescribers/list",
       action: "read",
-      subject: "acl-page",
       icon: ShieldOutline,
       title: "Prescribers",
     },
@@ -53,21 +52,18 @@ const navigation = () => {
     {
       path: "/samples/list",
       action: "read",
-      subject: "acl-page",
       icon: ShieldOutline,
       title: "Samples",
     },
     {
       path: "/flagged_addresses",
       action: "read",
-      subject: "acl-page",
       icon: ShieldOutline,
       title: "Flagged Addresses",
     },
     {
       path: "/users",
       action: "read",
-      subject: "acl-page",
       icon: ShieldOutline,
       title: "Registered Users",
     },

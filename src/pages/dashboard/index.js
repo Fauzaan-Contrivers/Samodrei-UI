@@ -5,6 +5,11 @@ import moment from "moment/moment";
 // ** MUI Imports
 import Grid from "@mui/material/Grid";
 
+import { useContext } from "react";
+
+// ** Context Imports
+import { AbilityContext } from "src/layouts/components/acl/Can";
+
 import RechartsLineChart from "src/views/charts/recharts/RechartsLineChart";
 import RechartsPieChart from "src/views/charts/recharts/RechartsPieChart";
 
@@ -23,6 +28,7 @@ const CRMDashboard = () => {
   const [visits, setVisits] = useState([]);
   const [dashboardData, setDashboardData] = useState([]);
   const [seed, setSeed] = useState(1);
+  const ability = useContext(AbilityContext);
 
   //Storing Data in an Array for Further Manipulation
   const store = useSelector((state) => state);
@@ -215,48 +221,57 @@ const CRMDashboard = () => {
   bestAdvData[0].stats = dashboardData?.bestProductAdvocate?.count;
 
   return (
-    <>
-      <ApexChartWrapper>
-        <Grid container rowSpacing={1} columnSpacing={1}>
-          <Grid item xs={12} md={6}>
-            <CrmStatisticsCard
-              title={"Prescriber"}
-              header={`Total ${PrescribersCovered} Prescribers Visited`}
-              dataObj={data}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <CrmStatisticsCard
-              title={"Product Advocate of The Week"}
-              header={`${bestAdvName}`}
-              dataObj={bestAdvData}
-            />
-          </Grid>
-        </Grid>
-      </ApexChartWrapper>
-      <div style={{ marginTop: "5px" }}>
-        <RechartsWrapper>
-          <Grid container rowSpacing={1} columnSpacing={1}>
-            <Grid item xs={12} md={6}>
-              <RechartsLineChart visitMonthly={monthRange} />
+    <div>
+      {ability?.can("read", "acl-page") ? (
+        <>
+          <ApexChartWrapper>
+            <Grid container rowSpacing={1} columnSpacing={1}>
+              <Grid item xs={12} md={6}>
+                <CrmStatisticsCard
+                  title={"Prescriber"}
+                  header={`Total ${PrescribersCovered} Prescribers Visited`}
+                  dataObj={data}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <CrmStatisticsCard
+                  title={"Product Advocate of The Week"}
+                  header={`${bestAdvName}`}
+                  dataObj={bestAdvData}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={6}>
-              <RechartsPieChart
-                fd={fd_Count}
-                ma={md_Count}
-                nurse={nurse_Count}
-                np={np_Count}
-                ph={ph_Count}
-                om={om_Count}
-                pa={pa_Count}
-                key={seed}
-              />
-            </Grid>
-          </Grid>
-        </RechartsWrapper>
-      </div>
-    </>
+          </ApexChartWrapper>
+          <div style={{ marginTop: "5px" }}>
+            <RechartsWrapper>
+              <Grid container rowSpacing={1} columnSpacing={1}>
+                <Grid item xs={12} md={6}>
+                  <RechartsLineChart visitMonthly={monthRange} />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <RechartsPieChart
+                    fd={fd_Count}
+                    ma={md_Count}
+                    nurse={nurse_Count}
+                    np={np_Count}
+                    ph={ph_Count}
+                    om={om_Count}
+                    pa={pa_Count}
+                    key={seed}
+                  />
+                </Grid>
+              </Grid>
+            </RechartsWrapper>
+          </div>
+        </>
+      ) : null}
+    </div>
   );
+};
+
+CRMDashboard.acl = {
+  action: "read",
+  subject: "acl-page",
 };
 
 export default CRMDashboard;

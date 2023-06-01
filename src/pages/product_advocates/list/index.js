@@ -61,6 +61,11 @@ import TableHeader from "src/views/apps/invoice/list/TableHeader";
 // ** Third Party Styles Imports
 import "react-datepicker/dist/react-datepicker.css";
 
+import { useContext } from "react";
+
+// ** Context Imports
+import { AbilityContext } from "src/layouts/components/acl/Can";
+
 // ** Styled Components
 import DatePickerWrapper from "src/@core/styles/libs/react-datepicker";
 import {
@@ -92,6 +97,7 @@ const InvoiceList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [active, setActive] = useState("");
   const [name_email, setNameEmail] = useState("");
+  const ability = useContext(AbilityContext);
 
   // ** Hooks
   const dispatch = useDispatch();
@@ -455,76 +461,89 @@ const InvoiceList = () => {
   const columns = [...defaultColumns];
 
   return (
-    <Grid container spacing={6}>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title="Filters" />
-          <CardContent>
-            <Grid container spacing={6}>
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel id="invoice-status-select">Status</InputLabel>
-                  <Select
-                    fullWidth
-                    sx={{ mr: 4, mb: 2 }}
-                    label="Advocate Status"
-                    onChange={handleStatusValue}
-                    labelId="invoice-status-select"
-                    value={store.product_advocates.filter.Active}
-                  >
-                    <MenuItem value="">Select Product Advocate Status</MenuItem>
-                    <MenuItem value="1">Active</MenuItem>
-                    <MenuItem value="0">Inactive</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={6} sm={6}>
-                <FormControl fullWidth>
-                  <TextField
-                    value={store.product_advocates.filter.ProductAdvocateValue}
-                    id="outlined-basic"
-                    label="Search By Name or Email"
-                    onChange={handleProductAdvocateValue}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6}></Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={12}>
-        <Card>
-          {Boolean(selectedRow) && Boolean(showSampleQuantity) && (
-            <ProductAdvocateAddSampleQuantity
-              open={showSampleQuantity}
-              row={selectedRow}
-              handleClose={() => setShowSampleQuantity(false)}
-            />
-          )}
-          <DataGrid
-            autoHeight
-            pagination
-            rows={isLoading ? [] : store.product_advocates.data}
-            columns={columns}
-            loading={isLoading}
-            getRowId={(row) => row.Id}
-            // checkboxSelection
-            rowCount={store.product_advocates.totalRecords}
-            disableSelectionOnClick
-            pageSize={Number(pageSize)}
-            rowsPerPageOptions={[10, 25, 50]}
-            onPageChange={(newPage) => {
-              setPage(newPage);
-            }}
-            onSelectionModelChange={(rows) => setSelectedRow(rows)}
-            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-            paginationMode="server"
-          />
-        </Card>
-      </Grid>
-    </Grid>
+    <div>
+      {ability?.can("read", "acl-page") ? (
+        <Grid container spacing={6}>
+          <Grid item xs={12}>
+            <Card>
+              <CardHeader title="Filters" />
+              <CardContent>
+                <Grid container spacing={6}>
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <InputLabel id="invoice-status-select">Status</InputLabel>
+                      <Select
+                        fullWidth
+                        sx={{ mr: 4, mb: 2 }}
+                        label="Advocate Status"
+                        onChange={handleStatusValue}
+                        labelId="invoice-status-select"
+                        value={store.product_advocates.filter.Active}
+                      >
+                        <MenuItem value="">
+                          Select Product Advocate Status
+                        </MenuItem>
+                        <MenuItem value="1">Active</MenuItem>
+                        <MenuItem value="0">Inactive</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={6} sm={6}>
+                    <FormControl fullWidth>
+                      <TextField
+                        value={
+                          store.product_advocates.filter.ProductAdvocateValue
+                        }
+                        id="outlined-basic"
+                        label="Search By Name or Email"
+                        onChange={handleProductAdvocateValue}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12} sm={6}></Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12}>
+            <Card>
+              {Boolean(selectedRow) && Boolean(showSampleQuantity) && (
+                <ProductAdvocateAddSampleQuantity
+                  open={showSampleQuantity}
+                  row={selectedRow}
+                  handleClose={() => setShowSampleQuantity(false)}
+                />
+              )}
+              <DataGrid
+                autoHeight
+                pagination
+                rows={isLoading ? [] : store.product_advocates.data}
+                columns={columns}
+                loading={isLoading}
+                getRowId={(row) => row.Id}
+                // checkboxSelection
+                rowCount={store.product_advocates.totalRecords}
+                disableSelectionOnClick
+                pageSize={Number(pageSize)}
+                rowsPerPageOptions={[10, 25, 50]}
+                onPageChange={(newPage) => {
+                  setPage(newPage);
+                }}
+                onSelectionModelChange={(rows) => setSelectedRow(rows)}
+                onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+                paginationMode="server"
+              />
+            </Card>
+          </Grid>
+        </Grid>
+      ) : null}
+    </div>
   );
+};
+
+InvoiceList.acl = {
+  action: "read",
+  subject: "acl-page",
 };
 
 export default InvoiceList;
