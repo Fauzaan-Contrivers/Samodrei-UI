@@ -56,6 +56,9 @@ import TableHeader from "src/views/jobs/TableHeader";
 // ** Third Party Styles Imports
 import "react-datepicker/dist/react-datepicker.css";
 
+// ** Config
+import authConfig from "src/configs/auth";
+
 // ** Styled Components
 import { styled } from "@mui/material/styles";
 import { convertDateToReadableFormat } from "src/configs/utils";
@@ -124,6 +127,10 @@ const InvoiceList = () => {
   const store = useSelector((state) => state);
 
   useEffect(() => {
+    const userData = JSON.parse(
+      window.localStorage.getItem(authConfig.userData)
+    );
+    console.log("ussseeeeeeeeeeeeeeeeer", userData.roleId);
     const startDate = moment(store.jobs.filter.startDateRange, "YYYY-MM-DD");
     const formattedStartDate = startDate.format("YYYY-MM-DD");
     const endDate = moment(store.jobs.filter.endDateRange, "YYYY-MM-DD");
@@ -157,6 +164,7 @@ const InvoiceList = () => {
         prescriber: store.jobs.filter.prescriberValue,
         lunch_meeting: check,
         radius: store.jobs.filter.difference_location_doctor,
+        clientId: userData.roleId,
       })
     ).then(() => {
       setIsLoading(false);

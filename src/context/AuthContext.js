@@ -68,7 +68,6 @@ const AuthProvider = ({ children }) => {
             console.log("USER DATA", userData);
 
             const role = "";
-
             if (userData?.roleId === 1) {
               role = "admin";
             }
@@ -81,6 +80,7 @@ const AuthProvider = ({ children }) => {
               role: role,
               fullName: userData?.name || "",
               email: userData?.email,
+              roleId: userData?.roleId,
             };
             setUser({ ...data });
           });
@@ -125,6 +125,7 @@ const AuthProvider = ({ children }) => {
             const returnUrl = router.query.returnUrl;
             const { userData } = response.data;
             const role = "";
+            console.log("USER DATA", userData);
 
             if (userData.roleId === 1) {
               role = "admin";
@@ -134,11 +135,11 @@ const AuthProvider = ({ children }) => {
             }
 
             const data = {
-              id: userData.id,
+              id: userData?.id,
               role: role,
-              fullName: userData?.name,
-              username: "abubakr",
-              email: userData.email,
+              fullName: userData?.name || "",
+              email: userData?.email,
+              roleId: userData?.roleId,
             };
             setUser({ ...data });
             await window.localStorage.setItem(

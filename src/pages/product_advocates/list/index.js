@@ -38,6 +38,9 @@ import DeleteOutline from "mdi-material-ui/DeleteOutline";
 import InformationOutline from "mdi-material-ui/InformationOutline";
 import ContentSaveOutline from "mdi-material-ui/ContentSaveOutline";
 
+// ** Config
+import authConfig from "src/configs/auth";
+
 // ** Third Party Imports
 import format from "date-fns/format";
 import DatePicker from "react-datepicker";
@@ -95,6 +98,10 @@ const InvoiceList = () => {
   const store = useSelector((state) => state);
 
   useEffect(() => {
+    const userData = JSON.parse(
+      window.localStorage.getItem(authConfig.userData)
+    );
+    console.log("ussseeeeeeeeeeeeeeeeer", userData.roleId);
     const fetchProductAdvocates = debounce(() => {
       if (
         store.product_advocates.totalRecords ||
@@ -116,6 +123,7 @@ const InvoiceList = () => {
             page_size: page_size,
             active_status: store.product_advocates.filter.Active,
             name_email: store.product_advocates.filter.ProductAdvocateValue,
+            clientId: userData.roleId,
           })
         ).then(() => setIsLoading(false));
       }

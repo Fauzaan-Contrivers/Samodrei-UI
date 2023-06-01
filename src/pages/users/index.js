@@ -26,6 +26,7 @@ import ServerSideToolbar from "src/views/table/data-grid/ServerSideToolbar";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import { status } from "nprogress";
 
 const RegisteredUsers = () => {
   // ** State
@@ -43,6 +44,7 @@ const RegisteredUsers = () => {
     name: "",
     email: "",
     roleId: 1,
+    companyName: "SOAANZ",
   });
 
   function loadServerRows(currentPage, data) {
@@ -226,7 +228,7 @@ const RegisteredUsers = () => {
                     sx={{ marginBottom: 5 }}
                   />
                 </FormControl>
-                <FormControl fullWidth>
+                <FormControl fullWidth sx={{ marginBottom: 5 }}>
                   <InputLabel id="standard-basic">SELECT ROLE</InputLabel>
                   <Select
                     fullWidth
@@ -243,6 +245,23 @@ const RegisteredUsers = () => {
                     {/* <MenuItem value={2}>ROLE 2</MenuItem> */}
                   </Select>
                 </FormControl>
+                <FormControl fullWidth>
+                  <InputLabel id="standard-basic">SELECT COMPANY</InputLabel>
+                  <Select
+                    fullWidth
+                    required
+                    label="company"
+                    id="standard-basic"
+                    onChange={handleChange}
+                    labelId="invoice-status-select"
+                    name="companyName"
+                    value={state.companyName}
+                    variant="standard"
+                  >
+                    <MenuItem value="SOAANZ">SOAANZ</MenuItem>
+                    <MenuItem value="SOAANZ 1">SOAANZ 1</MenuItem>
+                  </Select>
+                </FormControl>
                 <FormControl sx={{ width: 500, padding: 5, mb: 1 }}>
                   <Button
                     type="submit"
@@ -252,7 +271,7 @@ const RegisteredUsers = () => {
                     Add
                   </Button>
                   <Button onClick={handleClose} sx={{ mt: 1, mb: 1 }}>
-                    Discard
+                    Close
                   </Button>
                 </FormControl>
               </FormControl>
