@@ -44,7 +44,7 @@ const RegisteredUsers = () => {
     name: "",
     email: "",
     roleId: 1,
-    companyName: "SOAANZ",
+    company_name: "SOAANZ",
   });
 
   function loadServerRows(currentPage, data) {
@@ -85,6 +85,17 @@ const RegisteredUsers = () => {
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
           {params.row.email}
+        </Typography>
+      ),
+    },
+    {
+      flex: 0.2,
+      minWidth: 440,
+      headerName: "Company Name",
+      field: "company_name",
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ color: "text.primary" }}>
+          {params.row.company_name}
         </Typography>
       ),
     },
@@ -178,6 +189,8 @@ const RegisteredUsers = () => {
     });
   };
 
+  console.log(state);
+
   return (
     <Card>
       <>
@@ -242,7 +255,7 @@ const RegisteredUsers = () => {
                     variant="standard"
                   >
                     <MenuItem value={1}>ADMIN</MenuItem>
-                    {/* <MenuItem value={2}>ROLE 2</MenuItem> */}
+                    <MenuItem value={2}>ROLE 2</MenuItem>
                   </Select>
                 </FormControl>
                 <FormControl fullWidth>
@@ -254,12 +267,12 @@ const RegisteredUsers = () => {
                     id="standard-basic"
                     onChange={handleChange}
                     labelId="invoice-status-select"
-                    name="companyName"
-                    value={state.companyName}
+                    name="company_name"
+                    value={state.company_name}
                     variant="standard"
                   >
                     <MenuItem value="SOAANZ">SOAANZ</MenuItem>
-                    <MenuItem value="SOAANZ 1">SOAANZ 1</MenuItem>
+                    <MenuItem value="SOAANZ CLIENT">SOAANZ CLIENT</MenuItem>
                   </Select>
                 </FormControl>
                 <FormControl sx={{ width: 500, padding: 5, mb: 1 }}>
