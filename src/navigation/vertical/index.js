@@ -39,6 +39,7 @@ const navigation = () => {
     {
       path: "/prescribers/list",
       action: "read",
+      subject: "acl-page",
       icon: ShieldOutline,
       title: "Prescribers",
     },

@@ -189,8 +189,6 @@ const RegisteredUsers = () => {
     });
   };
 
-  console.log(state);
-
   return (
     <Card>
       <>
@@ -255,7 +253,7 @@ const RegisteredUsers = () => {
                     variant="standard"
                   >
                     <MenuItem value={1}>ADMIN</MenuItem>
-                    <MenuItem value={2}>ROLE 2</MenuItem>
+                    <MenuItem value={2}>CLIENT</MenuItem>
                   </Select>
                 </FormControl>
                 <FormControl fullWidth>

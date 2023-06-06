@@ -77,7 +77,7 @@ const AuthProvider = ({ children }) => {
 
             const data = {
               id: userData?.id,
-              role: role,
+              role: "admin",
               fullName: userData?.name || "",
               email: userData?.email,
               roleId: userData?.roleId,
@@ -136,7 +136,7 @@ const AuthProvider = ({ children }) => {
 
             const data = {
               id: userData?.id,
-              role: role,
+              role: "admin",
               fullName: userData?.name || "",
               email: userData?.email,
               roleId: userData?.roleId,

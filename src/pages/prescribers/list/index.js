@@ -46,6 +46,7 @@ import DatePicker from "react-datepicker";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPrescribersData } from "src/store/prescribers";
 import { debounce } from "lodash";
+import authConfig from "src/configs/auth";
 
 // ** Utils Import
 import { getInitials } from "src/@core/utils/get-initials";
@@ -72,57 +73,11 @@ const StyledLink = styled("a")(({ theme }) => ({
   color: theme.palette.primary.main,
 }));
 
-const RowOptions = ({ id }) => {
-  // ** State
-  const [anchorEl, setAnchorEl] = useState(null);
-  const rowOptionsOpen = Boolean(anchorEl);
+import { useContext } from "react";
 
-  const handleRowOptionsClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+// ** Context Imports
+import { AbilityContext } from "src/layouts/components/acl/Can";
 
-  const handleRowOptionsClose = () => {
-    setAnchorEl(null);
-  };
-
-  return (
-    <Fragment>
-      <IconButton size="small" onClick={handleRowOptionsClick}>
-        <DotsVertical fontSize="small" />
-      </IconButton>
-      <Menu
-        keepMounted
-        disablePortal
-        anchorEl={anchorEl}
-        open={rowOptionsOpen}
-        onClose={handleRowOptionsClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-      >
-        <MenuItem>
-          <Download fontSize="small" sx={{ mr: 2 }} />
-          Download
-        </MenuItem>
-        <Link href={`/apps/invoice/edit/${id}`} passHref>
-          <MenuItem>
-            <PencilOutline fontSize="small" sx={{ mr: 2 }} />
-            Edit
-          </MenuItem>
-        </Link>
-        <MenuItem>
-          <ContentCopy fontSize="small" sx={{ mr: 2 }} />
-          Duplicate
-        </MenuItem>
-      </Menu>
-    </Fragment>
-  );
-};
 /* eslint-enable */
 const InvoiceList = () => {
   // ** State
@@ -143,12 +98,16 @@ const InvoiceList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [state, setState] = useState("");
   const [isSoaanz, setIsSoaanz] = useState("");
+  const ability = useContext(AbilityContext);
 
   // ** Hooks
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
 
   useEffect(() => {
+    const userData = JSON.parse(
+      window.localStorage.getItem(authConfig.userData)
+    );
     setIsLoading(true);
     const fetchPrescribersDataWithDebounce = debounce(() => {
       dispatch(
@@ -158,6 +117,7 @@ const InvoiceList = () => {
           name: store.prescribers.filter.name,
           state: store.prescribers.filter.State,
           is_soaanz_prescriber: store.prescribers.filter.is_soaanz_prescriber,
+          clientId: userData.roleId,
         })
       ).then(() => {
         filterAllStates();
@@ -302,132 +262,118 @@ const InvoiceList = () => {
   ];
   const columns = [...defaultColumns];
 
-  const filterPrescriber = (prescriber) => {
-    const state = store.prescribers.filter.State;
-    const name = store.prescribers.filter.name;
-    const soaanzPresc = store.prescribers.filter.is_soaanz_prescriber;
-    let returnValue = true;
-    if (Boolean(name)) {
-      returnValue =
-        prescriber.name.toLowerCase().indexOf(name.toLowerCase()) != -1;
-    }
-    if (Boolean(state)) {
-      returnValue = state == prescriber.State;
-    }
-    if (Boolean(soaanzPresc)) {
-      if (soaanzPresc === "true") {
-        returnValue = prescriber.is_soaanz_prescriber;
-      } else {
-        returnValue = !prescriber.is_soaanz_prescriber;
-      }
-    }
-
-    return returnValue;
-  };
-
   const [snackOpen, setSnackOpen] = useState(false);
   return (
-    <Grid container spacing={6}>
-      <PrescriberEditDialog
-        prescriber={prescriber}
-        onPrescriberUpdate={() => {
-          setSnackOpen(true);
-          setOpen(false);
-        }}
-        open={open}
-        handleClose={handleClose}
-      />
-      <Snackbar
-        open={snackOpen}
-        onClose={() => setSnackOpen(false)}
-        message="Address updated successfully."
-        autoHideDuration={3000}
-        anchorOrigin={{ horizontal: "right", vertical: "top" }}
-      />
-
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title="Filters" />
-          <CardContent>
-            <Grid container spacing={4}>
-              <Grid item xs={6} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel id="status-select">State</InputLabel>
-                  <Select
-                    fullWidth
-                    value={store.prescribers.filter.State}
-                    sx={{ mr: 4, mb: 2 }}
-                    label="State"
-                    onChange={handleStateChangeHandler}
-                    labelId="meet-with-select"
-                  >
-                    <MenuItem value="">Select State</MenuItem>
-                    {store?.prescribers?.states &&
-                      store?.prescribers?.states.map((item, index) => (
-                        <MenuItem key={`state-${index}`} value={item}>
-                          {item}
-                        </MenuItem>
-                      ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={6} sm={6}>
-                <FormControl fullWidth>
-                  <TextField
-                    value={store.prescribers.filter.name}
-                    id="outlined-basic"
-                    label="Prescriber Name"
-                    onChange={handlePrescriberNameChangeHandler}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={6} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel id="status-select">
-                    Is Soaanz Prescriber
-                  </InputLabel>
-                  <Select
-                    fullWidth
-                    value={store.prescribers.filter.is_soaanz_prescriber}
-                    sx={{ mr: 4, mb: 2 }}
-                    label="State"
-                    onChange={handleSoaanzStateChangeHandler}
-                    labelId="meet-with-select"
-                  >
-                    <MenuItem value="">Select State</MenuItem>
-                    <MenuItem value="1">Yes</MenuItem>
-                    <MenuItem value="0">Not</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={12}>
-        <Card>
-          <DataGrid
-            autoHeight
-            pagination
-            rows={isLoading ? [] : store.prescribers.data}
-            columns={columns}
-            loading={isLoading}
-            getRowId={(row) => row?.Id}
-            rowCount={store.prescribers.totalRecords}
-            disableSelectionOnClick
-            pageSize={Number(pageSize)}
-            rowsPerPageOptions={[10, 25, 50]}
-            onPageChange={(newPage) => {
-              setPage(newPage);
+    <div>
+      {ability?.can("read", "acl-page") ? (
+        <Grid container spacing={6}>
+          <PrescriberEditDialog
+            prescriber={prescriber}
+            onPrescriberUpdate={() => {
+              setSnackOpen(true);
+              setOpen(false);
             }}
-            onSelectionModelChange={(rows) => setSelectedRow(rows)}
-            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-            paginationMode="server"
+            open={open}
+            handleClose={handleClose}
           />
-        </Card>
-      </Grid>
-    </Grid>
+          <Snackbar
+            open={snackOpen}
+            onClose={() => setSnackOpen(false)}
+            message="Address updated successfully."
+            autoHideDuration={3000}
+            anchorOrigin={{ horizontal: "right", vertical: "top" }}
+          />
+
+          <Grid item xs={12}>
+            <Card>
+              <CardHeader title="Filters" />
+              <CardContent>
+                <Grid container spacing={4}>
+                  <Grid item xs={6} sm={6}>
+                    <FormControl fullWidth>
+                      <InputLabel id="status-select">State</InputLabel>
+                      <Select
+                        fullWidth
+                        value={store.prescribers.filter.State}
+                        sx={{ mr: 4, mb: 2 }}
+                        label="State"
+                        onChange={handleStateChangeHandler}
+                        labelId="meet-with-select"
+                      >
+                        <MenuItem value="">Select State</MenuItem>
+                        {store?.prescribers?.states &&
+                          store?.prescribers?.states.map((item, index) => (
+                            <MenuItem key={`state-${index}`} value={item}>
+                              {item}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={6} sm={6}>
+                    <FormControl fullWidth>
+                      <TextField
+                        value={store.prescribers.filter.name}
+                        id="outlined-basic"
+                        label="Prescriber Name"
+                        onChange={handlePrescriberNameChangeHandler}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={6} sm={6}>
+                    <FormControl fullWidth>
+                      <InputLabel id="status-select">
+                        Is Soaanz Prescriber
+                      </InputLabel>
+                      <Select
+                        fullWidth
+                        value={store.prescribers.filter.is_soaanz_prescriber}
+                        sx={{ mr: 4, mb: 2 }}
+                        label="State"
+                        onChange={handleSoaanzStateChangeHandler}
+                        labelId="meet-with-select"
+                      >
+                        <MenuItem value="">Select State</MenuItem>
+                        <MenuItem value="1">Yes</MenuItem>
+                        <MenuItem value="0">Not</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12}>
+            <Card>
+              <DataGrid
+                autoHeight
+                pagination
+                rows={isLoading ? [] : store.prescribers.data}
+                columns={columns}
+                loading={isLoading}
+                getRowId={(row) => row?.Id}
+                rowCount={store.prescribers.totalRecords}
+                disableSelectionOnClick
+                pageSize={Number(pageSize)}
+                rowsPerPageOptions={[10, 25, 50]}
+                onPageChange={(newPage) => {
+                  setPage(newPage);
+                }}
+                onSelectionModelChange={(rows) => setSelectedRow(rows)}
+                onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+                paginationMode="server"
+              />
+            </Card>
+          </Grid>
+        </Grid>
+      ) : null}
+    </div>
   );
+};
+
+InvoiceList.acl = {
+  action: "read",
+  subject: "acl-page",
 };
 
 export default InvoiceList;
