@@ -95,7 +95,6 @@ const InvoiceList = () => {
   const [selectedRow, setSelectedRow] = useState(undefined);
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [active, setActive] = useState("");
   const [name_email, setNameEmail] = useState("");
   const ability = useContext(AbilityContext);
 
@@ -104,10 +103,6 @@ const InvoiceList = () => {
   const store = useSelector((state) => state);
 
   useEffect(() => {
-    const userData = JSON.parse(
-      window.localStorage.getItem(authConfig.userData)
-    );
-    console.log("ussseeeeeeeeeeeeeeeeer", userData.roleId);
     const fetchProductAdvocates = debounce(() => {
       if (
         store.product_advocates.totalRecords ||
@@ -129,7 +124,7 @@ const InvoiceList = () => {
             page_size: page_size,
             active_status: store.product_advocates.filter.Active,
             name_email: store.product_advocates.filter.ProductAdvocateValue,
-            clientId: userData.roleId,
+            clientId: userData.clientId,
           })
         ).then(() => setIsLoading(false));
       }
@@ -137,12 +132,13 @@ const InvoiceList = () => {
 
     fetchProductAdvocates();
 
-    return () => fetchProductAdvocates.cancel(); // cancel pending debounced invocation on unmount or re-render
+    return () => fetchProductAdvocates.cancel();
   }, [pageSize, page, store.product_advocates.filter, name_email]);
 
-  const handleFilter = (val) => {
-    setValue(val);
-  };
+  const userData = JSON?.parse(
+    window.localStorage.getItem(authConfig.userData)
+  );
+
   const handleStatusValue = (e) => {
     dispatch(
       onProductAdvocateStatusChangeHandler({
@@ -459,6 +455,19 @@ const InvoiceList = () => {
   ];
 
   const columns = [...defaultColumns];
+
+  if (userData.roleId == 1) {
+    const companyNameColumn = {
+      flex: 0.2,
+      minWidth: 150,
+      field: "company_name",
+      headerName: "Company Name",
+      renderCell: ({ row }) => <Typography variant="body2">{""}</Typography>,
+    };
+
+    const insertIndex = 3;
+    columns.splice(insertIndex, 0, companyNameColumn);
+  }
 
   return (
     <div>

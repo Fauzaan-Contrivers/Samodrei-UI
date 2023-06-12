@@ -132,11 +132,9 @@ const InvoiceList = () => {
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
 
+  const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
+
   useEffect(() => {
-    const userData = JSON.parse(
-      window.localStorage.getItem(authConfig.userData)
-    );
-    console.log("ussseeeeeeeeeeeeeeeeer", userData.roleId);
     const startDate = moment(store.jobs.filter.startDateRange, "YYYY-MM-DD");
     const formattedStartDate = startDate.format("YYYY-MM-DD");
     const endDate = moment(store.jobs.filter.endDateRange, "YYYY-MM-DD");
@@ -170,7 +168,7 @@ const InvoiceList = () => {
         prescriber: store.jobs.filter.prescriberValue,
         lunch_meeting: check,
         radius: store.jobs.filter.difference_location_doctor,
-        clientId: userData.roleId,
+        clientId: userData.clientId,
       })
     ).then(() => {
       setIsLoading(false);

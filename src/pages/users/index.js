@@ -14,19 +14,12 @@ import { DataGrid } from "@mui/x-data-grid";
 import Snackbar from "@mui/material/Snackbar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogActions from "@mui/material/DialogActions";
-import FormControl from "@mui/material/FormControl";
-import TextField from "@mui/material/TextField";
-import toast from "react-hot-toast";
+
 import Check from "mdi-material-ui/Check";
 import Close from "mdi-material-ui/Close";
 import ServerSideToolbar from "src/views/table/data-grid/ServerSideToolbar";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import { status } from "nprogress";
+import MyDialog from "src/views/components/dialogs/UserDialog";
+import authConfig from "src/configs/auth";
 
 const RegisteredUsers = () => {
   // ** State
@@ -34,22 +27,20 @@ const RegisteredUsers = () => {
   const [total, setTotal] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [rows, setRows] = useState([]);
+  const [company, setCompany] = useState([]);
+
   const [sortColumn, setSortColumn] = useState("id");
   const [sort, setSort] = useState("desc");
   const [open, setOpen] = useState(false);
-  const handleClose = () => setOpen(false);
   const [snackOpen, setSnackOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [state, setState] = useState({
-    name: "",
-    email: "",
-    roleId: 1,
-    company_name: "SOAANZ",
-  });
+  const [dialogFields, setDialogFields] = useState("");
 
   function loadServerRows(currentPage, data) {
     return data.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
   }
+
+  const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
 
   // ** Hooks
   const ability = useContext(AbilityContext);
@@ -127,9 +118,10 @@ const RegisteredUsers = () => {
           },
         })
         .then((res) => {
-          console.log(res.data);
-          setTotal(res.data.length);
-          setRows(loadServerRows(page, res.data));
+          console.log(res.data.users);
+          setTotal(res.data.users.length);
+          setRows(loadServerRows(page, res.data.users));
+          setCompany(res.data.company);
           setIsLoading(false);
         });
     },
@@ -139,7 +131,7 @@ const RegisteredUsers = () => {
 
   useEffect(() => {
     fetchTableData(sort, sortColumn);
-  }, [fetchTableData, sort, sortColumn]);
+  }, [fetchTableData, sort, sortColumn, open]);
 
   const handleSortModel = (newModel) => {
     if (newModel.length) {
@@ -152,143 +144,24 @@ const RegisteredUsers = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch(`${BASE_URL}user/invite`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(state),
-      });
-      const data = await response.json();
-      console.log("DATA", data);
-      if (data.status == 200) {
-        toast.success(data.message, {
-          duration: 2000,
-        });
-        fetchTableData();
-      }
-
-      if (data.status == 400) {
-        toast.error(data.message, {
-          duration: 2000,
-        });
-      }
-      handleClose();
-    } catch (error) {
-      console.log("CHECK", error);
-    }
+  const openDialog = (fields) => {
+    setOpen(true);
+    setDialogFields(fields);
   };
 
-  const handleChange = (e) => {
-    setState({
-      ...state,
-      [e.target.name]: e.target.value,
-    });
+  const handleCloseDialog = () => {
+    setOpen(false);
   };
 
   return (
     <Card>
       <>
-        <Dialog
+        <MyDialog
           open={open}
-          disableEscapeKeyDown
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          onClose={(event, reason) => {
-            if (reason !== "backdropClick") {
-              handleClose();
-            }
-          }}
-          PaperProps={{
-            style: {
-              width: "fit-content",
-              maxWidth: "100%",
-            },
-          }}
-        >
-          <DialogTitle id="alert-dialog-title">INVITE USER</DialogTitle>
-          <form onSubmit={handleSubmit}>
-            <DialogActions className="dialog-actions-dense">
-              <FormControl sx={{ width: 550, padding: 5, mb: 1 }}>
-                <FormControl fullWidth>
-                  <TextField
-                    required
-                    type="text"
-                    value={state.name}
-                    onChange={handleChange}
-                    id="standard-basic"
-                    name="name"
-                    label="Name"
-                    placeholder="Enter Name"
-                    variant="standard"
-                    sx={{ marginBottom: 5 }}
-                  />
-                  <TextField
-                    required
-                    type="email"
-                    value={state.email}
-                    onChange={handleChange}
-                    id="standard-basic"
-                    name="email"
-                    label="Email"
-                    placeholder="Enter Email"
-                    variant="standard"
-                    sx={{ marginBottom: 5 }}
-                  />
-                </FormControl>
-                <FormControl fullWidth sx={{ marginBottom: 5 }}>
-                  <InputLabel id="standard-basic">SELECT ROLE</InputLabel>
-                  <Select
-                    fullWidth
-                    required
-                    label="roleId"
-                    id="standard-basic"
-                    onChange={handleChange}
-                    labelId="invoice-status-select"
-                    name="roleId"
-                    value={state.roleId}
-                    variant="standard"
-                  >
-                    <MenuItem value={1}>ADMIN</MenuItem>
-                    <MenuItem value={2}>CLIENT</MenuItem>
-                  </Select>
-                </FormControl>
-                <FormControl fullWidth>
-                  <InputLabel id="standard-basic">SELECT COMPANY</InputLabel>
-                  <Select
-                    fullWidth
-                    required
-                    label="company"
-                    id="standard-basic"
-                    onChange={handleChange}
-                    labelId="invoice-status-select"
-                    name="company_name"
-                    value={state.company_name}
-                    variant="standard"
-                  >
-                    <MenuItem value="SOAANZ">SOAANZ</MenuItem>
-                    <MenuItem value="SOAANZ CLIENT">SOAANZ CLIENT</MenuItem>
-                  </Select>
-                </FormControl>
-                <FormControl sx={{ width: 500, padding: 5, mb: 1 }}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    sx={{ mt: 1, mb: 1 }}
-                  >
-                    Add
-                  </Button>
-                  <Button onClick={handleClose} sx={{ mt: 1, mb: 1 }}>
-                    Close
-                  </Button>
-                </FormControl>
-              </FormControl>
-            </DialogActions>
-          </form>
-        </Dialog>
+          handleClose={handleCloseDialog}
+          fields={dialogFields}
+          company={company}
+        />
         <Snackbar
           open={snackOpen}
           onClose={() => {
@@ -301,16 +174,27 @@ const RegisteredUsers = () => {
           anchorOrigin={{ horizontal: "right", vertical: "top" }}
         />
         <CardHeader
-          title="Registered Users"
           action={
-            <Box>
-              <Button
-                size="small"
-                variant="contained"
-                onClick={() => setOpen(true)}
-              >
-                Invite
-              </Button>
+            <Box sx={{ display: "flex", gap: "1rem" }}>
+              {userData.roleId == 1 || userData.roleId == 3 ? (
+                <Button
+                  size="small"
+                  variant="contained"
+                  onClick={() => openDialog("INVITE USER")}
+                >
+                  Invite User
+                </Button>
+              ) : null}
+
+              {userData.roleId == 1 ? (
+                <Button
+                  size="small"
+                  variant="contained"
+                  onClick={() => openDialog("REGISTER COMPANY")}
+                >
+                  REGISTER COMPANY
+                </Button>
+              ) : null}
             </Box>
           }
         />

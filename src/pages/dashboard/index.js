@@ -85,15 +85,34 @@ const CRMDashboard = () => {
   let nurse_Count = 0;
 
   if (dashboardData?.totalVisits?.length > 0) {
-    fd_Count =
-      parseInt(dashboardData?.totalVisits[0].count) +
-      parseInt(dashboardData?.totalVisits[2].count);
-    md_Count = parseInt(dashboardData?.totalVisits[1].count);
-    np_Count = parseInt(dashboardData?.totalVisits[3].count);
-    ph_Count = parseInt(dashboardData?.totalVisits[4].count);
-    om_Count = parseInt(dashboardData?.totalVisits[5].count);
-    pa_Count = parseInt(dashboardData?.totalVisits[6].count);
-    nurse_Count = parseInt(dashboardData?.totalVisits[7].count);
+    dashboardData?.totalVisits.map((item) => {
+      console.log(item.question_2);
+
+      if (item.question_2 == null || item.question_2 == "Front Desk Staff") {
+        fd_Count += parseInt(item.count);
+      }
+      if (item.question_2 == "Physician") {
+        ph_Count = parseInt(item.count);
+      }
+      if (item.question_2 == "Nurse Practitioner (NP)") {
+        np_Count = parseInt(item.count);
+      }
+      if (
+        item.question_2 == "Physician’s Assistant (PA)" ||
+        item.question_2 == " Physician?s Assistant (PA)"
+      ) {
+        pa_Count = parseInt(item.count);
+      }
+      if (item.question_2 == "Office Manager") {
+        om_Count = parseInt(item.count);
+      }
+      if (item.question_2 == "Medical Assistant (MA)") {
+        md_Count = parseInt(item.count);
+      }
+      if (item.question_2 == "Nurse") {
+        nurse_Count = parseInt(item.count);
+      }
+    });
   }
 
   let lm_Count = dashboardData?.lunch_meetings;

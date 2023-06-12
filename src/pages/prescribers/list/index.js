@@ -96,7 +96,6 @@ const InvoiceList = () => {
   const handleClose = () => setOpen(false);
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [state, setState] = useState("");
   const [isSoaanz, setIsSoaanz] = useState("");
   const ability = useContext(AbilityContext);
 
@@ -104,10 +103,11 @@ const InvoiceList = () => {
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
 
+  const userData = JSON?.parse(
+    window.localStorage.getItem(authConfig.userData)
+  );
+
   useEffect(() => {
-    const userData = JSON.parse(
-      window.localStorage.getItem(authConfig.userData)
-    );
     setIsLoading(true);
     const fetchPrescribersDataWithDebounce = debounce(() => {
       dispatch(
@@ -117,7 +117,7 @@ const InvoiceList = () => {
           name: store.prescribers.filter.name,
           state: store.prescribers.filter.State,
           is_soaanz_prescriber: store.prescribers.filter.is_soaanz_prescriber,
-          clientId: userData.roleId,
+          clientId: userData.clientId,
         })
       ).then(() => {
         filterAllStates();
@@ -261,6 +261,19 @@ const InvoiceList = () => {
     },
   ];
   const columns = [...defaultColumns];
+
+  if (userData.roleId == 1) {
+    const companyNameColumn = {
+      flex: 0.2,
+      minWidth: 150,
+      field: "company_name",
+      headerName: "Company Name",
+      renderCell: ({ row }) => <Typography variant="body2">{""}</Typography>,
+    };
+
+    const insertIndex = 3;
+    columns.splice(insertIndex, 0, companyNameColumn);
+  }
 
   const [snackOpen, setSnackOpen] = useState(false);
   return (
