@@ -30,6 +30,13 @@ const navigation = () => {
       title: "Dashboard",
     },
     {
+      path: "/analytics",
+      action: "read",
+      subject: "acl-page",
+      icon: ShieldOutline,
+      title: "Analytics",
+    },
+    {
       path: "/jobs/list",
       action: "read",
       subject: "acl-page",

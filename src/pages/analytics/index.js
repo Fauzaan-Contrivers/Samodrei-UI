@@ -56,6 +56,7 @@ const CustomInput = forwardRef((props, ref) => {
 const Analytics = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [seed, setSeed] = useState(1);
 
   // ** Hook
   const theme = useTheme();
@@ -83,14 +84,15 @@ const Analytics = () => {
       "YYYY-MM-DD"
     );
     const formattedEndDate = endDate.format("YYYY-MM-DD");
-
-    dispatch(
-      fetchProductAdvocateAnalyticsData({
-        id: store.product_advocates.filter.id,
-        start_date: formattedStartDate,
-        end_date: formattedEndDate,
-      })
-    );
+    if (endDate.isValid() && store.product_advocates.filter.name.length > 0) {
+      dispatch(
+        fetchProductAdvocateAnalyticsData({
+          id: store.product_advocates.filter.id,
+          start_date: formattedStartDate,
+          end_date: formattedEndDate,
+        })
+      ).then(setSeed(Math.random()));
+    }
   }, [store.product_advocates.filter]);
 
   const setDatesHandler = (val) => {
@@ -188,8 +190,6 @@ const Analytics = () => {
   let hours = store.product_advocates.timeSpent;
   let visit = store.product_advocates.visits;
 
-  console.log(store.product_advocates.filter);
-
   return (
     <>
       <Grid container spacing={6}>
@@ -204,7 +204,6 @@ const Analytics = () => {
                       <Autocomplete
                         value={{
                           id: store.product_advocates.filter.id,
-                          // label: productAdvocate.name,
                           value: store.product_advocates.filter.name,
                         }}
                         onChange={(e, value) =>
@@ -213,7 +212,6 @@ const Analytics = () => {
                         options={store.product_advocates.names.map((item) => ({
                           id: item.Id,
                           value: item.Name,
-                          // label: item.Name,
                         }))}
                         getOptionLabel={(option) => option.value}
                         renderInput={(params) => (
@@ -289,6 +287,7 @@ const Analytics = () => {
                     ph={ph_Count}
                     om={om_Count}
                     pa={pa_Count}
+                    key={seed}
                   />
                 </Grid>
               </Grid>

@@ -80,8 +80,6 @@ const TimeSpentBarChart = (props) => {
     data.datasets[0].data.push(timeSpent);
   });
 
-  console.log(data);
-
   return (
     <Card>
       <CardHeader
