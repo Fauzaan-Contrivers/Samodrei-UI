@@ -21,6 +21,9 @@ import { DataGrid } from "@mui/x-data-grid";
 import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
 
+// ** Config
+import authConfig from "src/configs/auth";
+
 // ** Icons
 import Close from "mdi-material-ui/Close";
 import EyeOutline from "mdi-material-ui/EyeOutline";
@@ -76,6 +79,7 @@ const SamplesList = () => {
   // ** Hooks
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
+  const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,6 +91,7 @@ const SamplesList = () => {
           product_advocate: store.samples.filter.productAdvocateValue,
           prescriber: store.samples.filter.prescriberValue,
           sample_status: store.samples.filter.Status,
+          clientId: userData.clientId,
         })
       );
       setIsLoading(false);
@@ -102,6 +107,7 @@ const SamplesList = () => {
             product_advocate: store.samples.filter.productAdvocateValue,
             prescriber: store.samples.filter.prescriberValue,
             sample_status: store.samples.filter.Status,
+            clientId: userData.clientId,
           })
         ).then(() => {
           fetchData();

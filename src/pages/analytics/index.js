@@ -83,6 +83,7 @@ const Analytics = () => {
       store.product_advocates.filter.endDateRange,
       "YYYY-MM-DD"
     );
+
     const formattedEndDate = endDate.format("YYYY-MM-DD");
     if (endDate.isValid() && store.product_advocates.filter.name.length > 0) {
       dispatch(
@@ -91,7 +92,9 @@ const Analytics = () => {
           start_date: formattedStartDate,
           end_date: formattedEndDate,
         })
-      ).then(setSeed(Math.random()));
+      ).then(() => {
+        setSeed(Math.random());
+      });
     }
   }, [store.product_advocates.filter]);
 

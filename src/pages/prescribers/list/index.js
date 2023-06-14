@@ -199,9 +199,13 @@ const InvoiceList = () => {
       field: "prescriber_address",
       headerName: "Address",
       renderCell: ({ row }) => (
-        <Typography variant="body2">
-          {`${row.Street_Address}, ${row.City}, ${row.State}, ${row.Zip}`}
-        </Typography>
+        <Tooltip
+          title={`${row.Street_Address}, ${row.City}, ${row.State}, ${row.Zip}`}
+        >
+          <Typography variant="body2">
+            {`${row.Street_Address}, ${row.City}, ${row.State}, ${row.Zip}`}
+          </Typography>
+        </Tooltip>
       ),
     },
     {

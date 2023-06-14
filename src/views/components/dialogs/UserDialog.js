@@ -58,8 +58,6 @@ const MyDialog = ({ open, handleClose, fields, company }) => {
     }
   };
 
-  console.log("asssssssssssssdsda", company);
-
   return (
     <Dialog
       open={open}

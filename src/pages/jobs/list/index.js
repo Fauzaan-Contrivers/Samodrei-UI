@@ -458,14 +458,18 @@ const InvoiceList = () => {
 
         return (
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Link href={`/prescribers/preview/${prescriber.Id}`} passHref>
-                <StyledLink>{prescriber.Name}</StyledLink>
-              </Link>
-              <Typography noWrap variant="caption">
-                {`${prescriber.Street_Address}, ${prescriber.City}, ${prescriber.State}, ${prescriber.Zip}`}
-              </Typography>
-            </Box>
+            <Tooltip
+              title={`${prescriber.Street_Address}, ${prescriber.City}, ${prescriber.State}, ${prescriber.Zip}`}
+            >
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Link href={`/prescribers/preview/${prescriber.Id}`} passHref>
+                  <StyledLink>{prescriber.Name}</StyledLink>
+                </Link>
+                <Typography noWrap variant="caption">
+                  {`${prescriber.Street_Address}, ${prescriber.City}, ${prescriber.State}, ${prescriber.Zip}`}
+                </Typography>
+              </Box>
+            </Tooltip>
           </Box>
         );
       },

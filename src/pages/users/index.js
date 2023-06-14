@@ -109,21 +109,23 @@ const RegisteredUsers = () => {
 
   const fetchTableData = useCallback(
     async (sort, column) => {
-      setIsLoading(true);
-      await axios
-        .get(`${BASE_URL}user/users`, {
-          body: {
-            sort,
-            column,
-          },
-        })
-        .then((res) => {
-          console.log(res.data.users);
-          setTotal(res.data.users.length);
-          setRows(loadServerRows(page, res.data.users));
-          setCompany(res.data.company);
-          setIsLoading(false);
-        });
+      if (!open) {
+        setIsLoading(true);
+        await axios
+          .get(`${BASE_URL}user/users`, {
+            body: {
+              sort,
+              column,
+            },
+          })
+          .then((res) => {
+            console.log(res.data.users);
+            setTotal(res.data.users.length);
+            setRows(loadServerRows(page, res.data.users));
+            setCompany(res.data.company);
+            setIsLoading(false);
+          });
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [page, pageSize]
@@ -131,7 +133,7 @@ const RegisteredUsers = () => {
 
   useEffect(() => {
     fetchTableData(sort, sortColumn);
-  }, [fetchTableData, sort, sortColumn, open]);
+  }, [fetchTableData, sort, sortColumn]);
 
   const handleSortModel = (newModel) => {
     if (newModel.length) {
