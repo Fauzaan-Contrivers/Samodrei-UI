@@ -24,6 +24,10 @@ import RechartsWrapper from "src/@core/styles/libs/recharts";
 import RechartsPieChart from "src/views/charts/recharts/RechartsPieChart";
 import TimeSpentBarChart from "src/views/charts/chartjs/ProductAdvocateTimeSpentBarChart";
 import { Paper, Typography } from "@mui/material";
+
+// ** Config
+import authConfig from "src/configs/auth";
+
 // ** Third Party Styles Imports
 import "react-datepicker/dist/react-datepicker.css";
 import { useTheme } from "@mui/material/styles";
@@ -69,8 +73,10 @@ const Analytics = () => {
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
 
+  const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
+
   useEffect(() => {
-    dispatch(getProductAdvocateNames({ clientId: 1 }));
+    dispatch(getProductAdvocateNames({ clientId: userData.clientId }));
   }, []);
 
   useEffect(() => {
@@ -190,8 +196,12 @@ const Analytics = () => {
     }
   });
 
-  let hours = store.product_advocates.timeSpent;
+  let hours = 0;
   let visit = store.product_advocates.visits;
+
+  store.product_advocates.timeSpentPerDay.map((item) => {
+    hours += Number(item.timeSpent);
+  });
 
   return (
     <>

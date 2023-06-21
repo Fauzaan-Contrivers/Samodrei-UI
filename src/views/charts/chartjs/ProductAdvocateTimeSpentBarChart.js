@@ -7,6 +7,7 @@ import TextField from "@mui/material/TextField";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import InputAdornment from "@mui/material/InputAdornment";
+import moment from "moment/moment";
 
 // ** Third Party Imports
 import format from "date-fns/format";
@@ -39,7 +40,7 @@ const TimeSpentBarChart = (props) => {
       },
       y: {
         min: 0,
-        max: 2,
+        max: 8,
         grid: {
           borderColor,
           color: gridLineColor,
@@ -69,16 +70,14 @@ const TimeSpentBarChart = (props) => {
   };
 
   props.data.forEach((item) => {
-    const formattedDate = new Date(item.date).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    });
-
+    const formattedDate = moment(item.date).local().format("MMM DD");
     const timeSpent = parseFloat(Number(item.timeSpent).toFixed(2) / 60);
 
     data.labels.push(formattedDate);
     data.datasets[0].data.push(timeSpent);
   });
+
+  console.log(data);
 
   return (
     <Card>

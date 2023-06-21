@@ -47,6 +47,7 @@ export const fetchDashboardData = createAsyncThunk(
   async (params) => {
     let response = await apiCall("POST", "dashboard/fetch_dashboard_data", {
       ...params,
+      clientId: params.clientId,
     });
     console.log("Dashboard Record==>", response.data);
     return {

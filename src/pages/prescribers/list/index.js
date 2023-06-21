@@ -266,18 +266,18 @@ const InvoiceList = () => {
   ];
   const columns = [...defaultColumns];
 
-  if (userData.roleId == 1) {
-    const companyNameColumn = {
-      flex: 0.2,
-      minWidth: 150,
-      field: "company_name",
-      headerName: "Company Name",
-      renderCell: ({ row }) => <Typography variant="body2">{""}</Typography>,
-    };
+  // if (userData.roleId == 1) {
+  //   const companyNameColumn = {
+  //     flex: 0.2,
+  //     minWidth: 150,
+  //     field: "company_name",
+  //     headerName: "Company Name",
+  //     renderCell: ({ row }) => <Typography variant="body2">{""}</Typography>,
+  //   };
 
-    const insertIndex = 3;
-    columns.splice(insertIndex, 0, companyNameColumn);
-  }
+  //   const insertIndex = 3;
+  //   columns.splice(insertIndex, 0, companyNameColumn);
+  // }
 
   const [snackOpen, setSnackOpen] = useState(false);
   return (

@@ -6,6 +6,9 @@ import { AbilityContext } from "src/layouts/components/acl/Can";
 import axios from "axios";
 import { BASE_URL } from "src/configs/config";
 
+// ** Config
+import authConfig from "src/configs/auth";
+
 // ** MUI Imports
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -19,7 +22,6 @@ import Check from "mdi-material-ui/Check";
 import Close from "mdi-material-ui/Close";
 import ServerSideToolbar from "src/views/table/data-grid/ServerSideToolbar";
 import MyDialog from "src/views/components/dialogs/UserDialog";
-import authConfig from "src/configs/auth";
 
 const RegisteredUsers = () => {
   // ** State
@@ -36,11 +38,11 @@ const RegisteredUsers = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [dialogFields, setDialogFields] = useState("");
 
+  const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
+
   function loadServerRows(currentPage, data) {
     return data.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
   }
-
-  const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
 
   // ** Hooks
   const ability = useContext(AbilityContext);
@@ -108,14 +110,17 @@ const RegisteredUsers = () => {
   ];
 
   const fetchTableData = useCallback(
-    async (sort, column) => {
+    async (sort, column, userData) => {
       if (!open) {
         setIsLoading(true);
+        console.log(userData.clientId);
+
         await axios
           .get(`${BASE_URL}user/users`, {
-            body: {
+            params: {
               sort,
               column,
+              clientId: userData.clientId,
             },
           })
           .then((res) => {
@@ -132,7 +137,7 @@ const RegisteredUsers = () => {
   );
 
   useEffect(() => {
-    fetchTableData(sort, sortColumn);
+    fetchTableData(sort, sortColumn, userData);
   }, [fetchTableData, sort, sortColumn]);
 
   const handleSortModel = (newModel) => {

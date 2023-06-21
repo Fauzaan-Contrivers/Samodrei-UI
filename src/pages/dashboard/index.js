@@ -7,6 +7,9 @@ import Grid from "@mui/material/Grid";
 
 import { useContext } from "react";
 
+// ** Config
+import authConfig from "src/configs/auth";
+
 // ** Context Imports
 import { AbilityContext } from "src/layouts/components/acl/Can";
 
@@ -29,6 +32,7 @@ const CRMDashboard = () => {
   const [dashboardData, setDashboardData] = useState([]);
   const [seed, setSeed] = useState(1);
   const ability = useContext(AbilityContext);
+  const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
 
   //Storing Data in an Array for Further Manipulation
   const store = useSelector((state) => state);
@@ -51,7 +55,11 @@ const CRMDashboard = () => {
   }, [dashboardData]);
 
   useEffect(() => {
-    dispatch(fetchDashboardData()).then(() => {});
+    dispatch(
+      fetchDashboardData({
+        clientId: userData.clientId,
+      })
+    ).then(() => {});
   }, []);
 
   useEffect(() => {
