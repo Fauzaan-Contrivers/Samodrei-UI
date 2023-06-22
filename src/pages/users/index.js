@@ -113,14 +113,13 @@ const RegisteredUsers = () => {
     async (sort, column, userData) => {
       if (!open) {
         setIsLoading(true);
-        console.log(userData.clientId);
 
         await axios
           .get(`${BASE_URL}user/users`, {
             params: {
               sort,
               column,
-              clientId: userData.clientId,
+              clientId: userData?.clientId,
             },
           })
           .then((res) => {
