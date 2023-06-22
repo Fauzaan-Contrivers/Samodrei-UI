@@ -84,6 +84,17 @@ const RegisteredUsers = () => {
     {
       flex: 0.2,
       minWidth: 440,
+      headerName: "Role",
+      field: "roleId",
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ color: "text.primary" }}>
+          {params.row.roleId == 1 ? "Super Admin" : "Admin"}
+        </Typography>
+      ),
+    },
+    {
+      flex: 0.2,
+      minWidth: 440,
       headerName: "Company Name",
       field: "company_name",
       renderCell: (params) => (
@@ -192,7 +203,7 @@ const RegisteredUsers = () => {
                 </Button>
               ) : null}
 
-              {userData.roleId == 1 ? (
+              {userData.clientId == 1 ? (
                 <Button
                   size="small"
                   variant="contained"
