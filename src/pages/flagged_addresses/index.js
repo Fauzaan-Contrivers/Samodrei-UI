@@ -16,6 +16,9 @@ import ServerSideToolbar from "src/views/table/data-grid/ServerSideToolbar";
 import PrescriberEditDialog from "../prescribers/list/edit-dialog";
 import Snackbar from "@mui/material/Snackbar";
 
+// ** Config
+import authConfig from "src/configs/auth";
+
 const FlaggedAddresses = () => {
   // ** State
   const [page, setPage] = useState(0);
@@ -30,6 +33,8 @@ const FlaggedAddresses = () => {
   const handleClose = () => setOpen(false);
   const [snackOpen, setSnackOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
 
   function loadServerRows(currentPage, data) {
     return data.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
@@ -88,16 +93,16 @@ const FlaggedAddresses = () => {
   ];
 
   const fetchTableData = useCallback(
-    async (sort, column) => {
+    async (sort, column, clientId) => {
       setIsLoading(true);
       await axios
         .post(`${BASE_URL}prescriber/get_prescriber_flagged_address`, {
-          params: {
-            sort,
-            column,
-          },
+          sort,
+          column,
+          clientId,
         })
         .then((res) => {
+          console.log(res.data.prescribers);
           setTotal(res.data.prescribers.length);
           setRows(loadServerRows(page, res.data.prescribers));
           setIsLoading(false);
@@ -108,14 +113,19 @@ const FlaggedAddresses = () => {
   );
 
   useEffect(() => {
-    fetchTableData(sort, sortColumn);
+    fetchTableData(sort, sortColumn, userData.clientId);
   }, [fetchTableData, sort, sortColumn]);
 
   const handleSortModel = (newModel) => {
     if (newModel.length) {
       setSort(newModel[0].sort);
       setSortColumn(newModel[0].field);
-      fetchTableData(newModel[0].sort, searchValue, newModel[0].field);
+      fetchTableData(
+        newModel[0].sort,
+        searchValue,
+        newModel[0].field,
+        userData.clientId
+      );
     } else {
       setSort("asc");
       setSortColumn("id");
@@ -124,7 +134,7 @@ const FlaggedAddresses = () => {
 
   const handleSearch = (value) => {
     setSearchValue(value);
-    fetchTableData(sort, value, sortColumn);
+    fetchTableData(sort, value, sortColumn, userData.clientId);
   };
 
   return (
@@ -144,7 +154,7 @@ const FlaggedAddresses = () => {
           onClose={() => {
             setSnackOpen(false);
 
-            fetchTableData(sort, sortColumn);
+            fetchTableData(sort, sortColumn, userData.clientId);
           }}
           message="Address updated successfully."
           autoHideDuration={3000}

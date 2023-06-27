@@ -6,6 +6,9 @@ import { AbilityContext } from "src/layouts/components/acl/Can";
 import axios from "axios";
 import { BASE_URL } from "src/configs/config";
 
+// ** Config
+import authConfig from "src/configs/auth";
+
 // ** MUI Imports
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -14,18 +17,11 @@ import { DataGrid } from "@mui/x-data-grid";
 import Snackbar from "@mui/material/Snackbar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogActions from "@mui/material/DialogActions";
-import FormControl from "@mui/material/FormControl";
-import TextField from "@mui/material/TextField";
-import toast from "react-hot-toast";
+
 import Check from "mdi-material-ui/Check";
 import Close from "mdi-material-ui/Close";
 import ServerSideToolbar from "src/views/table/data-grid/ServerSideToolbar";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
+import MyDialog from "src/views/components/dialogs/UserDialog";
 
 const RegisteredUsers = () => {
   // ** State
@@ -33,17 +29,16 @@ const RegisteredUsers = () => {
   const [total, setTotal] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [rows, setRows] = useState([]);
+  const [company, setCompany] = useState([]);
+
   const [sortColumn, setSortColumn] = useState("id");
   const [sort, setSort] = useState("desc");
   const [open, setOpen] = useState(false);
-  const handleClose = () => setOpen(false);
   const [snackOpen, setSnackOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [state, setState] = useState({
-    name: "",
-    email: "",
-    roleId: 1,
-  });
+  const [dialogFields, setDialogFields] = useState("");
+
+  const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
 
   function loadServerRows(currentPage, data) {
     return data.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
@@ -88,6 +83,28 @@ const RegisteredUsers = () => {
     },
     {
       flex: 0.2,
+      minWidth: 440,
+      headerName: "Role",
+      field: "roleId",
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ color: "text.primary" }}>
+          {params.row.roleId == 1 ? "Super Admin" : "Admin"}
+        </Typography>
+      ),
+    },
+    {
+      flex: 0.2,
+      minWidth: 440,
+      headerName: "Company Name",
+      field: "company_name",
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ color: "text.primary" }}>
+          {params.row.company_name}
+        </Typography>
+      ),
+    },
+    {
+      flex: 0.2,
       minWidth: 140,
       headerName: "Active",
       field: "is_active",
@@ -104,28 +121,33 @@ const RegisteredUsers = () => {
   ];
 
   const fetchTableData = useCallback(
-    async (sort, column) => {
-      setIsLoading(true);
-      await axios
-        .get(`${BASE_URL}user/users`, {
-          body: {
-            sort,
-            column,
-          },
-        })
-        .then((res) => {
-          console.log(res.data);
-          setTotal(res.data.length);
-          setRows(loadServerRows(page, res.data));
-          setIsLoading(false);
-        });
+    async (sort, column, userData) => {
+      if (!open) {
+        setIsLoading(true);
+
+        await axios
+          .get(`${BASE_URL}user/users`, {
+            params: {
+              sort,
+              column,
+              clientId: userData?.clientId,
+            },
+          })
+          .then((res) => {
+            console.log(res.data.users);
+            setTotal(res.data.users.length);
+            setRows(loadServerRows(page, res.data.users));
+            setCompany(res.data.company);
+            setIsLoading(false);
+          });
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [page, pageSize]
   );
 
   useEffect(() => {
-    fetchTableData(sort, sortColumn);
+    fetchTableData(sort, sortColumn, userData);
   }, [fetchTableData, sort, sortColumn]);
 
   const handleSortModel = (newModel) => {
@@ -139,126 +161,24 @@ const RegisteredUsers = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch(`${BASE_URL}user/invite`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(state),
-      });
-      const data = await response.json();
-      console.log("DATA", data);
-      if (data.status == 200) {
-        toast.success(data.message, {
-          duration: 2000,
-        });
-        fetchTableData();
-      }
-
-      if (data.status == 400) {
-        toast.error(data.message, {
-          duration: 2000,
-        });
-      }
-      handleClose();
-    } catch (error) {
-      console.log("CHECK", error);
-    }
+  const openDialog = (fields) => {
+    setOpen(true);
+    setDialogFields(fields);
   };
 
-  const handleChange = (e) => {
-    setState({
-      ...state,
-      [e.target.name]: e.target.value,
-    });
+  const handleCloseDialog = () => {
+    setOpen(false);
   };
 
   return (
     <Card>
       <>
-        <Dialog
+        <MyDialog
           open={open}
-          disableEscapeKeyDown
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          onClose={(event, reason) => {
-            if (reason !== "backdropClick") {
-              handleClose();
-            }
-          }}
-          PaperProps={{
-            style: {
-              width: "fit-content",
-              maxWidth: "100%",
-            },
-          }}
-        >
-          <DialogTitle id="alert-dialog-title">INVITE USER</DialogTitle>
-          <form onSubmit={handleSubmit}>
-            <DialogActions className="dialog-actions-dense">
-              <FormControl sx={{ width: 550, padding: 5, mb: 1 }}>
-                <FormControl fullWidth>
-                  <TextField
-                    required
-                    type="text"
-                    value={state.name}
-                    onChange={handleChange}
-                    id="standard-basic"
-                    name="name"
-                    label="Name"
-                    placeholder="Enter Name"
-                    variant="standard"
-                    sx={{ marginBottom: 5 }}
-                  />
-                  <TextField
-                    required
-                    type="email"
-                    value={state.email}
-                    onChange={handleChange}
-                    id="standard-basic"
-                    name="email"
-                    label="Email"
-                    placeholder="Enter Email"
-                    variant="standard"
-                    sx={{ marginBottom: 5 }}
-                  />
-                </FormControl>
-                <FormControl fullWidth>
-                  <InputLabel id="standard-basic">SELECT ROLE</InputLabel>
-                  <Select
-                    fullWidth
-                    required
-                    label="roleId"
-                    id="standard-basic"
-                    onChange={handleChange}
-                    labelId="invoice-status-select"
-                    name="roleId"
-                    value={state.roleId}
-                    variant="standard"
-                  >
-                    <MenuItem value={1}>ADMIN</MenuItem>
-                    {/* <MenuItem value={2}>ROLE 2</MenuItem> */}
-                  </Select>
-                </FormControl>
-                <FormControl sx={{ width: 500, padding: 5, mb: 1 }}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    sx={{ mt: 1, mb: 1 }}
-                  >
-                    Add
-                  </Button>
-                  <Button onClick={handleClose} sx={{ mt: 1, mb: 1 }}>
-                    Discard
-                  </Button>
-                </FormControl>
-              </FormControl>
-            </DialogActions>
-          </form>
-        </Dialog>
+          handleClose={handleCloseDialog}
+          fields={dialogFields}
+          company={company}
+        />
         <Snackbar
           open={snackOpen}
           onClose={() => {
@@ -271,16 +191,27 @@ const RegisteredUsers = () => {
           anchorOrigin={{ horizontal: "right", vertical: "top" }}
         />
         <CardHeader
-          title="Registered Users"
           action={
-            <Box>
-              <Button
-                size="small"
-                variant="contained"
-                onClick={() => setOpen(true)}
-              >
-                Invite
-              </Button>
+            <Box sx={{ display: "flex", gap: "1rem" }}>
+              {userData.roleId == 1 || userData.roleId == 3 ? (
+                <Button
+                  size="small"
+                  variant="contained"
+                  onClick={() => openDialog("INVITE USER")}
+                >
+                  Invite User
+                </Button>
+              ) : null}
+
+              {userData.clientId == 1 ? (
+                <Button
+                  size="small"
+                  variant="contained"
+                  onClick={() => openDialog("REGISTER COMPANY")}
+                >
+                  REGISTER COMPANY
+                </Button>
+              ) : null}
             </Box>
           }
         />

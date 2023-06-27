@@ -30,6 +30,13 @@ const navigation = () => {
       title: "Dashboard",
     },
     {
+      path: "/analytics",
+      action: "read",
+      subject: "acl-page",
+      icon: ShieldOutline,
+      title: "Analytics",
+    },
+    {
       path: "/jobs/list",
       action: "read",
       subject: "acl-page",
@@ -53,21 +60,18 @@ const navigation = () => {
     {
       path: "/samples/list",
       action: "read",
-      subject: "acl-page",
       icon: ShieldOutline,
       title: "Samples",
     },
     {
       path: "/flagged_addresses",
       action: "read",
-      subject: "acl-page",
       icon: ShieldOutline,
       title: "Flagged Addresses",
     },
     {
       path: "/users",
       action: "read",
-      subject: "acl-page",
       icon: ShieldOutline,
       title: "Registered Users",
     },

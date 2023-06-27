@@ -5,6 +5,14 @@ import moment from "moment/moment";
 // ** MUI Imports
 import Grid from "@mui/material/Grid";
 
+import { useContext } from "react";
+
+// ** Config
+import authConfig from "src/configs/auth";
+
+// ** Context Imports
+import { AbilityContext } from "src/layouts/components/acl/Can";
+
 import RechartsLineChart from "src/views/charts/recharts/RechartsLineChart";
 import RechartsPieChart from "src/views/charts/recharts/RechartsPieChart";
 
@@ -23,6 +31,8 @@ const CRMDashboard = () => {
   const [visits, setVisits] = useState([]);
   const [dashboardData, setDashboardData] = useState([]);
   const [seed, setSeed] = useState(1);
+  const ability = useContext(AbilityContext);
+  const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
 
   //Storing Data in an Array for Further Manipulation
   const store = useSelector((state) => state);
@@ -45,7 +55,11 @@ const CRMDashboard = () => {
   }, [dashboardData]);
 
   useEffect(() => {
-    dispatch(fetchDashboardData()).then(() => {});
+    dispatch(
+      fetchDashboardData({
+        clientId: userData.clientId,
+      })
+    ).then(() => {});
   }, []);
 
   useEffect(() => {
@@ -79,15 +93,34 @@ const CRMDashboard = () => {
   let nurse_Count = 0;
 
   if (dashboardData?.totalVisits?.length > 0) {
-    fd_Count =
-      parseInt(dashboardData?.totalVisits[0].count) +
-      parseInt(dashboardData?.totalVisits[2].count);
-    md_Count = parseInt(dashboardData?.totalVisits[1].count);
-    np_Count = parseInt(dashboardData?.totalVisits[3].count);
-    ph_Count = parseInt(dashboardData?.totalVisits[4].count);
-    om_Count = parseInt(dashboardData?.totalVisits[5].count);
-    pa_Count = parseInt(dashboardData?.totalVisits[6].count);
-    nurse_Count = parseInt(dashboardData?.totalVisits[7].count);
+    dashboardData?.totalVisits.map((item) => {
+      console.log(item.question_2);
+
+      if (item.question_2 == null || item.question_2 == "Front Desk Staff") {
+        fd_Count += parseInt(item.count);
+      }
+      if (item.question_2 == "Physician") {
+        ph_Count = parseInt(item.count);
+      }
+      if (item.question_2 == "Nurse Practitioner (NP)") {
+        np_Count = parseInt(item.count);
+      }
+      if (
+        item.question_2 == "Physician’s Assistant (PA)" ||
+        item.question_2 == " Physician?s Assistant (PA)"
+      ) {
+        pa_Count = parseInt(item.count);
+      }
+      if (item.question_2 == "Office Manager") {
+        om_Count = parseInt(item.count);
+      }
+      if (item.question_2 == "Medical Assistant (MA)") {
+        md_Count = parseInt(item.count);
+      }
+      if (item.question_2 == "Nurse") {
+        nurse_Count = parseInt(item.count);
+      }
+    });
   }
 
   let lm_Count = dashboardData?.lunch_meetings;
@@ -215,48 +248,57 @@ const CRMDashboard = () => {
   bestAdvData[0].stats = dashboardData?.bestProductAdvocate?.count;
 
   return (
-    <>
-      <ApexChartWrapper>
-        <Grid container rowSpacing={1} columnSpacing={1}>
-          <Grid item xs={12} md={6}>
-            <CrmStatisticsCard
-              title={"Prescriber"}
-              header={`Total ${PrescribersCovered} Prescribers Visited`}
-              dataObj={data}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <CrmStatisticsCard
-              title={"Product Advocate of The Week"}
-              header={`${bestAdvName}`}
-              dataObj={bestAdvData}
-            />
-          </Grid>
-        </Grid>
-      </ApexChartWrapper>
-      <div style={{ marginTop: "5px" }}>
-        <RechartsWrapper>
-          <Grid container rowSpacing={1} columnSpacing={1}>
-            <Grid item xs={12} md={6}>
-              <RechartsLineChart visitMonthly={monthRange} />
+    <div>
+      {ability?.can("read", "acl-page") ? (
+        <>
+          <ApexChartWrapper>
+            <Grid container rowSpacing={1} columnSpacing={1}>
+              <Grid item xs={12} md={6}>
+                <CrmStatisticsCard
+                  title={"Prescriber"}
+                  header={`Total ${PrescribersCovered} Prescribers Visited`}
+                  dataObj={data}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <CrmStatisticsCard
+                  title={"Product Advocate of The Week"}
+                  header={`${bestAdvName}`}
+                  dataObj={bestAdvData}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={6}>
-              <RechartsPieChart
-                fd={fd_Count}
-                ma={md_Count}
-                nurse={nurse_Count}
-                np={np_Count}
-                ph={ph_Count}
-                om={om_Count}
-                pa={pa_Count}
-                key={seed}
-              />
-            </Grid>
-          </Grid>
-        </RechartsWrapper>
-      </div>
-    </>
+          </ApexChartWrapper>
+          <div style={{ marginTop: "5px" }}>
+            <RechartsWrapper>
+              <Grid container rowSpacing={1} columnSpacing={1}>
+                <Grid item xs={12} md={6}>
+                  <RechartsLineChart visitMonthly={monthRange} />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <RechartsPieChart
+                    fd={fd_Count}
+                    ma={md_Count}
+                    nurse={nurse_Count}
+                    np={np_Count}
+                    ph={ph_Count}
+                    om={om_Count}
+                    pa={pa_Count}
+                    key={seed}
+                  />
+                </Grid>
+              </Grid>
+            </RechartsWrapper>
+          </div>
+        </>
+      ) : null}
+    </div>
   );
+};
+
+CRMDashboard.acl = {
+  action: "read",
+  subject: "acl-page",
 };
 
 export default CRMDashboard;
