@@ -17,19 +17,19 @@ import { DataGrid } from "@mui/x-data-grid";
 import Snackbar from "@mui/material/Snackbar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Tooltip from "@mui/material/Tooltip";
+import IconButton from "@mui/material/IconButton";
+import Delete from "mdi-material-ui/Delete";
+import toast from "react-hot-toast";
 
-import Check from "mdi-material-ui/Check";
-import Close from "mdi-material-ui/Close";
-import ServerSideToolbar from "src/views/table/data-grid/ServerSideToolbar";
-import MyDialog from "src/views/components/dialogs/UserDialog";
+import CreateListDialog from "src/views/components/dialogs/DialogCreateList";
 
-const RegisteredUsers = () => {
+const PrescribersList = () => {
   // ** State
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [rows, setRows] = useState([]);
-  const [company, setCompany] = useState([]);
 
   const [sortColumn, setSortColumn] = useState("id");
   const [sort, setSort] = useState("desc");
@@ -47,100 +47,78 @@ const RegisteredUsers = () => {
   // ** Hooks
   const ability = useContext(AbilityContext);
 
+  const handleDeleteList = async (id) => {
+    await axios
+      .post(`${BASE_URL}prescriber/delete_prescribers_list`, {
+        id,
+      })
+      .then((res) => {
+        if (res.data.status == 200) {
+          toast.success(res.data.message, {
+            duration: 2000,
+          });
+        }
+      });
+    fetchTableData(sort, sortColumn, userData);
+  };
+
   const columns = [
     {
       flex: 0.2,
-      minWidth: 70,
-      headerName: "ID",
-      field: "id",
+      minWidth: 30,
+      headerName: "List Name",
+      field: "List_Name",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.id}
+          {params.row.List_Name}
         </Typography>
       ),
     },
     {
       flex: 0.2,
-      minWidth: 180,
-      headerName: "Name",
-      field: "name",
+      minWidth: 440,
+      headerName: "LIST",
+      field: "List",
       renderCell: (params) => (
-        <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.name}
-        </Typography>
+        <Tooltip title={params.row.List.map((item) => item.Name).join(", ")}>
+          <Typography variant="body2" sx={{ color: "text.primary" }}>
+            {params.row.List.map((item) => item.Name).join(", ")}
+          </Typography>
+        </Tooltip>
       ),
     },
     {
-      flex: 0.2,
-      minWidth: 250,
-      headerName: "Email",
-      field: "email",
+      flex: 0.1,
+      minWidth: 50,
+      headerName: "Actions",
+      field: "Actions",
       renderCell: (params) => (
-        <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.email}
-        </Typography>
-      ),
-    },
-    {
-      flex: 0.2,
-      minWidth: 180,
-      headerName: "Role",
-      field: "roleId",
-      renderCell: (params) => (
-        <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.roleId == 1 ? "Super Admin" : "Admin"}
-        </Typography>
-      ),
-    },
-    {
-      flex: 0.2,
-      minWidth: 180,
-      headerName: "Company Name",
-      field: "company_name",
-      renderCell: (params) => (
-        <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.company_name}
-        </Typography>
-      ),
-    },
-    {
-      flex: 0.2,
-      minWidth: 140,
-      headerName: "Active",
-      field: "is_active",
-      renderCell: (params) => (
-        <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.is_active ? (
-            <Check sx={{ fontSize: "1rem" }} />
-          ) : (
-            <Close sx={{ fontSize: "1rem" }} />
-          )}
-        </Typography>
+        <IconButton
+          color="secondary"
+          onClick={() => handleDeleteList(params.row.Id)}
+        >
+          <Delete />
+        </IconButton>
       ),
     },
   ];
 
   const fetchTableData = useCallback(
     async (sort, column, userData) => {
-      if (!open) {
-        setIsLoading(true);
-
-        await axios
-          .get(`${BASE_URL}user/users`, {
-            params: {
-              sort,
-              column,
-              clientId: userData?.clientId,
-            },
-          })
-          .then((res) => {
-            console.log(res.data.users);
-            setTotal(res.data.users.length);
-            setRows(loadServerRows(page, res.data.users));
-            setCompany(res.data.company);
-            setIsLoading(false);
-          });
-      }
+      setIsLoading(true);
+      await axios
+        .get(`${BASE_URL}prescriber/get_prescribers_list`, {
+          params: {
+            sort,
+            column,
+            clientId: userData?.clientId,
+          },
+        })
+        .then((res) => {
+          setTotal(res.data.prescribersList.length);
+          setRows(res.data.prescribersList);
+          setIsLoading(false);
+        });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [page, pageSize]
@@ -148,7 +126,7 @@ const RegisteredUsers = () => {
 
   useEffect(() => {
     fetchTableData(sort, sortColumn, userData);
-  }, [fetchTableData, sort, sortColumn]);
+  }, [fetchTableData, sort, sortColumn, open]);
 
   const handleSortModel = (newModel) => {
     if (newModel.length) {
@@ -173,17 +151,15 @@ const RegisteredUsers = () => {
   return (
     <Card>
       <>
-        <MyDialog
+        <CreateListDialog
           open={open}
           handleClose={handleCloseDialog}
           fields={dialogFields}
-          company={company}
         />
         <Snackbar
           open={snackOpen}
           onClose={() => {
             setSnackOpen(false);
-
             fetchTableData(sort, sortColumn);
           }}
           message="Address updated successfully."
@@ -197,19 +173,9 @@ const RegisteredUsers = () => {
                 <Button
                   size="small"
                   variant="contained"
-                  onClick={() => openDialog("INVITE USER")}
+                  onClick={() => openDialog("CREATE PRESCRIBER'S LIST")}
                 >
-                  Invite User
-                </Button>
-              ) : null}
-
-              {userData.clientId == 1 ? (
-                <Button
-                  size="small"
-                  variant="contained"
-                  onClick={() => openDialog("REGISTER COMPANY")}
-                >
-                  REGISTER COMPANY
+                  Create List
                 </Button>
               ) : null}
             </Box>
@@ -218,7 +184,7 @@ const RegisteredUsers = () => {
         <DataGrid
           autoHeight
           pagination
-          rows={isLoading ? [] : rows}
+          rows={rows}
           rowCount={total}
           columns={columns}
           pageSize={pageSize}
@@ -227,9 +193,8 @@ const RegisteredUsers = () => {
           paginationMode="server"
           onSortModelChange={handleSortModel}
           rowsPerPageOptions={[10, 25, 50]}
-          getRowId={(row) => row?.id}
+          getRowId={(row) => row?.Id}
           onPageChange={(newPage) => setPage(newPage)}
-          components={{ Toolbar: ServerSideToolbar }}
           onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         />
       </>
@@ -237,4 +202,4 @@ const RegisteredUsers = () => {
   );
 };
 
-export default RegisteredUsers;
+export default PrescribersList;

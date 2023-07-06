@@ -13,7 +13,10 @@ import DialogActions from "@mui/material/DialogActions";
 import Input from "@mui/material/Input";
 
 import { useDispatch } from "react-redux";
-import { updatePrescriberAddress } from "src/store/prescribers";
+import {
+  updatePrescriberAddress,
+  updateFlaggedAddress,
+} from "src/store/prescribers";
 import PlacesAutocomplete, {
   geocodeByAddress,
   getLatLng,
@@ -100,6 +103,15 @@ const PrescriberEditDialog = ({
     onPrescriberUpdate();
   };
 
+  const onUpdateFlaggedAddressHandler = async () => {
+    dispatch(
+      updateFlaggedAddress({
+        id: prescriber.Id,
+      })
+    );
+    onPrescriberUpdate();
+  };
+
   return (
     <Fragment>
       <Dialog
@@ -173,6 +185,13 @@ const PrescriberEditDialog = ({
           <Button onClick={handleClose}>Close</Button>
           <Button variant="contained" onClick={() => onUpdateAddressHandler()}>
             Update
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => onUpdateFlaggedAddressHandler()}
+          >
+            Ignore
           </Button>
         </DialogActions>
       </Dialog>

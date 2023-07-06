@@ -147,6 +147,7 @@ export const productAdvocatesSlice = createSlice({
       ProductAdvocateValue: "",
       preview: "",
       sub_view: [null],
+      custom: "",
       dates: [],
       startDateRange: "",
       endDateRange: "",

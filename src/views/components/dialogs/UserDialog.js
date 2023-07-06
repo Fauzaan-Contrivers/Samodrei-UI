@@ -13,7 +13,7 @@ import authConfig from "src/configs/auth";
 import { BASE_URL } from "src/configs/config";
 import toast from "react-hot-toast";
 
-const MyDialog = ({ open, handleClose, fields, company }) => {
+const UserDialog = ({ open, handleClose, fields, company }) => {
   const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
 
   const [state, setState] = useState({
@@ -174,4 +174,4 @@ const MyDialog = ({ open, handleClose, fields, company }) => {
   );
 };
 
-export default MyDialog;
+export default UserDialog;

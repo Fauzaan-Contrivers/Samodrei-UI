@@ -38,6 +38,16 @@ export const setJobsLoadingTrue = createAsyncThunk(
   }
 );
 
+export const fetchJobData = createAsyncThunk("jobs/get_job", async (params) => {
+  let response = await apiCall("POST", "jobs/get_job", {
+    ...params,
+    job_id: params.id,
+  });
+  return {
+    result: response.data,
+  };
+});
+
 export const cancelJob = createAsyncThunk("jobs/cancel_job", async (params) => {
   let response = await apiCall("POST", "jobs/cancel_job", params);
   return response;
@@ -47,6 +57,7 @@ export const jobsSlice = createSlice({
   name: "jobs",
   initialState: {
     data: [],
+    jobData: [],
     isLoading: false,
     totalRecords: 0,
     LunchesSum: 0,
@@ -81,6 +92,10 @@ export const jobsSlice = createSlice({
       state.isLoading = false;
       state.totalRecords = action.payload.totalRecords;
       state.LunchesSum = action.payload.LunchesSum;
+    });
+    builder.addCase(fetchJobData.fulfilled, (state, action) => {
+      state.jobData = action.payload.result;
+      state.isLoading = false;
     });
     builder.addCase(setJobsLoadingTrue.fulfilled, (state, action) => {
       state.isLoading = true;
