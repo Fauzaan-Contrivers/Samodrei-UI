@@ -15,6 +15,7 @@ import EditIcon from "mdi-material-ui/Pencil";
 import ServerSideToolbar from "src/views/table/data-grid/ServerSideToolbar";
 import PrescriberEditDialog from "../prescribers/list/edit-dialog";
 import Snackbar from "@mui/material/Snackbar";
+import moment from "moment";
 
 // ** Config
 import authConfig from "src/configs/auth";
@@ -74,6 +75,21 @@ const FlaggedAddresses = () => {
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
           {`${params.row.Street_Address}, ${params.row.City}, ${params.row.State}, ${params.row.Zip}`}
+        </Typography>
+      ),
+    },
+    {
+      flex: 0.2,
+      minWidth: 140,
+      headerName: "Flagged Date",
+      field: "FlaggedDate",
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ color: "text.primary" }}>
+          {params.row.FlaggedDate
+            ? moment(params.row.FlaggedDate)
+                .local()
+                .format("YYYY-MM-DD HH:mm:ss")
+            : " "}
         </Typography>
       ),
     },

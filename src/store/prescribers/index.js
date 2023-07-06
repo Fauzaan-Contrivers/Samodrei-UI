@@ -69,6 +69,47 @@ export const updatePrescriberAddress = createAsyncThunk(
   }
 );
 
+export const updateFlaggedAddress = createAsyncThunk(
+  "prescriber/update_prescriber_flag_address",
+  async (params) => {
+    let response = await apiCall(
+      "POST",
+      "prescriber/update_prescriber_flag_address",
+      {
+        ...params,
+        prescriber_id: params.id,
+        flagged: false,
+      }
+    );
+    console.log("update_prescriber_flag_address", response.data);
+    return true;
+  }
+);
+
+export const getPrescribersName = createAsyncThunk(
+  "prescriber/get_all_prescribers_name",
+  async (params) => {
+    let response = await apiCall(
+      "POST",
+      "prescriber/get_all_prescribers_name",
+      {
+        ...params,
+        clientId: params.clientId,
+        name: params.name,
+      }
+    );
+
+    console.log(response.data);
+
+    return {
+      result: response.data.result,
+      states: response.data.states,
+      cities: response.data.cities,
+      speciality: response.data.speciality,
+    };
+  }
+);
+
 // ** Set is Loading True
 export const setPrescribersLoadingTrue = createAsyncThunk(
   "prescribers/isLoadingTrue",
@@ -99,7 +140,11 @@ export const prescribersSlice = createSlice({
     dashboardData: [],
     totalRecords: 0,
     states: [],
+    cities: [],
+    speciality: [],
+    state: [],
     isLoading: false,
+    names: [],
     filter: {
       State: "",
       Name: "",
@@ -130,9 +175,15 @@ export const prescribersSlice = createSlice({
     builder.addCase(setPrescriberLoadingTrue.fulfilled, (state, action) => {
       state.isLoading = true;
     });
+    builder.addCase(getPrescribersName.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.names = action.payload.result;
+      state.state = action.payload.states;
+      state.cities = action.payload.cities;
+      state.speciality = action.payload.speciality;
+    });
 
     builder.addCase(fetchDashboardData.fulfilled, (state, action) => {
-      // console.log('ACTION', action.payload.result)
       (state.dashboardData = action.payload.result), (state.isLoading = false);
     });
     builder.addCase(setDashboardLoadingTrue.fulfilled, (state, action) => {

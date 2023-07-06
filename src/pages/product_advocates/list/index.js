@@ -40,6 +40,8 @@ import ContentSaveOutline from "mdi-material-ui/ContentSaveOutline";
 
 // ** Config
 import authConfig from "src/configs/auth";
+import axios from "axios";
+import { BASE_URL } from "src/configs/config";
 
 // ** Third Party Imports
 import format from "date-fns/format";
@@ -75,8 +77,6 @@ import {
   fetchProductAdvocatesData,
 } from "src/store/product_advocates";
 import ProductAdvocateAddSampleQuantity from "src/views/product_advocates/ProductAdvocateAddSampleQuantity";
-import { status } from "nprogress";
-import { id } from "date-fns/locale";
 
 // ** Styled component for the link in the dataTable
 const StyledLink = styled("a")(({ theme }) => ({
@@ -96,11 +96,32 @@ const InvoiceList = () => {
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [name_email, setNameEmail] = useState("");
+  const [prescribersListOption, setPrescribersListOption] = useState([]);
+
   const ability = useContext(AbilityContext);
 
   // ** Hooks
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${BASE_URL}prescriber/get_prescribers_list`,
+          {
+            params: {},
+          }
+        );
+        setPrescribersListOption(response.data.prescribersList);
+      } catch (error) {
+        // Handle the error
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const fetchProductAdvocates = debounce(() => {
@@ -183,10 +204,7 @@ const InvoiceList = () => {
   };
 
   const handleStatusUpdateHandler = (product_advocate_id, Active) => {
-    console.log(Active);
-
     if (Active == "0") {
-      console.log("ACTIVE", Active);
       Active = "1";
     } else {
       Active = "0";
@@ -216,6 +234,25 @@ const InvoiceList = () => {
       SubView: SubView,
     };
     dispatch(updateProductAdvocateStatus(data));
+  };
+
+  const handleCustomListUpdateHandler = (product_advocate_id, CustomList) => {
+    // Call the update API
+    const data = {
+      product_advocate_id: product_advocate_id,
+      CustomList,
+    };
+    dispatch(updateProductAdvocateStatus(data));
+  };
+
+  const handleCustomList = (e, userId) => {
+    handleCustomListUpdateHandler(userId, e.target.value);
+    dispatch(
+      onProductAdvocateStatusChangeHandler({
+        filter: "custom",
+        value: e.target.value,
+      })
+    );
   };
 
   const RowOptions = ({ row }) => {
@@ -384,6 +421,38 @@ const InvoiceList = () => {
               >
                 <MenuItem value="All">All</MenuItem>
                 <MenuItem value="SOAANZ">SOAANZ</MenuItem>
+                <MenuItem value="CUSTOM">CUSTOM</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        );
+      },
+    },
+    {
+      flex: 0.2,
+      minWidth: 150,
+      field: "List",
+      headerName: "Prescribers List",
+      renderCell: ({ row }) => {
+        const isCellEnabled = row?.Preview === "CUSTOM";
+
+        return (
+          <Grid item xs={12} sm={12}>
+            <FormControl fullWidth variant="standard" sx={{ border: "none" }}>
+              <Select
+                fullWidth
+                onChange={(e) => {
+                  handleCustomList(e, row?.Id);
+                }}
+                labelId="invoice-status-select"
+                value={isCellEnabled ? row?.CustomList : ""}
+                disabled={!isCellEnabled}
+              >
+                {prescribersListOption.map((option) => (
+                  <MenuItem key={option.Id} value={option.Id}>
+                    {option.List_Name}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Grid>
@@ -396,6 +465,7 @@ const InvoiceList = () => {
       field: "SubView",
       headerName: "Sub View",
       renderCell: ({ row }) => {
+        const isCellEnabled = row?.Preview === "CUSTOM";
         const subView = row?.SubView?.split(";").map(
           (subView) => subView + " "
         );
@@ -415,6 +485,7 @@ const InvoiceList = () => {
                   row?.SubView?.split(";")?.map((subView) => subView + " ")
                 }
                 renderValue={() => subView}
+                disabled={isCellEnabled}
                 multiple
               >
                 <MenuItem value="All">All</MenuItem>
@@ -455,19 +526,6 @@ const InvoiceList = () => {
   ];
 
   const columns = [...defaultColumns];
-
-  // if (userData.roleId == 1) {
-  //   const companyNameColumn = {
-  //     flex: 0.2,
-  //     minWidth: 150,
-  //     field: "company_name",
-  //     headerName: "Company Name",
-  //     renderCell: ({ row }) => <Typography variant="body2">{""}</Typography>,
-  //   };
-
-  //   const insertIndex = 3;
-  //   columns.splice(insertIndex, 0, companyNameColumn);
-  // }
 
   return (
     <div>
@@ -530,7 +588,6 @@ const InvoiceList = () => {
                 columns={columns}
                 loading={isLoading}
                 getRowId={(row) => row.Id}
-                // checkboxSelection
                 rowCount={store.product_advocates.totalRecords}
                 disableSelectionOnClick
                 pageSize={Number(pageSize)}
