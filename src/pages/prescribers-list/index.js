@@ -80,9 +80,15 @@ const PrescribersList = () => {
       headerName: "LIST",
       field: "List",
       renderCell: (params) => (
-        <Tooltip title={params.row.List.map((item) => item.Name).join(", ")}>
+        <Tooltip
+          title={JSON.parse(params.row.List)
+            .map((item) => item.Name)
+            .join(", ")}
+        >
           <Typography variant="body2" sx={{ color: "text.primary" }}>
-            {params.row.List.map((item) => item.Name).join(", ")}
+            {JSON.parse(params.row.List)
+              .map((item) => item.Name)
+              .join(", ")}
           </Typography>
         </Tooltip>
       ),
