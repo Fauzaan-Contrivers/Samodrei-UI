@@ -18,34 +18,35 @@ import { debounce } from "lodash";
 import InputLabel from "@mui/material/InputLabel";
 
 const CreateListDialog = ({ open, handleClose, fields }) => {
-  const [state, setState] = useState({
-    name: "",
+  const [name, setName] = useState({
+    ListName: "",
     prescriber: [],
-    state: "",
+    searchName: "",
+    search: "",
   });
   const [prescriberName, setPrescribersName] = useState([]);
   const [prescriberStates, setPrescribersStates] = useState([]);
   const [prescriberCities, setPrescribersCities] = useState([]);
   const [prescriberSpeciality, setPrescribersSpeciality] = useState([]);
   const [selectedOption, setSelectedOption] = useState(true);
-  const [selectedState, setSelectedState] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
-  const [selectedSpecialty, setSelectedSpecialty] = useState("");
+  const [selectedState, setSelectedState] = useState([]);
+  const [selectedCity, setSelectedCity] = useState([]);
+  const [selectedSpecialty, setSelectedSpecialty] = useState([]);
 
   const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
 
-  const handleStateChange = (event) => {
-    setSelectedState(event.target.value);
+  const handleStateChange = (value) => {
+    setSelectedState(value);
   };
 
-  const handleCityChange = (event) => {
-    setSelectedCity(event.target.value);
+  const handleCityChange = (value) => {
+    setSelectedCity(value);
   };
 
-  const handleSpecialtyChange = (event) => {
-    setSelectedSpecialty(event.target.value);
+  const handleSpecialtyChange = (value) => {
+    setSelectedSpecialty(value);
   };
 
   const fetchData = useCallback(
@@ -53,11 +54,11 @@ const CreateListDialog = ({ open, handleClose, fields }) => {
       dispatch(
         getPrescribersName({
           clientId: userData.clientId,
-          name: state.state,
+          name: name.searchName,
         })
       ).catch((err) => {});
     }, 2000),
-    [dispatch, getPrescribersName, state.state, userData.clientId]
+    [dispatch, getPrescribersName, name.searchName, userData.clientId]
   );
 
   useEffect(() => {
@@ -71,27 +72,36 @@ const CreateListDialog = ({ open, handleClose, fields }) => {
     setPrescribersSpeciality(store.prescribers.speciality);
   }, [store.prescribers.names]);
 
-  const handleChange = (e) => {
-    setState({
-      ...state,
-      [e.target.name]: e.target.value,
-    });
+  const handleChange = (event) => {
+    const searchText = event.target.value;
+    setName((prevState) => ({
+      ...prevState,
+      ListName: searchText,
+    }));
   };
 
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
   };
 
-  const handleSearchState = (event) => {
+  const handleSearch = (event) => {
     const searchText = event.target.value;
-    setState((prevState) => ({
+    setName((prevState) => ({
       ...prevState,
-      state: searchText,
+      search: searchText,
     }));
   };
 
-  const handleMultiState = (value, key) => {
-    setState((prevState) => ({
+  const handleSearchName = (event) => {
+    const searchText = event.target.value;
+    setName((prevState) => ({
+      ...prevState,
+      searchName: searchText,
+    }));
+  };
+
+  const handleMultiName = (value, key) => {
+    setName((prevState) => ({
       ...prevState,
       [key]: value,
     }));
@@ -108,17 +118,16 @@ const CreateListDialog = ({ open, handleClose, fields }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            name: state.name,
-            prescriber: state.prescriber,
+            name: name.ListName,
+            prescriber: name.prescriber,
             createdBy: selectedOption,
-            city: selectedCity,
-            state: selectedState,
-            speciality: selectedSpecialty,
+            city: selectedCity.toString(),
+            state: selectedState.toString(),
+            speciality: selectedSpecialty.toString(),
           }),
         }
       );
       const data = await response.json();
-      console.log("DATA", data);
       if (data.status == 201) {
         toast.success(data.message, {
           duration: 2000,
@@ -136,7 +145,6 @@ const CreateListDialog = ({ open, handleClose, fields }) => {
     }
   };
 
-  console.log(selectedCity, selectedState, selectedSpecialty);
   return (
     <Dialog
       open={open}
@@ -159,7 +167,7 @@ const CreateListDialog = ({ open, handleClose, fields }) => {
               <TextField
                 required
                 type="text"
-                value={state.name}
+                value={name.ListName}
                 onChange={handleChange}
                 id="standard-basic"
                 name="name"
@@ -190,7 +198,7 @@ const CreateListDialog = ({ open, handleClose, fields }) => {
                   multiple
                   id="tags-standard"
                   onChange={(e, values) =>
-                    handleMultiState(values, "prescriber")
+                    handleMultiName(values, "prescriber")
                   }
                   options={prescriberName}
                   getOptionLabel={(option) => option.Name}
@@ -198,7 +206,7 @@ const CreateListDialog = ({ open, handleClose, fields }) => {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      onChange={handleSearchState}
+                      onChange={handleSearchName}
                       label="Prescriber's List"
                       variant="outlined"
                       inputProps={{
@@ -211,57 +219,74 @@ const CreateListDialog = ({ open, handleClose, fields }) => {
             ) : (
               <>
                 <FormControl fullWidth>
-                  <InputLabel>State</InputLabel>
-                  <Select
+                  <Autocomplete
                     required
-                    labelId="prescriber-select-label"
-                    id="prescriber-select"
-                    value={selectedState}
-                    onChange={handleStateChange}
-                    variant="standard"
-                    sx={{ marginBottom: 3 }}
-                  >
-                    <MenuItem value="">Select State</MenuItem>
-                    {prescriberStates.map((state, index) => (
-                      <MenuItem key={index} value={state}>
-                        {state}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                    multiple
+                    id="tags-standard"
+                    onChange={(e, values) => handleStateChange(values)}
+                    options={prescriberStates}
+                    getOptionLabel={(prescriberStates) => prescriberStates}
+                    clearIcon={null}
+                    sx={{ marginBottom: 5 }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        onChange={handleSearch}
+                        label="State"
+                        variant="outlined"
+                        inputProps={{
+                          ...params.inputProps,
+                        }}
+                      />
+                    )}
+                  />
                 </FormControl>
                 <FormControl fullWidth>
-                  <InputLabel>City</InputLabel>
-                  <Select
+                  <Autocomplete
                     required
-                    value={selectedCity}
-                    onChange={handleCityChange}
-                    variant="standard"
-                    sx={{ marginBottom: 3 }}
-                  >
-                    <MenuItem value="">Select City</MenuItem>
-                    {prescriberCities.map((city, index) => (
-                      <MenuItem key={index} value={city}>
-                        {city}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                    multiple
+                    id="tags-standard"
+                    onChange={(e, values) => handleCityChange(values)}
+                    options={prescriberCities}
+                    getOptionLabel={(prescriberCities) => prescriberCities}
+                    clearIcon={null}
+                    sx={{ marginBottom: 5 }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        onChange={handleSearch}
+                        label="City"
+                        variant="outlined"
+                        inputProps={{
+                          ...params.inputProps,
+                        }}
+                      />
+                    )}
+                  />
                 </FormControl>
                 <FormControl fullWidth>
-                  <InputLabel>Specialty</InputLabel>
-                  <Select
-                    fullWidth
+                  <Autocomplete
                     required
-                    value={selectedSpecialty}
-                    variant="standard"
-                    onChange={handleSpecialtyChange}
-                  >
-                    <MenuItem value="">Select Speciality</MenuItem>
-                    {prescriberSpeciality.map((speciality, index) => (
-                      <MenuItem key={index} value={speciality}>
-                        {speciality}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                    multiple
+                    id="tags-standard"
+                    onChange={(e, values) => handleSpecialtyChange(values)}
+                    options={prescriberSpeciality}
+                    getOptionLabel={(prescriberSpeciality) =>
+                      prescriberSpeciality
+                    }
+                    clearIcon={null}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        onChange={handleSearch}
+                        label="Speciality"
+                        variant="outlined"
+                        inputProps={{
+                          ...params.inputProps,
+                        }}
+                      />
+                    )}
+                  />
                 </FormControl>
               </>
             )}
