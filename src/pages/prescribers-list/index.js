@@ -21,8 +21,10 @@ import Tooltip from "@mui/material/Tooltip";
 import IconButton from "@mui/material/IconButton";
 import Delete from "mdi-material-ui/Delete";
 import toast from "react-hot-toast";
+import EyeOutline from "mdi-material-ui/EyeOutline";
 
 import CreateListDialog from "src/views/components/dialogs/DialogCreateList";
+import DialogViewCustomList from "src/views/components/dialogs/DialogViewCustomList";
 
 const PrescribersList = () => {
   // ** State
@@ -34,6 +36,8 @@ const PrescribersList = () => {
   const [sortColumn, setSortColumn] = useState("id");
   const [sort, setSort] = useState("desc");
   const [open, setOpen] = useState(false);
+  const [openView, setOpenView] = useState(false);
+  const [prescriber, setPrescriber] = useState([]);
   const [snackOpen, setSnackOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [dialogFields, setDialogFields] = useState("");
@@ -46,6 +50,11 @@ const PrescribersList = () => {
 
   // ** Hooks
   const ability = useContext(AbilityContext);
+
+  const handleViewList = (prescriber) => {
+    setOpenView(true);
+    setPrescriber(prescriber);
+  };
 
   const handleDeleteList = async (id) => {
     await axios
@@ -99,12 +108,37 @@ const PrescribersList = () => {
       headerName: "Actions",
       field: "Actions",
       renderCell: (params) => (
-        <IconButton
-          color="secondary"
-          onClick={() => handleDeleteList(params.row.Id)}
-        >
-          <Delete />
-        </IconButton>
+        <>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Tooltip title="Delete">
+              <Box>
+                <IconButton
+                  color="secondary"
+                  size="small"
+                  component="a"
+                  sx={{ textDecoration: "none" }}
+                  onClick={() => handleDeleteList(params.row.Id)}
+                >
+                  <Delete />
+                </IconButton>
+              </Box>
+            </Tooltip>
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Tooltip title="View">
+              <Box>
+                <IconButton
+                  size="small"
+                  component="a"
+                  sx={{ textDecoration: "none" }}
+                  onClick={() => handleViewList(JSON.parse(params.row.List))}
+                >
+                  <EyeOutline fontSize="small" />
+                </IconButton>
+              </Box>
+            </Tooltip>
+          </Box>
+        </>
       ),
     },
   ];
@@ -154,9 +188,18 @@ const PrescribersList = () => {
     setOpen(false);
   };
 
+  const handleCloseViewDialog = () => {
+    setOpenView(false);
+  };
+
   return (
     <Card>
       <>
+        <DialogViewCustomList
+          open={openView}
+          handleClose={handleCloseViewDialog}
+          prescriber={prescriber}
+        />
         <CreateListDialog
           open={open}
           handleClose={handleCloseDialog}
