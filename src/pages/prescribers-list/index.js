@@ -21,8 +21,10 @@ import Tooltip from "@mui/material/Tooltip";
 import IconButton from "@mui/material/IconButton";
 import Delete from "mdi-material-ui/Delete";
 import toast from "react-hot-toast";
+import EyeOutline from "mdi-material-ui/EyeOutline";
 
 import CreateListDialog from "src/views/components/dialogs/DialogCreateList";
+import DialogViewCustomList from "src/views/components/dialogs/DialogViewCustomList";
 
 const PrescribersList = () => {
   // ** State
@@ -34,6 +36,8 @@ const PrescribersList = () => {
   const [sortColumn, setSortColumn] = useState("id");
   const [sort, setSort] = useState("desc");
   const [open, setOpen] = useState(false);
+  const [openView, setOpenView] = useState(false);
+  const [listId, setListId] = useState(null);
   const [snackOpen, setSnackOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [dialogFields, setDialogFields] = useState("");
@@ -46,6 +50,11 @@ const PrescribersList = () => {
 
   // ** Hooks
   const ability = useContext(AbilityContext);
+
+  const handleViewList = (listId) => {
+    setOpenView(true);
+    setListId(listId);
+  };
 
   const handleDeleteList = async (id) => {
     await axios
@@ -75,36 +84,42 @@ const PrescribersList = () => {
       ),
     },
     {
-      flex: 0.2,
-      minWidth: 440,
-      headerName: "LIST",
-      field: "List",
-      renderCell: (params) => (
-        <Tooltip
-          title={JSON.parse(params.row.List)
-            .map((item) => item.Name)
-            .join(", ")}
-        >
-          <Typography variant="body2" sx={{ color: "text.primary" }}>
-            {JSON.parse(params.row.List)
-              .map((item) => item.Name)
-              .join(", ")}
-          </Typography>
-        </Tooltip>
-      ),
-    },
-    {
       flex: 0.1,
       minWidth: 50,
       headerName: "Actions",
       field: "Actions",
       renderCell: (params) => (
-        <IconButton
-          color="secondary"
-          onClick={() => handleDeleteList(params.row.Id)}
-        >
-          <Delete />
-        </IconButton>
+        <>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Tooltip title="Delete">
+              <Box>
+                <IconButton
+                  color="secondary"
+                  size="small"
+                  component="a"
+                  sx={{ textDecoration: "none" }}
+                  onClick={() => handleDeleteList(params.row.Id)}
+                >
+                  <Delete />
+                </IconButton>
+              </Box>
+            </Tooltip>
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Tooltip title="View">
+              <Box>
+                <IconButton
+                  size="small"
+                  component="a"
+                  sx={{ textDecoration: "none" }}
+                  onClick={() => handleViewList(params.row.Id)}
+                >
+                  <EyeOutline fontSize="small" />
+                </IconButton>
+              </Box>
+            </Tooltip>
+          </Box>
+        </>
       ),
     },
   ];
@@ -113,7 +128,7 @@ const PrescribersList = () => {
     async (sort, column, userData) => {
       setIsLoading(true);
       await axios
-        .get(`${BASE_URL}prescriber/get_prescribers_list`, {
+        .get(`${BASE_URL}prescriber/get_prescribers_list_name`, {
           params: {
             sort,
             column,
@@ -121,8 +136,8 @@ const PrescribersList = () => {
           },
         })
         .then((res) => {
-          setTotal(res.data.prescribersList.length);
-          setRows(res.data.prescribersList);
+          setTotal(res.data.prescribersListName.length);
+          setRows(res.data.prescribersListName);
           setIsLoading(false);
         });
     },
@@ -154,9 +169,18 @@ const PrescribersList = () => {
     setOpen(false);
   };
 
+  const handleCloseViewDialog = () => {
+    setOpenView(false);
+  };
+
   return (
     <Card>
       <>
+        <DialogViewCustomList
+          open={openView}
+          handleClose={handleCloseViewDialog}
+          listId={listId}
+        />
         <CreateListDialog
           open={open}
           handleClose={handleCloseDialog}
