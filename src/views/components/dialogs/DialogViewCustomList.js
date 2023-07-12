@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 // ** Next Import
 import Link from "next/link";
@@ -12,29 +12,52 @@ import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import Tooltip from "@mui/material/Tooltip";
 
+import axios from "axios";
+import { BASE_URL } from "src/configs/config";
+
 // ** Styled component for the link in the dataTable
 const StyledLink = styled("a")(({ theme }) => ({
   textDecoration: "none",
   color: theme.palette.primary.main,
 }));
 
-const DialogViewCustomList = ({ open, handleClose, prescriber }) => {
+const DialogViewCustomList = ({ open, handleClose, listId }) => {
   const [pageSize, setPageSize] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState([]);
   const [sort, setSort] = useState("desc");
   const [sortColumn, setSortColumn] = useState("Id");
+  const [prescriber, setPrescriber] = useState([]);
+  const [total, setTotal] = useState(0);
+
+  console.log("cheeeeeeeeeee", listId);
 
   function loadServerRows(currentPage, data) {
     return data.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
   }
 
+  const fetchTableData = useCallback(
+    async (sort, column, listId) => {
+      setIsLoading(true);
+      await axios
+        .post(`${BASE_URL}prescriber/get_prescribers_list`, {
+          listId: listId,
+        })
+        .then((res) => {
+          console.log(res.data);
+          setRows(loadServerRows(page, res.data.prescribersList));
+          setTotal(res.data.prescribersList.length);
+          setIsLoading(false);
+        });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [page, pageSize]
+  );
+
   useEffect(() => {
-    setIsLoading(true);
-    setRows(loadServerRows(page, prescriber));
-    setIsLoading(false);
-  }, [page, pageSize, prescriber]);
+    fetchTableData(sort, sortColumn, listId);
+  }, [fetchTableData, sort, sortColumn, listId]);
 
   const handleSortModel = (newModel) => {
     if (newModel.length) {
@@ -108,7 +131,7 @@ const DialogViewCustomList = ({ open, handleClose, prescriber }) => {
         autoHeight
         pagination
         rows={isLoading ? [] : rows}
-        rowCount={prescriber.length}
+        rowCount={total}
         columns={columns}
         pageSize={pageSize} // Set the pageSize to 10
         loading={isLoading}

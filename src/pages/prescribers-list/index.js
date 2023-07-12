@@ -37,7 +37,7 @@ const PrescribersList = () => {
   const [sort, setSort] = useState("desc");
   const [open, setOpen] = useState(false);
   const [openView, setOpenView] = useState(false);
-  const [prescriber, setPrescriber] = useState([]);
+  const [listId, setListId] = useState(null);
   const [snackOpen, setSnackOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [dialogFields, setDialogFields] = useState("");
@@ -51,9 +51,9 @@ const PrescribersList = () => {
   // ** Hooks
   const ability = useContext(AbilityContext);
 
-  const handleViewList = (prescriber) => {
+  const handleViewList = (listId) => {
     setOpenView(true);
-    setPrescriber(prescriber);
+    setListId(listId);
   };
 
   const handleDeleteList = async (id) => {
@@ -81,25 +81,6 @@ const PrescribersList = () => {
         <Typography variant="body2" sx={{ color: "text.primary" }}>
           {params.row.List_Name}
         </Typography>
-      ),
-    },
-    {
-      flex: 0.2,
-      minWidth: 440,
-      headerName: "LIST",
-      field: "List",
-      renderCell: (params) => (
-        <Tooltip
-          title={JSON.parse(params.row.List)
-            .map((item) => item.Name)
-            .join(", ")}
-        >
-          <Typography variant="body2" sx={{ color: "text.primary" }}>
-            {JSON.parse(params.row.List)
-              .map((item) => item.Name)
-              .join(", ")}
-          </Typography>
-        </Tooltip>
       ),
     },
     {
@@ -131,7 +112,7 @@ const PrescribersList = () => {
                   size="small"
                   component="a"
                   sx={{ textDecoration: "none" }}
-                  onClick={() => handleViewList(JSON.parse(params.row.List))}
+                  onClick={() => handleViewList(params.row.Id)}
                 >
                   <EyeOutline fontSize="small" />
                 </IconButton>
@@ -147,7 +128,7 @@ const PrescribersList = () => {
     async (sort, column, userData) => {
       setIsLoading(true);
       await axios
-        .get(`${BASE_URL}prescriber/get_prescribers_list`, {
+        .get(`${BASE_URL}prescriber/get_prescribers_list_name`, {
           params: {
             sort,
             column,
@@ -155,8 +136,8 @@ const PrescribersList = () => {
           },
         })
         .then((res) => {
-          setTotal(res.data.prescribersList.length);
-          setRows(res.data.prescribersList);
+          setTotal(res.data.prescribersListName.length);
+          setRows(res.data.prescribersListName);
           setIsLoading(false);
         });
     },
@@ -198,7 +179,7 @@ const PrescribersList = () => {
         <DialogViewCustomList
           open={openView}
           handleClose={handleCloseViewDialog}
-          prescriber={prescriber}
+          listId={listId}
         />
         <CreateListDialog
           open={open}

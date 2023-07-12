@@ -108,12 +108,12 @@ const InvoiceList = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${BASE_URL}prescriber/get_prescribers_list`,
+          `${BASE_URL}prescriber/get_prescribers_list_name`,
           {
             params: {},
           }
         );
-        setPrescribersListOption(response.data.prescribersList);
+        setPrescribersListOption(response.data.prescribersListName);
       } catch (error) {
         // Handle the error
         console.error(error);
