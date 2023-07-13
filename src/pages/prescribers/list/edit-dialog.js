@@ -82,6 +82,7 @@ const getLocationData = async (location) => {
     Location__Longitude: lng,
   };
 };
+
 const PrescriberEditDialog = ({
   prescriber,
   open,
