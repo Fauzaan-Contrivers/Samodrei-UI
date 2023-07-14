@@ -97,6 +97,18 @@ export const updateFlaggedAddress = createAsyncThunk(
   }
 );
 
+export const deletePrescriber = createAsyncThunk(
+  "prescriber/delete_prescriber",
+  async (params) => {
+    let response = await apiCall("POST", "prescriber/delete_prescriber", {
+      ...params,
+      prescriberId: params.id,
+      IsDeleted: params.isDeleted,
+    });
+    return true;
+  }
+);
+
 export const getPrescribersName = createAsyncThunk(
   "prescriber/get_all_prescribers_name",
   async (params) => {

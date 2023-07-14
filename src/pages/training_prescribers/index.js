@@ -14,7 +14,12 @@ import Tooltip from "@mui/material/Tooltip";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import { DataGrid } from "@mui/x-data-grid";
+import IconButton from "@mui/material/IconButton";
+import Delete from "mdi-material-ui/Delete";
 import CreateTrainingPrescriber from "src/views/components/dialogs/DialogCreateTrainingPrescriber";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { BASE_URL } from "src/configs/config";
 
 // ** Icons Imports
 import Snackbar from "@mui/material/Snackbar";
@@ -57,6 +62,8 @@ const TrainingPrescribers = () => {
   const [prescriber, setPrescriber] = useState({});
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
+
   const ability = useContext(AbilityContext);
 
   // ** Hooks
@@ -84,7 +91,7 @@ const TrainingPrescribers = () => {
       fetchPrescribersDataWithDebounce();
       return fetchPrescribersDataWithDebounce.cancel;
     }
-  }, [page, pageSize, store.prescribers.filter, openCreatePrescriberDialog]);
+  }, [page, pageSize, openCreatePrescriberDialog, isDeleted]);
 
   const handleClose = () => setOpen(false);
 
@@ -96,10 +103,27 @@ const TrainingPrescribers = () => {
     setOpenCreatePrescriberDialog(false);
   };
 
+  const handleDeleteTrainingPrescriber = async (prescriberId) => {
+    console.log(prescriberId);
+    await axios
+      .post(`${BASE_URL}prescriber/delete_prescriber`, {
+        prescriberId: prescriberId,
+        IsDeleted: true,
+      })
+      .then((res) => {
+        if (res.data.status == 200) {
+          toast.success(res.data.message, {
+            duration: 2000,
+          });
+          setIsDeleted(true);
+        }
+      });
+  };
+
   const defaultColumns = [
     {
       field: "name",
-      minWidth: 210,
+      minWidth: 180,
       headerName: "Name",
       renderCell: ({ row }) => (
         <Link href={`/prescribers/preview/${row.Id}`} passHref>
@@ -166,15 +190,35 @@ const TrainingPrescribers = () => {
     },
     {
       flex: 0.1,
-      minWidth: 70,
+      minWidth: 90,
       field: "market_decile",
       headerName: "Edit",
       renderCell: ({ row }) => (
-        <EditIcon
-          onClick={() => {
-            setPrescriber(row), setOpen(true);
-          }}
-        />
+        <>
+          <Tooltip title="Edit Address">
+            <EditIcon
+              onClick={() => {
+                setPrescriber(row), setOpen(true);
+              }}
+            />
+          </Tooltip>
+
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Tooltip title="Delete">
+              <Box>
+                <IconButton
+                  color="secondary"
+                  size="small"
+                  component="a"
+                  sx={{ textDecoration: "none" }}
+                  onClick={() => handleDeleteTrainingPrescriber(row.Id)}
+                >
+                  <Delete />
+                </IconButton>
+              </Box>
+            </Tooltip>
+          </Box>
+        </>
       ),
     },
   ];
