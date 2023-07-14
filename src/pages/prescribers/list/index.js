@@ -220,6 +220,15 @@ const InvoiceList = () => {
     {
       flex: 0.2,
       minWidth: 140,
+      field: "VisitCount",
+      headerName: "Visit Count",
+      renderCell: ({ row }) => (
+        <Typography variant="body2">{row?.VisitCount || ""}</Typography>
+      ),
+    },
+    {
+      flex: 0.2,
+      minWidth: 140,
       field: "Furosemide_Trx",
       headerName: "Furosemide trx",
       renderCell: ({ row }) => (
