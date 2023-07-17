@@ -81,6 +81,12 @@ const navigation = () => {
       icon: ShieldOutline,
       title: "Prescriber's List",
     },
+    {
+      path: "/training_prescribers",
+      action: "read",
+      icon: ShieldOutline,
+      title: "Training Prescribers",
+    },
     // {
     //   sectionTitle: 'Apps & Pages'
     // },
