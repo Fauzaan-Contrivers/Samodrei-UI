@@ -20,8 +20,6 @@ export const fetchProductAdvocatesData = createAsyncThunk(
       }
     );
 
-    console.log(response.data.result.records.productAdvocates);
-
     return {
       totalRecords: response.data.result.records.count,
       result: response.data.result.records.productAdvocates,
@@ -60,7 +58,6 @@ export const fetchProductAdvocateAnalyticsData = createAsyncThunk(
         end_date: params.end_date,
       }
     );
-    console.log(response.data);
 
     return {
       result: response.data.totalVisits,
