@@ -116,15 +116,13 @@ const DialogBox = ({
               defaultValue={productAdvocate}
             >
               <MenuItem value="">none</MenuItem>
-              {store.product_advocates.data
-                .filter((val) => val.Active)
-                .map((val) => {
-                  return (
-                    <MenuItem key={val.id} value={val.id}>
-                      {val.name}
-                    </MenuItem>
-                  );
-                })}
+              {store.samples.product_advocate.map((val) => {
+                return (
+                  <MenuItem key={val.Id} value={val.Id}>
+                    {val.Name}
+                  </MenuItem>
+                );
+              })}
             </Select>
           </FormControl>
           <FormControl fullWidth sx={{ mb: 4 }}>
@@ -186,29 +184,35 @@ const SampleTableHeader = (props) => {
   const store = useSelector((state) => state);
 
   const downloadCSV = (start, end, productAdvocate, sampleStatus) => {
-    let samples = store.samples.data;
+    let filteredSamples = store.samples.data;
+
     if (start) {
-      samples = samples.filter((val) =>
-        moment(val.Post_Sign_Date).isSameOrAfter(moment(start), "D")
+      filteredSamples = filteredSamples.filter((val) =>
+        moment(val.Pre_Sign_Date).isSameOrAfter(moment(start), "D")
       );
     }
+
     if (end) {
-      samples = samples.filter((val) =>
+      filteredSamples = filteredSamples.filter((val) =>
         moment(val.Post_Sign_Date).isSameOrBefore(moment(end), "D")
       );
     }
+
     if (productAdvocate) {
-      samples = samples.filter(
-        (val) => val.Product_Advocate__r.Id == productAdvocate
+      filteredSamples = filteredSamples.filter(
+        (val) => val.product_advocate.Id == productAdvocate
       );
     }
+
     if (sampleStatus) {
-      samples = samples.filter((val) => val.Status == sampleStatus);
+      filteredSamples = filteredSamples.filter(
+        (val) => val.Status == sampleStatus
+      );
     }
     let csv =
       "Product Advocate,Quantity 20 MG,Quantity 60 MG,Prescriber Name,Prescriber Street,Prescriber City,Prescriber State,Prescriber Zip,Prescriber NPI,Request Date,Deliver Date,Status\n";
 
-    samples.forEach(function (row) {
+    filteredSamples.forEach(function (row) {
       const preSignDate =
         String(row.Pre_Sign_Date) == "null"
           ? "N.A."

@@ -126,7 +126,7 @@ const Preview = ({ id, invoiceData }) => {
                       <MUITableCell>
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           <Link
-                            href={`/product_advocates/preview/${data.p_Id}`}
+                            href={`/product_advocates/preview/${data.pa_Id}`}
                             passHref
                           >
                             <StyledLink>{data.pa_Name}</StyledLink>

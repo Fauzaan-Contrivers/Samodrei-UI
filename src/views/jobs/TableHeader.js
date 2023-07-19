@@ -178,7 +178,7 @@ const TableHeader = (props) => {
       csv += `${row.question_l_4},`;
       csv += convertTimeZoneToReadableDate(row.question_l_0) + ","; // date
       csv += convertTimeZoneToReadableTime(row.question_l_0) + ","; // time
-      csv += `${row.product_advocate.name},`;
+      csv += `${row.product_advocate.Name},`;
 
       csv += "\n";
     });
