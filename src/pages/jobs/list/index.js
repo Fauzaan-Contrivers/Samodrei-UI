@@ -623,7 +623,7 @@ const InvoiceList = () => {
       },
       {
         key: "Id",
-        header: "ID",
+        header: "Job ID",
       },
       {
         key: "LastModifiedDate",
@@ -633,10 +633,10 @@ const InvoiceList = () => {
         key: "Status",
         header: "Job Status",
       },
-      {
-        key: "amount",
-        header: "Amount",
-      },
+      // {
+      //   key: "amount",
+      //   header: "Amount",
+      // },
       {
         key: "difference_location_doctor",
         header: "Difference Location Doctor",
@@ -646,22 +646,18 @@ const InvoiceList = () => {
         header: "Feedback Submitted Date",
       },
       {
-        key: "job_id",
-        header: "Job Id",
-      },
-      {
         key: "prescriber",
-        key2: "address",
+        key2: "Street_Address",
         header: "Prescriber Address",
       },
       {
         key: "prescriber",
-        key2: "npi",
+        key2: "NPI",
         header: "Prescriber NPI",
       },
       {
         key: "prescriber",
-        key2: "speciality",
+        key2: "Speciality",
         header: "Prescriber Speciality",
       },
       {
@@ -669,11 +665,13 @@ const InvoiceList = () => {
         header: "Status",
       },
       {
-        key: "prescriber_name",
+        key: "prescriber",
+        key2: "Name",
         header: "Prescriber Name",
       },
       {
-        key: "product_advocate_name",
+        key: "product_advocate",
+        key2: "Name",
         header: "Product Advocate Name",
       },
       {
