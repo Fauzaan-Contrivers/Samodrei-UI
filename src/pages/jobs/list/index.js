@@ -1013,7 +1013,7 @@ const InvoiceList = () => {
           </Grid>
           <Grid item xs={12}>
             <Card>
-              <TableHeader onClick={() => toCSVForm(filteredRows)} />
+              <TableHeader onClick={() => toCSVForm(store.jobs.data)} />
               <DataGrid
                 autoHeight
                 pagination
