@@ -127,6 +127,7 @@ const InvoiceList = () => {
   const [endDate, setEndDate] = useState("");
   const [seed, setSeed] = useState(1);
   const ability = useContext(AbilityContext);
+  const [dataCSV, setDataCSV] = useState(false);
 
   // ** Hooks
   const dispatch = useDispatch();
@@ -605,6 +606,47 @@ const InvoiceList = () => {
   ];
   const columns = [...jobsListViewColumns];
 
+  const handleClickDownloadDataCSV = () => {
+    const startDate = moment(store.jobs.filter.startDateRange, "YYYY-MM-DD");
+    const formattedStartDate = startDate.format("YYYY-MM-DD");
+    const endDate = moment(store.jobs.filter.endDateRange, "YYYY-MM-DD");
+    const formattedEndStartDate = endDate.format("YYYY-MM-DD");
+    let fetchPageSize = pageSize;
+
+    const check = store.jobs.filter.jobs_with_lunches_only;
+    if (!store.jobs.filter.jobs_with_lunches_only) {
+      check = "null";
+    }
+
+    if (store.jobs.filter.dates.length === 0) {
+      formattedStartDate = "";
+      formattedEndStartDate = "";
+    }
+
+    dispatch(
+      fetchJobsData({
+        status: store.jobs.filter.statusValue,
+        product_advocate: store.jobs.filter.productAdvocateValue,
+        start_date: formattedStartDate,
+        end_date: formattedEndStartDate,
+        meet_with: store.jobs.filter.meet_with.join(","),
+        prescriber: store.jobs.filter.prescriberValue,
+        lunch_meeting: check,
+        radius: store.jobs.filter.difference_location_doctor,
+        clientId: userData.clientId,
+      })
+    ).then(() => {
+      setIsLoading(false);
+      setDataCSV(store.jobs.dataCSV);
+    });
+  };
+
+  useEffect(() => {
+    if (dataCSV) {
+      toCSVForm(store.jobs.dataCSV);
+    }
+  }, [dataCSV]);
+
   const toCSVForm = (data) => {
     let csv = "";
 
@@ -659,6 +701,11 @@ const InvoiceList = () => {
         key: "prescriber",
         key2: "Speciality",
         header: "Prescriber Speciality",
+      },
+      {
+        key: "prescriber",
+        key2: "Phone",
+        header: "Prescriber Phone",
       },
       {
         key: "Status",
@@ -815,6 +862,7 @@ const InvoiceList = () => {
     hiddenElement.download = "Data.csv";
     hiddenElement.click();
   };
+
   return (
     <div>
       {ability?.can("read", "acl-page") ? (
@@ -1013,7 +1061,7 @@ const InvoiceList = () => {
           </Grid>
           <Grid item xs={12}>
             <Card>
-              <TableHeader onClick={() => toCSVForm(store.jobs.data)} />
+              <TableHeader onClick={() => handleClickDownloadDataCSV()} />
               <DataGrid
                 autoHeight
                 pagination
