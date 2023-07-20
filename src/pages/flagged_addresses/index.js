@@ -16,6 +16,7 @@ import ServerSideToolbar from "src/views/table/data-grid/ServerSideToolbar";
 import PrescriberEditDialog from "../prescribers/list/edit-dialog";
 import Snackbar from "@mui/material/Snackbar";
 import moment from "moment";
+import Tooltip from "@mui/material/Tooltip";
 
 // ** Config
 import authConfig from "src/configs/auth";
@@ -69,7 +70,7 @@ const FlaggedAddresses = () => {
     },
     {
       flex: 0.2,
-      minWidth: 440,
+      minWidth: 400,
       headerName: "Flagged Addresses",
       field: "Street_Address",
       renderCell: (params) => (
@@ -91,6 +92,19 @@ const FlaggedAddresses = () => {
                 .format("YYYY-MM-DD HH:mm:ss")
             : " "}
         </Typography>
+      ),
+    },
+    {
+      flex: 0.2,
+      minWidth: 280,
+      headerName: "Comment",
+      field: "FlaggedAddressComment",
+      renderCell: (params) => (
+        <Tooltip title={params.row.FlaggedAddressComment}>
+          <Typography variant="body2" sx={{ color: "text.primary" }}>
+            {params.row.FlaggedAddressComment}
+          </Typography>
+        </Tooltip>
       ),
     },
     {
