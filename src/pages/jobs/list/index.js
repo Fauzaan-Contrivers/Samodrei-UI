@@ -843,7 +843,7 @@ const InvoiceList = () => {
       csvDataArray.map((item) => {
         if ("key2" in item) {
           csv += `${String(job[item["key"]][item.key2]).replace(
-            /,|# |\n /gi,
+            /,|#|\n/gi,
             " "
           )},`;
         } else {
@@ -862,7 +862,6 @@ const InvoiceList = () => {
     hiddenElement.download = "Data.csv";
     hiddenElement.click();
   };
-
   return (
     <div>
       {ability?.can("read", "acl-page") ? (
