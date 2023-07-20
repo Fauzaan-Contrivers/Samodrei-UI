@@ -217,13 +217,13 @@ const TableHeader = (props) => {
         handleClose={handleClose}
       />
       <Box>
-        <Button
+        {/* <Button
           sx={{ mb: 2, mr: 2 }}
           onClick={handleClickOpen}
           variant="contained"
         >
           Download Lunch CSV
-        </Button>
+        </Button> */}
         <Button
           sx={{ mb: 2, mr: 2 }}
           onClick={() => props.onClick()}
