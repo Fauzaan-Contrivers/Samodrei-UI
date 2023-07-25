@@ -946,7 +946,7 @@ const InvoiceList = () => {
                         <MenuItem value="Medical Assistant">
                           Medical Assistant
                         </MenuItem>
-                        <MenuItem value="Nurse Practitioner (NP)">
+                        <MenuItem value="Nurse">
                           Nurse Practitioner (NP)
                         </MenuItem>
                         <MenuItem value="Physician">Physician</MenuItem>
