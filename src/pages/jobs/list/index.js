@@ -694,6 +694,21 @@ const InvoiceList = () => {
       },
       {
         key: "prescriber",
+        key2: "City",
+        header: "Prescriber City",
+      },
+      {
+        key: "prescriber",
+        key2: "State",
+        header: "Prescriber State",
+      },
+      {
+        key: "prescriber",
+        key2: "Zip",
+        header: "Prescriber Zip",
+      },
+      {
+        key: "prescriber",
         key2: "NPI",
         header: "Prescriber NPI",
       },
