@@ -30,6 +30,13 @@ const navigation = () => {
       title: "Dashboard",
     },
     {
+      path: "/analytics",
+      action: "read",
+      subject: "acl-page",
+      icon: ShieldOutline,
+      title: "Analytics",
+    },
+    {
       path: "/jobs/list",
       action: "read",
       subject: "acl-page",
@@ -53,16 +60,32 @@ const navigation = () => {
     {
       path: "/samples/list",
       action: "read",
-      subject: "acl-page",
       icon: ShieldOutline,
       title: "Samples",
     },
     {
       path: "/flagged_addresses",
       action: "read",
-      subject: "acl-page",
       icon: ShieldOutline,
       title: "Flagged Addresses",
+    },
+    {
+      path: "/users",
+      action: "read",
+      icon: ShieldOutline,
+      title: "Registered Users",
+    },
+    {
+      path: "/prescribers-list",
+      action: "read",
+      icon: ShieldOutline,
+      title: "Prescriber's List",
+    },
+    {
+      path: "/training_prescribers",
+      action: "read",
+      icon: ShieldOutline,
+      title: "Training Prescribers",
     },
     // {
     //   sectionTitle: 'Apps & Pages'

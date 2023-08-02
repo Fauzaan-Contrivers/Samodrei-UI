@@ -10,69 +10,79 @@ import InputAdornment from "@mui/material/InputAdornment";
 
 // ** Third Party Imports
 import format from "date-fns/format";
+import { Bar } from "react-chartjs-2";
 import DatePicker from "react-datepicker";
 
 // ** Icons Imports
-import BellOutline from "mdi-material-ui/BellOutline";
 import ChevronDown from "mdi-material-ui/ChevronDown";
+import CalendarOutline from "mdi-material-ui/CalendarOutline";
 
-// ** Component Import
-import ReactApexcharts from "src/@core/components/react-apexcharts";
+const ProductAdvocateBarChart = (props) => {
+  // ** Props
+  const { yellow, labelColor, borderColor, gridLineColor } = props;
 
-const ApexBarChart = () => {
   // ** States
   const [endDate, setEndDate] = useState(null);
   const [startDate, setStartDate] = useState(new Date());
 
   const options = {
-    chart: {
-      parentHeightOffset: 0,
-      toolbar: {
-        show: false,
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 500 },
+    scales: {
+      x: {
+        grid: {
+          borderColor,
+          color: gridLineColor,
+        },
+        ticks: { color: labelColor },
       },
-    },
-    plotOptions: {
-      bar: {
-        borderRadius: 8,
-        barHeight: "30%",
-        horizontal: true,
-        startingShape: "rounded",
-      },
-    },
-    grid: {
-      xaxis: {
-        lines: {
-          show: false,
+      y: {
+        min: 0,
+        max: 400,
+        grid: {
+          borderColor,
+          color: gridLineColor,
+        },
+        ticks: {
+          stepSize: 100,
+          color: labelColor,
         },
       },
-      padding: {
-        top: -10,
-      },
     },
-    colors: ["#00cfe8"],
-    dataLabels: {
-      enabled: false,
-    },
-    xaxis: {
-      categories: [
-        "MON, 11",
-        "THU, 14",
-        "FRI, 15",
-        "MON, 18",
-        "WED, 20",
-        "FRI, 21",
-        "MON, 23",
-      ],
+    plugins: {
+      legend: { display: false },
     },
   };
 
-  const series = [
-    {
-      data: [700, 350, 480, 600, 210, 550, 150],
-    },
-  ];
+  const data = {
+    labels: [
+      "7/12",
+      "8/12",
+      "9/12",
+      "10/12",
+      "11/12",
+      "12/12",
+      "13/12",
+      "14/12",
+      "15/12",
+      "16/12",
+      "17/12",
+      "18/12",
+      "19/12",
+    ],
+    datasets: [
+      {
+        maxBarThickness: 15,
+        backgroundColor: yellow,
+        borderColor: "transparent",
+        borderRadius: { topRight: 15, topLeft: 15 },
+        data: [275, 90, 190, 205, 125, 85, 55, 87, 127, 150, 230, 280, 190],
+      },
+    ],
+  };
 
-  const CustomInput = forwardRef((props, ref) => {
+  const CustomInput = forwardRef(({ ...props }, ref) => {
     const startDate = format(props.start, "MM/dd/yyyy");
     const endDate =
       props.end !== null ? ` - ${format(props.end, "MM/dd/yyyy")}` : null;
@@ -87,7 +97,7 @@ const ApexBarChart = () => {
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <BellOutline />
+              <CalendarOutline />
             </InputAdornment>
           ),
           endAdornment: (
@@ -109,39 +119,32 @@ const ApexBarChart = () => {
   return (
     <Card>
       <CardHeader
-        title="Data Science"
-        subheader="$74,382.72"
+        title="Visits of Who They Met With"
         titleTypographyProps={{ variant: "h6" }}
-        subheaderTypographyProps={{ variant: "caption" }}
         sx={{
           flexDirection: ["column", "row"],
           alignItems: ["flex-start", "center"],
           "& .MuiCardHeader-action": { marginBottom: 0 },
           "& .MuiCardHeader-content": { marginBottom: [2, 0] },
         }}
-        action={
-          <DatePicker
-            selectsRange
-            endDate={endDate}
-            id="apexchart-bar"
-            selected={startDate}
-            startDate={startDate}
-            onChange={handleOnChange}
-            placeholderText="Click to select a date"
-            customInput={<CustomInput start={startDate} end={endDate} />}
-          />
-        }
+        // action={
+        //   <DatePicker
+        //     selectsRange
+        //     id="chartjs-bar"
+        //     endDate={endDate}
+        //     selected={startDate}
+        //     startDate={startDate}
+        //     onChange={handleOnChange}
+        //     placeholderText="Click to select a date"
+        //     customInput={<CustomInput start={startDate} end={endDate} />}
+        //   />
+        // }
       />
       <CardContent>
-        <ReactApexcharts
-          options={options}
-          series={series}
-          type="bar"
-          height={400}
-        />
+        <Bar data={data} options={options} height={400} />
       </CardContent>
     </Card>
   );
 };
 
-export default ApexBarChart;
+export default ProductAdvocateBarChart;

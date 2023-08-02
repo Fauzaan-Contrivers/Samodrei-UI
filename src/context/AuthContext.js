@@ -57,14 +57,32 @@ const AuthProvider = ({ children }) => {
       if (storedToken) {
         setLoading(true);
         await axios
-          .get(authConfig.meEndpoint, {
+          .get(`${BASE_URL}auth/me`, {
             headers: {
               Authorization: storedToken,
             },
           })
           .then(async (response) => {
             setLoading(false);
-            setUser({ ...response.data.userData });
+            const { userData } = response?.data;
+            console.log("USER DATA", userData);
+
+            const role = "";
+            if (userData?.roleId === 1) {
+              role = "admin";
+            }
+            if (userData?.roleId === 2) {
+              role = "client";
+            }
+
+            const data = {
+              id: userData?.id,
+              role: "admin",
+              fullName: userData?.name || "",
+              email: userData?.email,
+              roleId: userData?.roleId,
+            };
+            setUser({ ...data });
           });
         loadInitials();
       } else {
@@ -107,6 +125,7 @@ const AuthProvider = ({ children }) => {
             const returnUrl = router.query.returnUrl;
             const { userData } = response.data;
             const role = "";
+            console.log("USER DATA", userData);
 
             if (userData.roleId === 1) {
               role = "admin";
@@ -116,11 +135,11 @@ const AuthProvider = ({ children }) => {
             }
 
             const data = {
-              id: userData.id,
-              role: role,
-              fullName: userData?.name,
-              username: "abubakr",
-              email: userData.email,
+              id: userData?.id,
+              role: "admin",
+              fullName: userData?.name || "",
+              email: userData?.email,
+              roleId: userData?.roleId,
             };
             setUser({ ...data });
             await window.localStorage.setItem(

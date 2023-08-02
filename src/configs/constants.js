@@ -3,6 +3,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
 import { convertDateToReadableFormat } from "src/configs/utils";
+import moment from "moment";
 
 const StyledLink = styled("a")(({ theme }) => ({
   textDecoration: "none",
@@ -46,7 +47,7 @@ export const jobsListViewColumns = [
               <StyledLink>{row?.Prescriber_Name}</StyledLink>
             </Link>
             <Typography noWrap variant="caption">
-              {row?.Prescriber_Address}
+              {`${row?.Street_Address}, ${row?.City}, ${row?.State}, ${row?.Zip}`}
             </Typography>
           </Box>
         </Box>
@@ -83,7 +84,11 @@ export const jobsListViewColumns = [
     headerName: "Feedback Submitted At",
     renderCell: ({ row }) => (
       <Typography variant="body2">
-        {convertDateToReadableFormat(row.feedback_submitted_at) || ""}
+        {row?.feedback_submitted_at
+          ? moment(row.feedback_submitted_at)
+              .local()
+              .format("YYYY-MM-DD HH:mm:ss")
+          : " "}
       </Typography>
     ),
   },

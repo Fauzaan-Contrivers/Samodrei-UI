@@ -49,12 +49,20 @@ import { fetchJobsData } from "src/store/jobs";
 // ** Utils Import
 import { getInitials } from "src/@core/utils/get-initials";
 
+import { useContext } from "react";
+
+// ** Context Imports
+import { AbilityContext } from "src/layouts/components/acl/Can";
+
 // ** Custom Components Imports
 import CustomChip from "src/@core/components/mui/chip";
 import CustomAvatar from "src/@core/components/mui/avatar";
 import TableHeader from "src/views/jobs/TableHeader";
 // ** Third Party Styles Imports
 import "react-datepicker/dist/react-datepicker.css";
+
+// ** Config
+import authConfig from "src/configs/auth";
 
 // ** Styled Components
 import { styled } from "@mui/material/styles";
@@ -118,10 +126,14 @@ const InvoiceList = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [seed, setSeed] = useState(1);
+  const ability = useContext(AbilityContext);
+  const [dataCSV, setDataCSV] = useState(false);
 
   // ** Hooks
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
+
+  const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
 
   useEffect(() => {
     const startDate = moment(store.jobs.filter.startDateRange, "YYYY-MM-DD");
@@ -157,6 +169,7 @@ const InvoiceList = () => {
         prescriber: store.jobs.filter.prescriberValue,
         lunch_meeting: check,
         radius: store.jobs.filter.difference_location_doctor,
+        clientId: userData.clientId,
       })
     ).then(() => {
       setIsLoading(false);
@@ -446,14 +459,18 @@ const InvoiceList = () => {
 
         return (
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Link href={`/prescribers/preview/${prescriber.Id}`} passHref>
-                <StyledLink>{prescriber.Name}</StyledLink>
-              </Link>
-              <Typography noWrap variant="caption">
-                {prescriber.Street_Address}
-              </Typography>
-            </Box>
+            <Tooltip
+              title={`${prescriber.Street_Address}, ${prescriber.City}, ${prescriber.State}, ${prescriber.Zip}`}
+            >
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Link href={`/prescribers/preview/${prescriber.Id}`} passHref>
+                  <StyledLink>{prescriber.Name}</StyledLink>
+                </Link>
+                <Typography noWrap variant="caption">
+                  {`${prescriber.Street_Address}, ${prescriber.City}, ${prescriber.State}, ${prescriber.Zip}`}
+                </Typography>
+              </Box>
+            </Tooltip>
           </Box>
         );
       },
@@ -484,24 +501,17 @@ const InvoiceList = () => {
       },
     },
     {
-      flex: 0.5,
-      minWidth: 450,
-      field: "feedback_submitted_at",
-      headerName: "Feedback Submitted At",
-      renderCell: ({ row }) => (
-        <Typography variant="body2">
-          {convertDateToReadableFormat(row.feedback_submitted_at) || ""}
-        </Typography>
-      ),
-    },
-    {
       flex: 0.2,
       minWidth: 190,
       field: "feedback_submitted_at",
       headerName: "Feedback Submitted At",
       renderCell: ({ row }) => (
         <Typography variant="body2">
-          {convertDateToReadableFormat(row.feedback_submitted_at) || ""}
+          {row?.feedback_submitted_at
+            ? moment(row.feedback_submitted_at)
+                .local()
+                .format("YYYY-MM-DD HH:mm:ss")
+            : " "}
         </Typography>
       ),
     },
@@ -515,7 +525,6 @@ const InvoiceList = () => {
           variant="body2"
           style={{ color: row.selected_far_doctor ? "red" : "green" }}
         >
-          {/* {parseFloat(row.Distance_To_Doctor).toFixed(2)} */}
           {row?.Distance_To_Doctor === null
             ? " "
             : parseFloat(row?.Distance_To_Doctor).toFixed(2)}
@@ -597,6 +606,47 @@ const InvoiceList = () => {
   ];
   const columns = [...jobsListViewColumns];
 
+  const handleClickDownloadDataCSV = () => {
+    const startDate = moment(store.jobs.filter.startDateRange, "YYYY-MM-DD");
+    const formattedStartDate = startDate.format("YYYY-MM-DD");
+    const endDate = moment(store.jobs.filter.endDateRange, "YYYY-MM-DD");
+    const formattedEndStartDate = endDate.format("YYYY-MM-DD");
+    let fetchPageSize = pageSize;
+
+    const check = store.jobs.filter.jobs_with_lunches_only;
+    if (!store.jobs.filter.jobs_with_lunches_only) {
+      check = "null";
+    }
+
+    if (store.jobs.filter.dates.length === 0) {
+      formattedStartDate = "";
+      formattedEndStartDate = "";
+    }
+
+    dispatch(
+      fetchJobsData({
+        status: store.jobs.filter.statusValue,
+        product_advocate: store.jobs.filter.productAdvocateValue,
+        start_date: formattedStartDate,
+        end_date: formattedEndStartDate,
+        meet_with: store.jobs.filter.meet_with.join(","),
+        prescriber: store.jobs.filter.prescriberValue,
+        lunch_meeting: check,
+        radius: store.jobs.filter.difference_location_doctor,
+        clientId: userData.clientId,
+      })
+    ).then(() => {
+      setIsLoading(false);
+      setDataCSV(store.jobs.dataCSV);
+    });
+  };
+
+  useEffect(() => {
+    if (dataCSV) {
+      toCSVForm(store.jobs.dataCSV);
+    }
+  }, [dataCSV]);
+
   const toCSVForm = (data) => {
     let csv = "";
 
@@ -615,7 +665,7 @@ const InvoiceList = () => {
       },
       {
         key: "Id",
-        header: "ID",
+        header: "Job ID",
       },
       {
         key: "LastModifiedDate",
@@ -625,10 +675,10 @@ const InvoiceList = () => {
         key: "Status",
         header: "Job Status",
       },
-      {
-        key: "amount",
-        header: "Amount",
-      },
+      // {
+      //   key: "amount",
+      //   header: "Amount",
+      // },
       {
         key: "difference_location_doctor",
         header: "Difference Location Doctor",
@@ -638,34 +688,52 @@ const InvoiceList = () => {
         header: "Feedback Submitted Date",
       },
       {
-        key: "job_id",
-        header: "Job Id",
-      },
-      {
         key: "prescriber",
-        key2: "address",
+        key2: "Street_Address",
         header: "Prescriber Address",
       },
       {
         key: "prescriber",
-        key2: "npi",
+        key2: "City",
+        header: "Prescriber City",
+      },
+      {
+        key: "prescriber",
+        key2: "State",
+        header: "Prescriber State",
+      },
+      {
+        key: "prescriber",
+        key2: "Zip",
+        header: "Prescriber Zip",
+      },
+      {
+        key: "prescriber",
+        key2: "NPI",
         header: "Prescriber NPI",
       },
       {
         key: "prescriber",
-        key2: "speciality",
+        key2: "Speciality",
         header: "Prescriber Speciality",
+      },
+      {
+        key: "prescriber",
+        key2: "Phone",
+        header: "Prescriber Phone",
       },
       {
         key: "Status",
         header: "Status",
       },
       {
-        key: "prescriber_name",
+        key: "prescriber",
+        key2: "Name",
         header: "Prescriber Name",
       },
       {
-        key: "product_advocate_name",
+        key: "product_advocate",
+        key2: "Name",
         header: "Product Advocate Name",
       },
       {
@@ -790,7 +858,7 @@ const InvoiceList = () => {
       csvDataArray.map((item) => {
         if ("key2" in item) {
           csv += `${String(job[item["key"]][item.key2]).replace(
-            /,|# |\n /gi,
+            /,|#|\n/gi,
             " "
           )},`;
         } else {
@@ -810,278 +878,233 @@ const InvoiceList = () => {
     hiddenElement.click();
   };
   return (
-    <Grid container spacing={6}>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title="Filters" />
-          <CardContent>
-            <Grid container spacing={6}>
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel id="status-select">Status</InputLabel>
-                  <Select
-                    fullWidth
-                    value={store.jobs.filter.statusValue}
-                    sx={{ mr: 4, mb: 2 }}
-                    label="Status"
-                    onChange={handleStatusValue}
-                    labelId="status-select"
-                  >
-                    <MenuItem value="">none</MenuItem>
-                    <MenuItem value="Assigned">Assigned</MenuItem>
-                    <MenuItem value="Job cancelled">Job cancelled</MenuItem>
-                    <MenuItem value="Feedback completed">
-                      Feedback completed
-                    </MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <TextField
-                    id="outlined-basic"
-                    label="Product Advocate"
-                    onChange={handleProductAdvocateValue}
-                    value={store.jobs.filter.productAdvocateValue}
-                  />
-                </FormControl>
-                {/* <FormControl fullWidth>
-                  <InputLabel id='product-advocate'>Product Advocate</InputLabel>
-                  <Select
-                    fullWidth
-                    value={store.jobs.filter.productAdvocateValue}
-                    sx={{ mr: 4, mb: 2 }}
-                    label='Product Advocate'
-                    onChange={handleProductAdvocateValue}
-                    labelId='product-advocate'
-                  >
-                    <MenuItem value=''>none</MenuItem>
-                    {store.product_advocates.data
-                      .filter(val => val.Active)
-                      .map(val => {
-                        return (
-                          <MenuItem key={val.id} value={val.id}>
-                            {val.name}
-                          </MenuItem>
-                        )
-                      })}
-                  </Select>
-                </FormControl> */}
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <DatePickerWrapper>
-                  <DatePicker
-                    isClearable
-                    selectsRange
-                    monthsShown={2}
-                    endDate={store.jobs.filter.endDateRange}
-                    selected={store.jobs.filter.startDateRange}
-                    startDate={store.jobs.filter.startDateRange}
-                    shouldCloseOnSelect={false}
-                    id="date-range-picker-months"
-                    onChange={handleOnChangeRange}
-                    customInput={
-                      <CustomInput
-                        dates={store.jobs.filter.dates}
-                        setDates={setDatesHandler}
-                        label="Feedback submitted at"
-                        end={store.jobs.filter.endDateRange}
-                        start={store.jobs.filter.startDateRange}
+    <div>
+      {ability?.can("read", "acl-page") ? (
+        <Grid container spacing={6}>
+          <Grid item xs={12}>
+            <Card>
+              <CardHeader title="Filters" />
+              <CardContent>
+                <Grid container spacing={6}>
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <InputLabel id="status-select">Status</InputLabel>
+                      <Select
+                        fullWidth
+                        value={store.jobs.filter.statusValue}
+                        sx={{ mr: 4, mb: 2 }}
+                        label="Status"
+                        onChange={handleStatusValue}
+                        labelId="status-select"
+                      >
+                        <MenuItem value="">none</MenuItem>
+                        <MenuItem value="Assigned">Assigned</MenuItem>
+                        <MenuItem value="Job cancelled">Job cancelled</MenuItem>
+                        <MenuItem value="Feedback completed">
+                          Feedback completed
+                        </MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <TextField
+                        id="outlined-basic"
+                        label="Product Advocate"
+                        onChange={handleProductAdvocateValue}
+                        value={store.jobs.filter.productAdvocateValue}
                       />
-                    }
-                  />
-                </DatePickerWrapper>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                {/* <FormControl fullWidth>
-                  <TextField
-                    value={meetWith}
-                    id='outlined-basic'
-                    label='Who Did You Meet With'
-                    onChange={e => setMeetWith(e.target.value)}
-                  />
-                </FormControl> */}
-                <FormControl fullWidth>
-                  <InputLabel id="status-select">
-                    Who Did You Meet With
-                  </InputLabel>
-                  <Select
-                    fullWidth
-                    value={store.jobs.filter.meet_with}
-                    sx={{ mr: 4, mb: 2 }}
-                    label="Status"
-                    onChange={handleWhoDidYouMeetWith}
-                    labelId="status-select"
-                    multiple
-                  >
-                    <MenuItem value="">Select Who Did You Meet With</MenuItem>
-                    <MenuItem value="Front Desk">Front Desk</MenuItem>
-                    <MenuItem value="Medical Assistant">
-                      Medical Assistant
-                    </MenuItem>
-                    <MenuItem value="Nurse Practitioner (NP)">
-                      Nurse Practitioner (NP)
-                    </MenuItem>
-                    <MenuItem value="Physician">Physician</MenuItem>
-                    <MenuItem value="Office Manager">Office Manager</MenuItem>
-                    <MenuItem value="Physician’s Assistant">
-                      Physician’s Assistant
-                    </MenuItem>
-                  </Select>
-                </FormControl>
-                {/* <FormControl fullWidth>
-                  <InputLabel id='status-select'>Who Did You Meet With</InputLabel>
-                  <Select
-                    fullWidth
-                    value={store.jobs.filter.question_2}
-                    sx={{ mr: 4, mb: 2 }}
-                    label='Who Did You Meet With'
-                    onChange={handleWhoDidYouMeetWith}
-                    labelId='meet-with-select'
-                    multiple
-                  >
-                    <MenuItem value=''>Select Who Did You Meet With</MenuItem>
-                    <MenuItem value='Front Desk'>Front Desk</MenuItem>
-                    <MenuItem value='Madical Assistant'>Madical Assistant</MenuItem>
-                    <MenuItem value='Nurse Practitioner (NP)'>Nurse Practitioner (NP)</MenuItem>
-                  </Select>
-                </FormControl> */}
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <TextField
-                    value={store.jobs.filter.prescriberValue}
-                    id="outlined-basic"
-                    label="Prescriber"
-                    onChange={handlePrescriberValue}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={
-                        store.jobs.filter.jobs_with_lunches_only == false
-                      }
-                      onChange={(event, checked) =>
-                        dispatch(
-                          onJobFilterChangeHandler({
-                            filter: "jobs_with_lunches_only",
-                            value: checked == true ? false : true,
-                          })
-                        )
-                      }
-                    />
-                  }
-                  label="All Jobs"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={store.jobs.filter.jobs_with_lunches_only == true}
-                      onChange={(event, checked) => {
-                        setJobsWithLunches(checked);
-                        if (checked == false) {
-                          setJobsWithLunches(false);
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <DatePickerWrapper>
+                      <DatePicker
+                        isClearable
+                        selectsRange
+                        monthsShown={2}
+                        endDate={store.jobs.filter.endDateRange}
+                        selected={store.jobs.filter.startDateRange}
+                        startDate={store.jobs.filter.startDateRange}
+                        shouldCloseOnSelect={false}
+                        id="date-range-picker-months"
+                        onChange={handleOnChangeRange}
+                        customInput={
+                          <CustomInput
+                            dates={store.jobs.filter.dates}
+                            setDates={setDatesHandler}
+                            label="Feedback submitted at"
+                            end={store.jobs.filter.endDateRange}
+                            start={store.jobs.filter.startDateRange}
+                          />
                         }
-                        dispatch(
-                          onJobFilterChangeHandler({
-                            filter: "jobs_with_lunches_only",
-                            value: checked == true ? true : false,
-                          })
-                        );
-                      }}
-                    />
-                  }
-                  label="Jobs With Lunch"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={store.jobs.filter.revisits == true}
-                      onChange={(event, checked) =>
-                        dispatch(
-                          onRevisitFilterChangeHandler({
-                            filter: "revisits",
-                            value: checked == false ? false : true,
-                          })
-                        )
+                      />
+                    </DatePickerWrapper>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <InputLabel id="status-select">
+                        Who Did You Meet With
+                      </InputLabel>
+                      <Select
+                        fullWidth
+                        value={store.jobs.filter.meet_with}
+                        sx={{ mr: 4, mb: 2 }}
+                        label="Status"
+                        onChange={handleWhoDidYouMeetWith}
+                        labelId="status-select"
+                        multiple
+                      >
+                        <MenuItem value="">
+                          Select Who Did You Meet With
+                        </MenuItem>
+                        <MenuItem value="Front Desk">Front Desk</MenuItem>
+                        <MenuItem value="Medical Assistant">
+                          Medical Assistant
+                        </MenuItem>
+                        <MenuItem value="Nurse">
+                          Nurse Practitioner (NP)
+                        </MenuItem>
+                        <MenuItem value="Physician">Physician</MenuItem>
+                        <MenuItem value="Office Manager">
+                          Office Manager
+                        </MenuItem>
+                        <MenuItem value="Physician’s Assistant">
+                          Physician’s Assistant
+                        </MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                      <TextField
+                        value={store.jobs.filter.prescriberValue}
+                        id="outlined-basic"
+                        label="Prescriber"
+                        onChange={handlePrescriberValue}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={
+                            store.jobs.filter.jobs_with_lunches_only == false
+                          }
+                          onChange={(event, checked) =>
+                            dispatch(
+                              onJobFilterChangeHandler({
+                                filter: "jobs_with_lunches_only",
+                                value: checked == true ? false : true,
+                              })
+                            )
+                          }
+                        />
                       }
+                      label="All Jobs"
                     />
-                  }
-                  label="Exclude Revisits"
-                />
-                {totalLunchSpent > 0 && (
-                  <span>
-                    Total Lunch Spent:
-                    <b>
-                      {"  "} ${totalLunchSpent}{" "}
-                    </b>
-                  </span>
-                )}
-              </Grid>
-              {store.jobs.filter.statusValue == "Feedback completed" && (
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id="status-select">Radius</InputLabel>
-                    <Select
-                      fullWidth
-                      value={store.jobs.filter.difference_location_doctor}
-                      sx={{ mr: 4, mb: 2 }}
-                      label="Status"
-                      onChange={handleRadiusValue}
-                      labelId="status-select"
-                    >
-                      <MenuItem value="">Both</MenuItem>
-                      <MenuItem value="within">Within Radius</MenuItem>
-                      <MenuItem value="outside">Outside Radius</MenuItem>
-                    </Select>
-                  </FormControl>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={
+                            store.jobs.filter.jobs_with_lunches_only == true
+                          }
+                          onChange={(event, checked) => {
+                            setJobsWithLunches(checked);
+                            if (checked == false) {
+                              setJobsWithLunches(false);
+                            }
+                            dispatch(
+                              onJobFilterChangeHandler({
+                                filter: "jobs_with_lunches_only",
+                                value: checked == true ? true : false,
+                              })
+                            );
+                          }}
+                        />
+                      }
+                      label="Jobs With Lunch"
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={store.jobs.filter.revisits == true}
+                          onChange={(event, checked) =>
+                            dispatch(
+                              onRevisitFilterChangeHandler({
+                                filter: "revisits",
+                                value: checked == false ? false : true,
+                              })
+                            )
+                          }
+                        />
+                      }
+                      label="Exclude Revisits"
+                    />
+                    {totalLunchSpent > 0 && (
+                      <span>
+                        Total Lunch Spent:
+                        <b>
+                          {"  "} ${totalLunchSpent}{" "}
+                        </b>
+                      </span>
+                    )}
+                  </Grid>
+                  {store.jobs.filter.statusValue == "Feedback completed" && (
+                    <Grid item xs={12} sm={6}>
+                      <FormControl fullWidth>
+                        <InputLabel id="status-select">Radius</InputLabel>
+                        <Select
+                          fullWidth
+                          value={store.jobs.filter.difference_location_doctor}
+                          sx={{ mr: 4, mb: 2 }}
+                          label="Status"
+                          onChange={handleRadiusValue}
+                          labelId="status-select"
+                        >
+                          <MenuItem value="">Both</MenuItem>
+                          <MenuItem value="within">Within Radius</MenuItem>
+                          <MenuItem value="outside">Outside Radius</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                  )}
                 </Grid>
-              )}
-            </Grid>
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={12}>
-        <Card>
-          <TableHeader onClick={() => toCSVForm(filteredRows)} />
-          {/* <DataGrid
-            autoHeight
-            pagination
-            rows={filteredRows}
-            rowCount={store.jobs.totalRecords}
-            columns={columns}
-            disableSelectionOnClick
-            pageSize={Number(pageSize)}
-            rowsPerPageOptions={[10, 25, 50]}
-            onPageSizeChange={newPageSize => setPageSize(newPageSize)}
-          /> */}
-
-          <DataGrid
-            autoHeight
-            pagination
-            rows={isLoading ? [] : store.jobs.data}
-            columns={columns}
-            loading={isLoading}
-            // checkboxSelection
-            rowCount={store.jobs.totalRecords}
-            getRowId={(row) => row?.Id}
-            disableSelectionOnClick
-            pageSize={Number(pageSize)}
-            rowsPerPageOptions={[10, 25, 50]}
-            onPageChange={(newPage) => {
-              setPage(newPage);
-            }}
-            onSelectionModelChange={(rows) => setSelectedRow(rows)}
-            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-            paginationMode="server"
-          />
-        </Card>
-      </Grid>
-    </Grid>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12}>
+            <Card>
+              <TableHeader onClick={() => handleClickDownloadDataCSV()} />
+              <DataGrid
+                autoHeight
+                pagination
+                rows={isLoading ? [] : store.jobs.data}
+                columns={columns}
+                loading={isLoading}
+                rowCount={store.jobs.totalRecords}
+                getRowId={(row) => row?.Id}
+                disableSelectionOnClick
+                pageSize={Number(pageSize)}
+                rowsPerPageOptions={[10, 25, 50]}
+                onPageChange={(newPage) => {
+                  setPage(newPage);
+                }}
+                onSelectionModelChange={(rows) => setSelectedRow(rows)}
+                onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+                paginationMode="server"
+              />
+            </Card>
+          </Grid>
+        </Grid>
+      ) : null}
+    </div>
   );
+};
+
+InvoiceList.acl = {
+  action: "read",
+  subject: "acl-page",
 };
 
 export default InvoiceList;

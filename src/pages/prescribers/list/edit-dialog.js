@@ -11,9 +11,15 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Input from "@mui/material/Input";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 import { useDispatch } from "react-redux";
-import { updatePrescriberAddress } from "src/store/prescribers";
+import {
+  updatePrescriberAddress,
+  updateFlaggedAddress,
+  deletePrescriber,
+} from "src/store/prescribers";
 import PlacesAutocomplete, {
   geocodeByAddress,
   getLatLng,
@@ -79,6 +85,7 @@ const getLocationData = async (location) => {
     Location__Longitude: lng,
   };
 };
+
 const PrescriberEditDialog = ({
   prescriber,
   open,
@@ -91,12 +98,35 @@ const PrescriberEditDialog = ({
   };
 
   const [value, setValue] = useState("");
+  const [isChecked, setIsChecked] = useState(false);
+
+  const handleCheckboxChange = () => {
+    setIsChecked(!isChecked);
+  };
 
   const onUpdateAddressHandler = async () => {
-    const result = await geocodeByAddress(value);
-    let d = await getLocationData(result[0]);
-    d["prescriber_id"] = prescriber.Id;
-    dispatch(updatePrescriberAddress(d));
+    if (isChecked) {
+      dispatch(
+        deletePrescriber({
+          id: prescriber.Id,
+          isDeleted: isChecked,
+        })
+      );
+    } else {
+      const result = await geocodeByAddress(value);
+      let d = await getLocationData(result[0]);
+      d["prescriber_id"] = prescriber.Id;
+      dispatch(updatePrescriberAddress(d));
+    }
+    onPrescriberUpdate();
+  };
+
+  const onUpdateFlaggedAddressHandler = async () => {
+    dispatch(
+      updateFlaggedAddress({
+        id: prescriber.Id,
+      })
+    );
     onPrescriberUpdate();
   };
 
@@ -168,11 +198,24 @@ const PrescriberEditDialog = ({
               </div>
             )}
           </PlacesAutocomplete>
+          <FormControlLabel
+            control={
+              <Checkbox checked={isChecked} onChange={handleCheckboxChange} />
+            }
+            label="Remove Prescriber"
+          />
         </DialogContent>
         <DialogActions className="dialog-actions-dense">
           <Button onClick={handleClose}>Close</Button>
           <Button variant="contained" onClick={() => onUpdateAddressHandler()}>
             Update
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => onUpdateFlaggedAddressHandler()}
+          >
+            Ignore
           </Button>
         </DialogActions>
       </Dialog>

@@ -21,6 +21,9 @@ import { DataGrid } from "@mui/x-data-grid";
 import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
 
+// ** Config
+import authConfig from "src/configs/auth";
+
 // ** Icons
 import Close from "mdi-material-ui/Close";
 import EyeOutline from "mdi-material-ui/EyeOutline";
@@ -76,6 +79,7 @@ const SamplesList = () => {
   // ** Hooks
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
+  const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,6 +91,7 @@ const SamplesList = () => {
           product_advocate: store.samples.filter.productAdvocateValue,
           prescriber: store.samples.filter.prescriberValue,
           sample_status: store.samples.filter.Status,
+          clientId: userData.clientId,
         })
       );
       setIsLoading(false);
@@ -102,6 +107,7 @@ const SamplesList = () => {
             product_advocate: store.samples.filter.productAdvocateValue,
             prescriber: store.samples.filter.prescriberValue,
             sample_status: store.samples.filter.Status,
+            clientId: userData.clientId,
           })
         ).then(() => {
           fetchData();
@@ -357,7 +363,11 @@ const SamplesList = () => {
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
               <Typography noWrap variant="caption">
-                {moment(row.Pre_Sign_Date).format("YYYY-MM-DD")}
+                <Typography variant="body2">
+                  {row?.Pre_Sign_Date
+                    ? moment(row.Pre_Sign_Date).local().format("YYYY-MM-DD")
+                    : " "}
+                </Typography>
               </Typography>
             </Box>
           </Box>
@@ -374,9 +384,11 @@ const SamplesList = () => {
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
               <Typography noWrap variant="caption">
-                {String(row.Post_Sign_Date) != "null"
-                  ? moment(row.Post_Sign_Date).format("YYYY-MM-DD")
-                  : ""}
+                <Typography variant="body2">
+                  {row?.Post_Sign_Date
+                    ? moment(row.Post_Sign_Date).local().format("YYYY-MM-DD")
+                    : " "}
+                </Typography>
               </Typography>
             </Box>
           </Box>
@@ -392,7 +404,7 @@ const SamplesList = () => {
         return (
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Typography noWrap variant="caption">
+              <Typography noWrap variant="body2">
                 {row.Status || ""}
               </Typography>
             </Box>

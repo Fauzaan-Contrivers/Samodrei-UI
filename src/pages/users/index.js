@@ -6,35 +6,37 @@ import { AbilityContext } from "src/layouts/components/acl/Can";
 import axios from "axios";
 import { BASE_URL } from "src/configs/config";
 
+// ** Config
+import authConfig from "src/configs/auth";
+
 // ** MUI Imports
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import Typography from "@mui/material/Typography";
 import { DataGrid } from "@mui/x-data-grid";
-import EditIcon from "mdi-material-ui/Pencil";
-import ServerSideToolbar from "src/views/table/data-grid/ServerSideToolbar";
-import PrescriberEditDialog from "../prescribers/list/edit-dialog";
 import Snackbar from "@mui/material/Snackbar";
-import moment from "moment";
-import Tooltip from "@mui/material/Tooltip";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 
-// ** Config
-import authConfig from "src/configs/auth";
+import Check from "mdi-material-ui/Check";
+import Close from "mdi-material-ui/Close";
+import ServerSideToolbar from "src/views/table/data-grid/ServerSideToolbar";
+import MyDialog from "src/views/components/dialogs/UserDialog";
 
-const FlaggedAddresses = () => {
+const RegisteredUsers = () => {
   // ** State
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [rows, setRows] = useState([]);
-  const [searchValue, setSearchValue] = useState("");
+  const [company, setCompany] = useState([]);
+
   const [sortColumn, setSortColumn] = useState("id");
-  const [sort, setSort] = useState("asc");
-  const [prescriber, setPrescriber] = useState({});
+  const [sort, setSort] = useState("desc");
   const [open, setOpen] = useState(false);
-  const handleClose = () => setOpen(false);
   const [snackOpen, setSnackOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [dialogFields, setDialogFields] = useState("");
 
   const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
 
@@ -50,10 +52,10 @@ const FlaggedAddresses = () => {
       flex: 0.2,
       minWidth: 70,
       headerName: "ID",
-      field: "Id",
+      field: "id",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.Id}
+          {params.row.id}
         </Typography>
       ),
     },
@@ -61,136 +63,158 @@ const FlaggedAddresses = () => {
       flex: 0.2,
       minWidth: 180,
       headerName: "Name",
-      field: "Name",
+      field: "name",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.Name}
+          {params.row.name}
         </Typography>
       ),
     },
     {
       flex: 0.2,
-      minWidth: 400,
-      headerName: "Flagged Addresses",
-      field: "Street_Address",
+      minWidth: 250,
+      headerName: "Email",
+      field: "email",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {`${params.row.Street_Address}, ${params.row.City}, ${params.row.State}, ${params.row.Zip}`}
+          {params.row.email}
+        </Typography>
+      ),
+    },
+    {
+      flex: 0.2,
+      minWidth: 180,
+      headerName: "Role",
+      field: "roleId",
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ color: "text.primary" }}>
+          {params.row.roleId == 1 ? "Super Admin" : "Admin"}
+        </Typography>
+      ),
+    },
+    {
+      flex: 0.2,
+      minWidth: 180,
+      headerName: "Company Name",
+      field: "company_name",
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ color: "text.primary" }}>
+          {params.row.company_name}
         </Typography>
       ),
     },
     {
       flex: 0.2,
       minWidth: 140,
-      headerName: "Flagged Date",
-      field: "FlaggedDate",
+      headerName: "Active",
+      field: "is_active",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.FlaggedDate
-            ? moment(params.row.FlaggedDate)
-                .local()
-                .format("YYYY-MM-DD HH:mm:ss")
-            : " "}
+          {params.row.is_active ? (
+            <Check sx={{ fontSize: "1rem" }} />
+          ) : (
+            <Close sx={{ fontSize: "1rem" }} />
+          )}
         </Typography>
-      ),
-    },
-    {
-      flex: 0.2,
-      minWidth: 280,
-      headerName: "Comment",
-      field: "FlaggedAddressComment",
-      renderCell: (params) => (
-        <Tooltip title={params.row.FlaggedAddressComment}>
-          <Typography variant="body2" sx={{ color: "text.primary" }}>
-            {params.row.FlaggedAddressComment}
-          </Typography>
-        </Tooltip>
-      ),
-    },
-    {
-      flex: 0.2,
-      minWidth: 60,
-      field: "address",
-      headerName: "Edit",
-      renderCell: ({ row }) => (
-        <EditIcon
-          onClick={() => {
-            setPrescriber(row), setOpen(true);
-          }}
-        />
       ),
     },
   ];
 
   const fetchTableData = useCallback(
-    async (sort, column, clientId) => {
-      setIsLoading(true);
-      await axios
-        .post(`${BASE_URL}prescriber/get_prescriber_flagged_address`, {
-          sort,
-          column,
-          clientId,
-        })
-        .then((res) => {
-          console.log(res.data.prescribers);
-          setTotal(res.data.prescribers.length);
-          setRows(loadServerRows(page, res.data.prescribers));
-          setIsLoading(false);
-        });
+    async (sort, column, userData) => {
+      if (!open) {
+        setIsLoading(true);
+
+        await axios
+          .get(`${BASE_URL}user/users`, {
+            params: {
+              sort,
+              column,
+              clientId: userData?.clientId,
+            },
+          })
+          .then((res) => {
+            console.log(res.data.users);
+            setTotal(res.data.users.length);
+            setRows(loadServerRows(page, res.data.users));
+            setCompany(res.data.company);
+            setIsLoading(false);
+          });
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [page, pageSize]
   );
 
   useEffect(() => {
-    fetchTableData(sort, sortColumn, userData.clientId);
+    fetchTableData(sort, sortColumn, userData);
   }, [fetchTableData, sort, sortColumn]);
 
   const handleSortModel = (newModel) => {
     if (newModel.length) {
       setSort(newModel[0].sort);
       setSortColumn(newModel[0].field);
-      fetchTableData(
-        newModel[0].sort,
-        searchValue,
-        newModel[0].field,
-        userData.clientId
-      );
+      fetchTableData(newModel[0].sort, newModel[0].field);
     } else {
-      setSort("asc");
+      setSort("DESC");
       setSortColumn("id");
     }
   };
 
-  const handleSearch = (value) => {
-    setSearchValue(value);
-    fetchTableData(sort, value, sortColumn, userData.clientId);
+  const openDialog = (fields) => {
+    setOpen(true);
+    setDialogFields(fields);
+  };
+
+  const handleCloseDialog = () => {
+    setOpen(false);
   };
 
   return (
     <Card>
       <>
-        <PrescriberEditDialog
-          prescriber={prescriber}
-          onPrescriberUpdate={() => {
-            setSnackOpen(true);
-            setOpen(false);
-          }}
+        <MyDialog
           open={open}
-          handleClose={handleClose}
+          handleClose={handleCloseDialog}
+          fields={dialogFields}
+          company={company}
         />
         <Snackbar
           open={snackOpen}
           onClose={() => {
             setSnackOpen(false);
 
-            fetchTableData(sort, sortColumn, userData.clientId);
+            fetchTableData(sort, sortColumn);
           }}
           message="Address updated successfully."
           autoHideDuration={3000}
           anchorOrigin={{ horizontal: "right", vertical: "top" }}
         />
-        <CardHeader title="Flagged Addresses List" />
+        <CardHeader
+          action={
+            <Box sx={{ display: "flex", gap: "1rem" }}>
+              {userData.roleId == 1 || userData.roleId == 3 ? (
+                <Button
+                  size="small"
+                  variant="contained"
+                  onClick={() => openDialog("INVITE USER")}
+                >
+                  Invite User
+                </Button>
+              ) : null}
+
+              {userData.clientId == 1 ? (
+                <Button
+                  size="small"
+                  variant="contained"
+                  onClick={() => openDialog("REGISTER COMPANY")}
+                >
+                  REGISTER COMPANY
+                </Button>
+              ) : null}
+            </Box>
+          }
+        />
         <DataGrid
           autoHeight
           pagination
@@ -198,26 +222,19 @@ const FlaggedAddresses = () => {
           rowCount={total}
           columns={columns}
           pageSize={pageSize}
+          loading={isLoading}
           sortingMode="server"
           paginationMode="server"
-          loading={isLoading}
           onSortModelChange={handleSortModel}
           rowsPerPageOptions={[10, 25, 50]}
-          getRowId={(row) => row?.Id}
+          getRowId={(row) => row?.id}
           onPageChange={(newPage) => setPage(newPage)}
           components={{ Toolbar: ServerSideToolbar }}
           onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-          componentsProps={{
-            toolbar: {
-              value: searchValue,
-              clearSearch: () => handleSearch(""),
-              onChange: (event) => handleSearch(event.target.value),
-            },
-          }}
         />
       </>
     </Card>
   );
 };
 
-export default FlaggedAddresses;
+export default RegisteredUsers;

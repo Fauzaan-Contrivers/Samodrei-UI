@@ -6,7 +6,6 @@ import { apiCall } from "src/configs/utils";
 export const fetchPrescribersData = createAsyncThunk(
   "prescribers/fetchData/",
   async (params) => {
-    console.log(params.page_num);
     let response = await apiCall("POST", "prescriber/fetch_prescribers", {
       ...params,
       page_num: params.page_num,
@@ -23,6 +22,22 @@ export const fetchPrescribersData = createAsyncThunk(
   }
 );
 
+export const fetchTraingingPrescribersData = createAsyncThunk(
+  "prescriber/fetch_training_prescribers/",
+  async (params) => {
+    let response = await apiCall(
+      "POST",
+      "prescriber/fetch_training_prescribers",
+      {
+        ...params,
+      }
+    );
+    return {
+      prescribers: response.data.prescribers,
+    };
+  }
+);
+
 export const fetchPrescriberData = createAsyncThunk(
   "prescriber/fetchData/",
   async (params) => {
@@ -34,7 +49,6 @@ export const fetchPrescriberData = createAsyncThunk(
         id: params.id,
       }
     );
-    console.log("Prescriber Record==>", response.data);
     return {
       totalRecords: response.data.total_records,
       result: response.data,
@@ -47,8 +61,8 @@ export const fetchDashboardData = createAsyncThunk(
   async (params) => {
     let response = await apiCall("POST", "dashboard/fetch_dashboard_data", {
       ...params,
+      clientId: params.clientId,
     });
-    console.log("Dashboard Record==>", response.data);
     return {
       result: response.data,
     };
@@ -63,8 +77,57 @@ export const updatePrescriberAddress = createAsyncThunk(
       "prescriber/update_prescriber",
       params
     );
-    console.log("update_prescriber", response.data.result);
     return true;
+  }
+);
+
+export const updateFlaggedAddress = createAsyncThunk(
+  "prescriber/update_prescriber_flag_address",
+  async (params) => {
+    let response = await apiCall(
+      "POST",
+      "prescriber/update_prescriber_flag_address",
+      {
+        ...params,
+        prescriber_id: params.id,
+        flagged: false,
+      }
+    );
+    return true;
+  }
+);
+
+export const deletePrescriber = createAsyncThunk(
+  "prescriber/delete_prescriber",
+  async (params) => {
+    let response = await apiCall("POST", "prescriber/delete_prescriber", {
+      ...params,
+      prescriberId: params.id,
+      IsDeleted: params.isDeleted,
+    });
+    return true;
+  }
+);
+
+export const getPrescribersName = createAsyncThunk(
+  "prescriber/get_all_prescribers_name",
+  async (params) => {
+    let response = await apiCall(
+      "POST",
+      "prescriber/get_all_prescribers_name",
+      {
+        ...params,
+        clientId: params.clientId,
+        name: params.name,
+      }
+    );
+
+    return {
+      result: response.data.result,
+      states: response.data.states,
+      cities: response.data.cities,
+      speciality: response.data.speciality,
+    };
   }
 );
 
@@ -96,9 +159,14 @@ export const prescribersSlice = createSlice({
     data: [],
     jobsData: [],
     dashboardData: [],
+    trainingPrescribersData: [],
     totalRecords: 0,
     states: [],
+    cities: [],
+    speciality: [],
+    state: [],
     isLoading: false,
+    names: [],
     filter: {
       State: "",
       Name: "",
@@ -112,7 +180,6 @@ export const prescribersSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchPrescribersData.fulfilled, (state, action) => {
-      console.log("ACTION", action.payload);
       (state.data = action.payload.result),
         (state.isLoading = false),
         (state.totalRecords = action.payload.totalRecords),
@@ -129,11 +196,26 @@ export const prescribersSlice = createSlice({
     builder.addCase(setPrescriberLoadingTrue.fulfilled, (state, action) => {
       state.isLoading = true;
     });
+    builder.addCase(getPrescribersName.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.names = action.payload.result;
+      state.state = action.payload.states;
+      state.cities = action.payload.cities;
+      state.speciality = action.payload.speciality;
+    });
 
     builder.addCase(fetchDashboardData.fulfilled, (state, action) => {
-      // console.log('ACTION', action.payload.result)
       (state.dashboardData = action.payload.result), (state.isLoading = false);
     });
+
+    builder.addCase(
+      fetchTraingingPrescribersData.fulfilled,
+      (state, action) => {
+        (state.trainingPrescribersData = action.payload.prescribers),
+          (state.isLoading = false);
+      }
+    );
+
     builder.addCase(setDashboardLoadingTrue.fulfilled, (state, action) => {
       state.isLoading = true;
     });
