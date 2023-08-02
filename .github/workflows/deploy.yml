@@ -25,5 +25,5 @@ jobs:
             git pull
             npm install --legacy-peer-deps
             npm run build  
-            pm2 restart sam-api
+            pm2 restart sam-portal
           EOF
