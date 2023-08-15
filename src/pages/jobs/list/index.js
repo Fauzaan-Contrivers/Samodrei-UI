@@ -637,7 +637,7 @@ const InvoiceList = () => {
       })
     ).then(() => {
       setIsLoading(false);
-      setDataCSV(store.jobs.dataCSV);
+      setDataCSV(true);
     });
   };
 
@@ -686,6 +686,10 @@ const InvoiceList = () => {
       {
         key: "feedback_submitted_at",
         header: "Feedback Submitted Date",
+      },
+      {
+        key: "Time_Spent_At_Job",
+        header: "Time Spent (Minutes)",
       },
       {
         key: "prescriber",
