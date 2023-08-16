@@ -135,6 +135,7 @@ const UserDialog = ({ open, handleClose, fields, company }) => {
                       <MenuItem value={3}>ADMIN</MenuItem>
                     ) : null}
                     <MenuItem value={2}>CLIENT</MenuItem>
+                    <MenuItem value={4}>TELEMARKETER</MenuItem>
                   </Select>
                 </FormControl>
                 <FormControl fullWidth>

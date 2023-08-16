@@ -68,21 +68,22 @@ const AuthProvider = ({ children }) => {
             console.log("USER DATA", userData);
 
             const role = "";
-            if (userData?.roleId === 1) {
+            if (userData?.roleId === 1 || userData.roleId === 3) {
               role = "admin";
             }
-            if (userData?.roleId === 2) {
+            if (userData?.roleId === 4) {
               role = "client";
             }
 
             const data = {
               id: userData?.id,
-              role: "admin",
+              role: role,
               fullName: userData?.name || "",
               email: userData?.email,
               roleId: userData?.roleId,
             };
             setUser({ ...data });
+            RCAdapter.setClosed(true);
           });
         loadInitials();
       } else {
@@ -127,21 +128,22 @@ const AuthProvider = ({ children }) => {
             const role = "";
             console.log("USER DATA", userData);
 
-            if (userData.roleId === 1) {
+            if (userData.roleId === 1 || userData.roleId === 3) {
               role = "admin";
             }
-            if (userData.roleId === 2) {
+            if (userData.roleId === 4) {
               role = "client";
             }
 
             const data = {
               id: userData?.id,
-              role: "admin",
+              role: role,
               fullName: userData?.name || "",
               email: userData?.email,
               roleId: userData?.roleId,
             };
             setUser({ ...data });
+            RCAdapter.setClosed(true);
             await window.localStorage.setItem(
               "userData",
               JSON.stringify(response.data.userData)

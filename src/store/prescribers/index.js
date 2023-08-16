@@ -22,6 +22,28 @@ export const fetchPrescribersData = createAsyncThunk(
   }
 );
 
+export const fetchPrescribersforPhoneLogs = createAsyncThunk(
+  "prescribers/fetch_prescribers_for_Logs",
+  async (params) => {
+    let response = await apiCall(
+      "POST",
+      "prescriber/fetch_prescribers_for_Logs",
+      {
+        ...params,
+        page_num: params.page_num,
+        limit: params.page_size,
+        name: params.name,
+        state: params.state,
+        is_soaanz_prescriber: params.is_soaanz_prescriber,
+      }
+    );
+    return {
+      result: response.data.result.records.prescribers,
+      totalRecords: response.data.result.records.count,
+    };
+  }
+);
+
 export const fetchTraingingPrescribersData = createAsyncThunk(
   "prescriber/fetch_training_prescribers/",
   async (params) => {
@@ -160,6 +182,7 @@ export const prescribersSlice = createSlice({
     jobsData: [],
     dashboardData: [],
     trainingPrescribersData: [],
+    PhonebookPrescribersData: [],
     totalRecords: 0,
     states: [],
     cities: [],
@@ -190,6 +213,11 @@ export const prescribersSlice = createSlice({
     });
     builder.addCase(fetchPrescriberData.fulfilled, (state, action) => {
       (state.jobsData = action.payload.result),
+        (state.isLoading = false),
+        (state.totalRecords = action.payload.totalRecords);
+    });
+    builder.addCase(fetchPrescribersforPhoneLogs.fulfilled, (state, action) => {
+      (state.PhonebookPrescribersData = action.payload.result),
         (state.isLoading = false),
         (state.totalRecords = action.payload.totalRecords);
     });

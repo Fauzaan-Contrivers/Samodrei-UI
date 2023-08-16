@@ -88,7 +88,11 @@ const RegisteredUsers = () => {
       field: "roleId",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.roleId == 1 ? "Super Admin" : "Admin"}
+          {params.row.roleId === 1
+            ? "Super Admin"
+            : params.row.roleId === 4
+            ? "Tele-Marketer"
+            : "Admin"}
         </Typography>
       ),
     },
