@@ -25,35 +25,30 @@ const navigation = () => {
     {
       path: "/dashboard",
       action: "read",
-      subject: "acl-page",
       icon: ShieldOutline,
       title: "Dashboard",
     },
     {
       path: "/analytics",
       action: "read",
-      subject: "acl-page",
       icon: ShieldOutline,
       title: "Analytics",
     },
     {
       path: "/jobs/list",
       action: "read",
-      subject: "acl-page",
       icon: ShieldOutline,
       title: "Jobs",
     },
     {
       path: "/prescribers/list",
       action: "read",
-      subject: "acl-page",
       icon: ShieldOutline,
       title: "Prescribers",
     },
     {
       path: "/product_advocates/list",
       action: "read",
-      subject: "acl-page",
       icon: ShieldOutline,
       title: "Product Advocates",
     },
@@ -86,6 +81,18 @@ const navigation = () => {
       action: "read",
       icon: ShieldOutline,
       title: "Training Prescribers",
+    },
+    {
+      path: "/phonebook",
+      action: "read",
+      subject: "acl-page",
+      icon: ShieldOutline,
+      title: "Phone Book",
+    },
+    {
+      path: "/flagged_numbers",
+      icon: ShieldOutline,
+      title: "Flagged Numbers",
     },
     // {
     //   sectionTitle: 'Apps & Pages'
