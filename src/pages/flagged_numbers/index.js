@@ -49,11 +49,11 @@ const FlaggedNumbers = () => {
     {
       flex: 0.2,
       minWidth: 70,
-      headerName: "ID",
-      field: "Id",
+      headerName: "NPI",
+      field: "NPI",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.Id}
+          {params.row.NPI}
         </Typography>
       ),
     },
@@ -64,7 +64,7 @@ const FlaggedNumbers = () => {
       field: "Name",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.Name}
+          {`${params.row.First_Name} ${params.row.Last_Name}`}
         </Typography>
       ),
     },
@@ -113,13 +113,14 @@ const FlaggedNumbers = () => {
     async (sort, column, clientId) => {
       setIsLoading(true);
       await axios
-        .post(`${BASE_URL}prescriber/get_prescriber_flagged_number`, {
+        .post(`${BASE_URL}tele-prescribers/get_prescriber_flagged_number`, {
           sort,
           column,
           clientId,
         })
         .then((res) => {
           setTotal(res.data.prescribers.length);
+          console.log("CHEEEEEEEEEEECK", res.data.prescribers);
           setRows(loadServerRows(page, res.data.prescribers));
           setIsLoading(false);
         });

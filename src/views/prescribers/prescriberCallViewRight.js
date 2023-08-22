@@ -25,6 +25,7 @@ import { useRouter } from "next/router";
 
 import { BASE_URL } from "src/configs/config";
 import toast from "react-hot-toast";
+import authConfig from "src/configs/auth";
 
 // ** Styled Tab component
 const Tab = styled(MuiTab)(({ theme }) => ({
@@ -47,6 +48,10 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   const [elapsedTime, setElapsedTime] = useState(0);
   const router = useRouter();
 
+  const userData = JSON?.parse(
+    window.localStorage.getItem(authConfig.userData)
+  );
+
   useEffect(() => {
     if (prescriber.CallFeedback) {
       setPhoneNumberFeedbackArray(prescriber.CallFeedback.split(", "));
@@ -60,14 +65,15 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   const onSubmitFeedbackHandler = async () => {
     try {
       const response = await fetch(
-        `${BASE_URL}prescriber/update_prescriber_flag_number`,
+        `${BASE_URL}tele-prescribers/add_call_logs`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            prescriber_id: prescriber.Id,
+            telemarketerId: userData.id,
+            prescriberId: prescriber.Id,
             flagged: isChecked,
             feedback: feedbackText,
             call_time: elapsedTime,

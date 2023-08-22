@@ -69,10 +69,6 @@ const PhoneBook = () => {
           fetchPrescribersforPhoneLogs({
             page_num: page + 1,
             page_size: pageSize,
-            name: store.prescribers.filter.name,
-            state: store.prescribers.filter.State,
-            is_soaanz_prescriber: store.prescribers.filter.is_soaanz_prescriber,
-            clientId: userData.clientId,
           })
         ).then(() => {
           setIsLoading(false);
@@ -87,40 +83,40 @@ const PhoneBook = () => {
 
   const defaultColumns = [
     {
-      field: "name",
+      field: "NPI",
+      minWidth: 210,
+      headerName: "NPI",
+      renderCell: ({ row }) => (
+        <Typography variant="body2">{`${row?.NPI}`}</Typography>
+      ),
+    },
+    {
+      field: "Name",
       minWidth: 210,
       headerName: "Name",
       renderCell: ({ row }) => (
-        <Typography variant="body2">{`${row?.Name}`}</Typography>
+        <Typography variant="body2">{`${row?.First_Name} ${row?.Last_Name}`}</Typography>
       ),
     },
     {
-      flex: 0.2,
-      minWidth: 250,
-      field: "prescriber_address",
-      headerName: "Address",
+      field: "Phone",
+      minWidth: 210,
+      headerName: "Phone",
       renderCell: ({ row }) => (
-        <Tooltip
-          title={`${row.Street_Address}, ${row.City}, ${row.State}, ${row.Zip}`}
-        >
-          <Typography variant="body2">
-            {`${row.Street_Address}, ${row.City}, ${row.State}, ${row.Zip}`}
-          </Typography>
-        </Tooltip>
+        <Typography variant="body2">{`${row?.Phone}`}</Typography>
       ),
     },
     {
-      flex: 0.2,
-      minWidth: 310,
-      field: "Speciality",
-      headerName: "Speciality",
+      field: "Fax",
+      minWidth: 210,
+      headerName: "FAX",
       renderCell: ({ row }) => (
-        <Typography variant="body2">{row?.Speciality || ""}</Typography>
+        <Typography variant="body2">{`${row?.Fax}`}</Typography>
       ),
     },
     {
-      flex: 0.2,
-      minWidth: 100,
+      flex: 0.1,
+      minWidth: 50,
       field: "Action",
       headerName: "Action",
       renderCell: ({ row }) => (
@@ -130,7 +126,6 @@ const PhoneBook = () => {
               size="small"
               component="a"
               sx={{ textDecoration: "none", cursor: "pointer" }}
-              onClick={() => openClickHandler(row.Id)}
             >
               <EyeOutline fontSize="small" />
             </IconButton>
@@ -150,24 +145,6 @@ const PhoneBook = () => {
   };
   const handleCloseDialog = () => {
     setOpen(false);
-  };
-
-  const openClickHandler = async (phoneNumber) => {
-    try {
-      const response = await fetch(`${BASE_URL}prescriber/add_call_logs`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          telemarketerId: userData.id,
-          prescriberId: phoneNumber,
-        }),
-      });
-      const data = await response.json();
-    } catch (error) {
-      console.log("CHECK", error);
-    }
   };
 
   return (
