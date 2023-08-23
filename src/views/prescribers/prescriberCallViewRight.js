@@ -25,7 +25,6 @@ import { useRouter } from "next/router";
 
 import { BASE_URL } from "src/configs/config";
 import toast from "react-hot-toast";
-import authConfig from "src/configs/auth";
 
 // ** Styled Tab component
 const Tab = styled(MuiTab)(({ theme }) => ({
@@ -48,10 +47,6 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   const [elapsedTime, setElapsedTime] = useState(0);
   const router = useRouter();
 
-  const userData = JSON?.parse(
-    window.localStorage.getItem(authConfig.userData)
-  );
-
   useEffect(() => {
     if (prescriber.CallFeedback) {
       setPhoneNumberFeedbackArray(prescriber.CallFeedback.split(", "));
@@ -65,52 +60,20 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   const onSubmitFeedbackHandler = async () => {
     try {
       const response = await fetch(
-        `${BASE_URL}tele-prescribers/add_call_logs`,
+        `${BASE_URL}prescriber/update_prescriber_flag_number`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            telemarketerId: userData.id,
-            prescriberId: prescriber.Id,
+            prescriber_id: prescriber.Id,
+            flagged: isChecked,
             feedback: feedbackText,
             call_time: elapsedTime,
             call_receiver_name: receiverName,
             call_receiver_position: receiverPosition,
             call_disposition: disposition,
-          }),
-        }
-      );
-      const data = await response.json();
-      if (data.status == 200) {
-        setPhoneNumberFeedbackArray((prevArray) => [
-          ...prevArray,
-          feedbackText,
-        ]);
-
-        toast.success(data.message, {
-          duration: 2000,
-        });
-        router.replace("/phonebook");
-      }
-    } catch (error) {
-      console.log("CHECK", error);
-    }
-  };
-
-  const onFlaggedClickHandler = async () => {
-    try {
-      const response = await fetch(
-        `${BASE_URL}tele-prescribers/update_tele_prescriber_flag_number`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            prescriberId: prescriber.Id,
-            flagged: true,
           }),
         }
       );
@@ -267,6 +230,15 @@ const PrescriberCallViewRight = ({ prescriber }) => {
             onChange={(e) => setFeedbackText(e.target.value)}
           />
         </Grid>
+        <Grid xs={6}>
+          <FormControlLabel
+            control={
+              <Checkbox checked={isChecked} onChange={handleCheckboxChange} />
+            }
+            label="Flag Number"
+            sx={{ margin: "5px" }}
+          />
+        </Grid>
       </Grid>
       <Grid
         container
@@ -277,16 +249,9 @@ const PrescriberCallViewRight = ({ prescriber }) => {
         <Button
           variant="contained"
           onClick={() => onSubmitFeedbackHandler()}
-          sx={{ marginLeft: 2, backgroundColor: "green" }}
-        >
-          Submit
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => onFlaggedClickHandler()}
           sx={{ marginLeft: 2 }}
         >
-          Flag Number
+          Submit
         </Button>
       </Grid>
       <Typography variant="h6">Comments</Typography>

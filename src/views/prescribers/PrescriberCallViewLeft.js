@@ -56,7 +56,7 @@ const PrescriberCallViewLeft = ({ data }) => {
               fontSize: "2rem",
             }}
           >
-            {getInitials(`${data.First_Name} ${data.Last_Name}`)}
+            {getInitials(data.Name)}
           </CustomAvatar>
         );
       }
@@ -79,7 +79,7 @@ const PrescriberCallViewLeft = ({ data }) => {
             >
               {renderUserAvatar()}
               <Typography variant="h6" sx={{ marginBottom: 2 }}>
-                {`${data?.First_Name} ${data?.Last_Name}`}
+                {data?.Name}
               </Typography>
               <CustomChip
                 skin="light"
@@ -140,18 +140,6 @@ const PrescriberCallViewLeft = ({ data }) => {
                       fontSize: "0.875rem",
                     }}
                   >
-                    FAX:
-                  </Typography>
-                  <Typography variant="body2">{data?.Fax}</Typography>
-                </Box>
-                {/* <Box sx={{ display: "flex", marginBottom: 2.7 }}>
-                  <Typography
-                    sx={{
-                      marginRight: 2,
-                      fontWeight: 500,
-                      fontSize: "0.875rem",
-                    }}
-                  >
                     Speciality:
                   </Typography>
                   <Typography variant="body2">{data?.Speciality}</Typography>
@@ -198,7 +186,7 @@ const PrescriberCallViewLeft = ({ data }) => {
                       ${data?.State},
                       ${data?.Zip}`}
                   </Typography>
-                </Box> */}
+                </Box>
               </Box>
             </CardContent>
           </Card>

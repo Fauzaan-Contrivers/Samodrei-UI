@@ -10,7 +10,7 @@ import Link from "next/link";
 // ** MUI Imports
 import Grid from "@mui/material/Grid";
 import Alert from "@mui/material/Alert";
-import { fetchTelePrescriberData } from "src/store/prescribers";
+import { fetchPrescriberData } from "src/store/prescribers";
 // ** Third Party Components
 import axios from "axios";
 
@@ -29,7 +29,7 @@ const Preview = ({ id, invoiceData }) => {
     setLoading(true);
     setError(null);
     try {
-      await dispatch(fetchTelePrescriberData({ id: id }));
+      await dispatch(fetchPrescriberData({ id: id }));
     } catch (err) {
       setError(err.message);
     }
@@ -51,8 +51,8 @@ const Preview = ({ id, invoiceData }) => {
   }, [id]);
 
   useEffect(() => {
-    setData(store.prescribers.TelePrescriberData);
-  }, [store.prescribers.TelePrescriberData]);
+    setData(store.prescribers.jobsData);
+  }, [store.prescribers.jobsData]);
 
   if (error) {
     return (

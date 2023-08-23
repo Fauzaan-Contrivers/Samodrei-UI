@@ -23,15 +23,18 @@ export const fetchPrescribersData = createAsyncThunk(
 );
 
 export const fetchPrescribersforPhoneLogs = createAsyncThunk(
-  "tele-prescribers/fetch_prescribers_for_Logs",
+  "prescribers/fetch_prescribers_for_Logs",
   async (params) => {
     let response = await apiCall(
       "POST",
-      "tele-prescribers/fetch_prescribers_for_Logs",
+      "prescriber/fetch_prescribers_for_Logs",
       {
         ...params,
         page_num: params.page_num,
         limit: params.page_size,
+        name: params.name,
+        state: params.state,
+        is_soaanz_prescriber: params.is_soaanz_prescriber,
       }
     );
     return {
@@ -63,24 +66,6 @@ export const fetchPrescriberData = createAsyncThunk(
     let response = await apiCall(
       "POST",
       "prescriber/fetch_prescriber_details",
-      {
-        ...params,
-        id: params.id,
-      }
-    );
-    return {
-      totalRecords: response.data.total_records,
-      result: response.data,
-    };
-  }
-);
-
-export const fetchTelePrescriberData = createAsyncThunk(
-  "tele-prescribers/fetch_tele_prescriber_details/",
-  async (params) => {
-    let response = await apiCall(
-      "POST",
-      "tele-prescribers/fetch_tele_prescriber_details",
       {
         ...params,
         id: params.id,
@@ -198,7 +183,6 @@ export const prescribersSlice = createSlice({
     dashboardData: [],
     trainingPrescribersData: [],
     PhonebookPrescribersData: [],
-    TelePrescriberData: [],
     totalRecords: 0,
     states: [],
     cities: [],
@@ -229,11 +213,6 @@ export const prescribersSlice = createSlice({
     });
     builder.addCase(fetchPrescriberData.fulfilled, (state, action) => {
       (state.jobsData = action.payload.result),
-        (state.isLoading = false),
-        (state.totalRecords = action.payload.totalRecords);
-    });
-    builder.addCase(fetchTelePrescriberData.fulfilled, (state, action) => {
-      (state.TelePrescriberData = action.payload.result),
         (state.isLoading = false),
         (state.totalRecords = action.payload.totalRecords);
     });
