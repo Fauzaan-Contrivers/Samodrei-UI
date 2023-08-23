@@ -74,12 +74,43 @@ const PrescriberCallViewRight = ({ prescriber }) => {
           body: JSON.stringify({
             telemarketerId: userData.id,
             prescriberId: prescriber.Id,
-            flagged: isChecked,
             feedback: feedbackText,
             call_time: elapsedTime,
             call_receiver_name: receiverName,
             call_receiver_position: receiverPosition,
             call_disposition: disposition,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.status == 200) {
+        setPhoneNumberFeedbackArray((prevArray) => [
+          ...prevArray,
+          feedbackText,
+        ]);
+
+        toast.success(data.message, {
+          duration: 2000,
+        });
+        router.replace("/phonebook");
+      }
+    } catch (error) {
+      console.log("CHECK", error);
+    }
+  };
+
+  const onFlaggedClickHandler = async () => {
+    try {
+      const response = await fetch(
+        `${BASE_URL}tele-prescribers/update_tele_prescriber_flag_number`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            prescriberId: prescriber.Id,
+            flagged: true,
           }),
         }
       );
@@ -236,15 +267,6 @@ const PrescriberCallViewRight = ({ prescriber }) => {
             onChange={(e) => setFeedbackText(e.target.value)}
           />
         </Grid>
-        <Grid xs={6}>
-          <FormControlLabel
-            control={
-              <Checkbox checked={isChecked} onChange={handleCheckboxChange} />
-            }
-            label="Flag Number"
-            sx={{ margin: "5px" }}
-          />
-        </Grid>
       </Grid>
       <Grid
         container
@@ -255,9 +277,16 @@ const PrescriberCallViewRight = ({ prescriber }) => {
         <Button
           variant="contained"
           onClick={() => onSubmitFeedbackHandler()}
-          sx={{ marginLeft: 2 }}
+          sx={{ marginLeft: 2, backgroundColor: "green" }}
         >
           Submit
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => onFlaggedClickHandler()}
+          sx={{ marginLeft: 2 }}
+        >
+          Flag Number
         </Button>
       </Grid>
       <Typography variant="h6">Comments</Typography>

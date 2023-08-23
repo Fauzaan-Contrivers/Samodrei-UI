@@ -31,27 +31,9 @@ const PhoneBook = () => {
   const [open, setOpen] = useState(false);
   const [dialogFields, setDialogFields] = useState([]);
   const [socket, setSocket] = useState(null);
+  const [disabledPrescribers, setDisabledPrescribers] = useState({});
 
   const ability = useContext(AbilityContext);
-
-  // useEffect(() => {
-  //   const newSocket = io.connect("http://localhost:80", {
-  //     transports: ["websocket"],
-  //   });
-  //   setSocket(newSocket);
-
-  //   return () => {
-  //     newSocket.disconnect();
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   if (socket) {
-  //     socket.on("message", (data) => {
-  //       console.log("Received data:", data);
-  //     });
-  //   }
-  // }, [socket]);
 
   // ** Hooks
   const dispatch = useDispatch();
@@ -81,7 +63,45 @@ const PhoneBook = () => {
     }
   }, [page, pageSize]);
 
+  useEffect(() => {
+    const newSocket = io.connect("http://localhost:80", {
+      transports: ["websocket"],
+    });
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("message", (prescriberId) => {
+        setDisabledPrescribers((prevDisabledPrescribers) => ({
+          ...prevDisabledPrescribers,
+          [prescriberId]: true,
+        }));
+      });
+    }
+  }, [socket]);
+
+  const onActionClick = (prescriberId) => {
+    socket.emit("message", prescriberId);
+  };
+
+  const isActionDisabled = (prescriberId) => {
+    return disabledPrescribers[prescriberId];
+  };
+
   const defaultColumns = [
+    {
+      field: "Id",
+      minWidth: 210,
+      headerName: "Id",
+      renderCell: ({ row }) => (
+        <Typography variant="body2">{`${row?.Id}`}</Typography>
+      ),
+    },
     {
       field: "NPI",
       minWidth: 210,
@@ -126,6 +146,8 @@ const PhoneBook = () => {
               size="small"
               component="a"
               sx={{ textDecoration: "none", cursor: "pointer" }}
+              onClick={() => onActionClick(row.Id)}
+              disabled={isActionDisabled(row.Id)}
             >
               <EyeOutline fontSize="small" />
             </IconButton>

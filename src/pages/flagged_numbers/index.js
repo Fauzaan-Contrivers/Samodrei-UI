@@ -49,6 +49,17 @@ const FlaggedNumbers = () => {
     {
       flex: 0.2,
       minWidth: 70,
+      headerName: "Id",
+      field: "Id",
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ color: "text.primary" }}>
+          {params.row.Id}
+        </Typography>
+      ),
+    },
+    {
+      flex: 0.2,
+      minWidth: 70,
       headerName: "NPI",
       field: "NPI",
       renderCell: (params) => (
@@ -94,19 +105,6 @@ const FlaggedNumbers = () => {
         </Typography>
       ),
     },
-    {
-      flex: 0.2,
-      minWidth: 280,
-      headerName: "Comment",
-      field: "CallFeedback",
-      renderCell: (params) => (
-        <Tooltip title={params.row.CallFeedback}>
-          <Typography variant="body2" sx={{ color: "text.primary" }}>
-            {params.row.CallFeedback}
-          </Typography>
-        </Tooltip>
-      ),
-    },
   ];
 
   const fetchTableData = useCallback(
@@ -120,7 +118,6 @@ const FlaggedNumbers = () => {
         })
         .then((res) => {
           setTotal(res.data.prescribers.length);
-          console.log("CHEEEEEEEEEEECK", res.data.prescribers);
           setRows(loadServerRows(page, res.data.prescribers));
           setIsLoading(false);
         });

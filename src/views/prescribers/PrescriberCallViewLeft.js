@@ -79,7 +79,7 @@ const PrescriberCallViewLeft = ({ data }) => {
             >
               {renderUserAvatar()}
               <Typography variant="h6" sx={{ marginBottom: 2 }}>
-                {data?.Name}
+                {`${data?.First_Name} ${data?.Last_Name}`}
               </Typography>
               <CustomChip
                 skin="light"
