@@ -411,8 +411,6 @@ const ResetPasswordV2 = () => {
     </Box>
   );
 };
-
-ResetPasswordV2.getLayout = (page) => <BlankLayout>{page}</BlankLayout>;
 ResetPasswordV2.guestGuard = true;
 
 export default ResetPasswordV2;

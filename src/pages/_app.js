@@ -108,7 +108,6 @@ const App = (props) => {
           />
           <meta name="keywords" content="Dashboard" />
           <meta name="viewport" content="initial-scale=1, width=device-width" />
-          <meta httpEquiv="Permissions-Policy" content="interest-cohort=()" />
           <script
             defer
             type="text/javascript"
