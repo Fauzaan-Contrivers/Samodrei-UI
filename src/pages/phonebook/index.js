@@ -85,6 +85,36 @@ const PhoneBook = () => {
     }
   }, [page, pageSize]);
 
+  useEffect(() => {
+    const newSocket = io.connect(BASE_URL, {
+      transports: ["websocket"],
+    });
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("message", (prescriberId) => {
+        setDisabledPrescribers((prevDisabledPrescribers) => ({
+          ...prevDisabledPrescribers,
+          [prescriberId]: true,
+        }));
+      });
+    }
+  }, [socket]);
+
+  const onActionClick = (prescriberId) => {
+    socket.emit("message", prescriberId);
+  };
+
+  const isActionDisabled = (prescriberId) => {
+    return disabledPrescribers[prescriberId];
+  };
+
   const defaultColumns = [
     {
       field: "name",
