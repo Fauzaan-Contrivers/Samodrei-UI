@@ -64,7 +64,7 @@ const PhoneBook = () => {
   }, [page, pageSize]);
 
   useEffect(() => {
-    const newSocket = io.connect("http://localhost:80", {
+    const newSocket = io.connect(BASE_URL, {
       transports: ["websocket"],
     });
     setSocket(newSocket);
