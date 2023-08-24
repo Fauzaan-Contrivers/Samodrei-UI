@@ -37,11 +37,11 @@ const Preview = ({ id, invoiceData }) => {
   };
 
   useEffect(() => {
-    RCAdapter.setClosed(false);
-    RCAdapter.setMinimized(true);
+    // RCAdapter.setClosed(false);
+    // RCAdapter.setMinimized(true);
 
     return () => {
-      RCAdapter.setClosed(true);
+      // RCAdapter.setClosed(true);
     };
   }, []);
 

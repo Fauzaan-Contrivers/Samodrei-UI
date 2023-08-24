@@ -138,7 +138,7 @@ const LoginPage = () => {
   const hidden = useMediaQuery(theme.breakpoints.down("md"));
 
   useEffect(() => {
-    RCAdapter.setClosed(true);
+    // RCAdapter.setClosed(true);
   }, []);
 
   const onSubmit = async (data) => {
