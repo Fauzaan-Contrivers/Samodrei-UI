@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // ** Next Imports
 import Link from "next/link";
@@ -136,6 +136,10 @@ const LoginPage = () => {
 
   // ** Vars
   const hidden = useMediaQuery(theme.breakpoints.down("md"));
+
+  useEffect(() => {
+    RCAdapter.setClosed(true);
+  }, []);
 
   const onSubmit = async (data) => {
     const { email, password } = data;

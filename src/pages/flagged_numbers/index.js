@@ -49,11 +49,22 @@ const FlaggedNumbers = () => {
     {
       flex: 0.2,
       minWidth: 70,
-      headerName: "ID",
+      headerName: "Id",
       field: "Id",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
           {params.row.Id}
+        </Typography>
+      ),
+    },
+    {
+      flex: 0.2,
+      minWidth: 70,
+      headerName: "NPI",
+      field: "NPI",
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ color: "text.primary" }}>
+          {params.row.NPI}
         </Typography>
       ),
     },
@@ -64,7 +75,7 @@ const FlaggedNumbers = () => {
       field: "Name",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.Name}
+          {`${params.row.First_Name} ${params.row.Last_Name}`}
         </Typography>
       ),
     },
@@ -94,26 +105,13 @@ const FlaggedNumbers = () => {
         </Typography>
       ),
     },
-    {
-      flex: 0.2,
-      minWidth: 280,
-      headerName: "Comment",
-      field: "CallFeedback",
-      renderCell: (params) => (
-        <Tooltip title={params.row.CallFeedback}>
-          <Typography variant="body2" sx={{ color: "text.primary" }}>
-            {params.row.CallFeedback}
-          </Typography>
-        </Tooltip>
-      ),
-    },
   ];
 
   const fetchTableData = useCallback(
     async (sort, column, clientId) => {
       setIsLoading(true);
       await axios
-        .post(`${BASE_URL}prescriber/get_prescriber_flagged_number`, {
+        .post(`${BASE_URL}tele-prescribers/get_prescriber_flagged_number`, {
           sort,
           column,
           clientId,

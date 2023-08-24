@@ -104,61 +104,63 @@ const AuthProvider = ({ children }) => {
     dispatch(fetchSamplesData());
   };
 
-  const handleLogin = (params, errorCallback) => {
+  const authUser = () => {
     axios
-      .post(`${BASE_URL}auth/login`, params)
-      .then(async (res) => {
+      .get(`${BASE_URL}auth/me`, {
+        headers: {
+          Authorization: window.localStorage.getItem(
+            authConfig.storageTokenKeyName
+          ),
+        },
+      })
+      .then(async (response) => {
+        const returnUrl = router.query.returnUrl;
+        const { userData } = response.data;
+        const role = "";
+        console.log("USER DATA", userData);
+
+        if (userData.roleId === 1 || userData.roleId === 3) {
+          role = "admin";
+        }
+        if (userData.roleId === 4) {
+          role = "client";
+        }
+
+        const data = {
+          id: userData?.id,
+          role: role,
+          fullName: userData?.name || "",
+          email: userData?.email,
+          roleId: userData?.roleId,
+        };
+        setUser({ ...data });
+        RCAdapter.setClosed(true);
+        await window.localStorage.setItem(
+          "userData",
+          JSON.stringify(response.data.userData)
+        );
+        const redirectURL = returnUrl && returnUrl !== "/" ? returnUrl : "/";
+        router.replace(redirectURL);
+      });
+
+    loadInitials();
+  };
+
+  const handleLogin = (params, errorCallback) => {
+    axios.post(`${BASE_URL}auth/login`, params).then(async (res) => {
+      if (res.data.accessToken) {
         window.localStorage.setItem(
           authConfig.storageTokenKeyName,
           res.data.accessToken
         );
-      })
-      .then(() => {
-        axios
-          .get(`${BASE_URL}auth/me`, {
-            headers: {
-              Authorization: window.localStorage.getItem(
-                authConfig.storageTokenKeyName
-              ),
-            },
-          })
-          .then(async (response) => {
-            const returnUrl = router.query.returnUrl;
-            const { userData } = response.data;
-            const role = "";
-            console.log("USER DATA", userData);
-
-            if (userData.roleId === 1 || userData.roleId === 3) {
-              role = "admin";
-            }
-            if (userData.roleId === 4) {
-              role = "client";
-            }
-
-            const data = {
-              id: userData?.id,
-              role: role,
-              fullName: userData?.name || "",
-              email: userData?.email,
-              roleId: userData?.roleId,
-            };
-            setUser({ ...data });
-            RCAdapter.setClosed(true);
-            await window.localStorage.setItem(
-              "userData",
-              JSON.stringify(response.data.userData)
-            );
-            const redirectURL =
-              returnUrl && returnUrl !== "/" ? returnUrl : "/";
-            router.replace(redirectURL);
-          });
-        loadInitials();
-      })
-      .catch((err) => {
-        toast.error("Invalid username or password", {
+        authUser();
+      }
+      if (res.data.statusCode == 403 || res.data.statusCode == 401) {
+        toast.error(res.data.message, {
           duration: 2000,
         });
-      });
+      }
+    });
   };
 
   const handleLogout = () => {
