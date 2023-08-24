@@ -135,6 +135,45 @@ const UserDialog = ({ open, handleClose, fields, company }) => {
                       <MenuItem value={3}>ADMIN</MenuItem>
                     ) : null}
                     <MenuItem value={2}>CLIENT</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl fullWidth>
+                  <InputLabel id="standard-basic">SELECT COMPANY</InputLabel>
+                  <Select
+                    fullWidth
+                    required
+                    label="company"
+                    id="standard-basic"
+                    onChange={handleChange}
+                    labelId="invoice-status-select"
+                    name="company_name"
+                    value={state.company_name}
+                    variant="standard"
+                  >
+                    {company.map((item) => (
+                      <MenuItem key={item.Id} value={item.Name}>
+                        {item.Name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </FormControl>
+            )}
+            {fields === "INVITE TELE-MARKETER" && (
+              <FormControl fullWidth>
+                <FormControl fullWidth sx={{ mb: 5 }}>
+                  <InputLabel id="standard-basic">SELECT ROLE</InputLabel>
+                  <Select
+                    fullWidth
+                    required
+                    label="roleId"
+                    id="standard-basic"
+                    onChange={handleChange}
+                    labelId="invoice-status-select"
+                    name="roleId"
+                    value={state.roleId}
+                    variant="standard"
+                  >
                     <MenuItem value={4}>TELEMARKETER</MenuItem>
                   </Select>
                 </FormControl>

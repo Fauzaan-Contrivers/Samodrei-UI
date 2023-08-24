@@ -1,5 +1,5 @@
 // ** React Imports
-import { useCallback, useContext, useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 
 // ** Context Imports
 import { AbilityContext } from "src/layouts/components/acl/Can";
@@ -23,29 +23,62 @@ import Close from "mdi-material-ui/Close";
 import ServerSideToolbar from "src/views/table/data-grid/ServerSideToolbar";
 import MyDialog from "src/views/components/dialogs/UserDialog";
 
-const RegisteredUsers = () => {
-  // ** State
+const TeleMarketers = () => {
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [rows, setRows] = useState([]);
-  const [company, setCompany] = useState([]);
-
+  const [isLoading, setIsLoading] = useState(false);
   const [sortColumn, setSortColumn] = useState("id");
   const [sort, setSort] = useState("desc");
   const [open, setOpen] = useState(false);
-  const [snackOpen, setSnackOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [dialogFields, setDialogFields] = useState("");
-
+  const [company, setCompany] = useState([]);
   const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
 
   function loadServerRows(currentPage, data) {
     return data.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
   }
 
-  // ** Hooks
-  const ability = useContext(AbilityContext);
+  const fetchTableData = useCallback(
+    async (sort, column, userData) => {
+      if (!open) {
+        setIsLoading(true);
+
+        await axios
+          .get(`${BASE_URL}user/tele-marketer-users`, {
+            params: {
+              sort,
+              column,
+              clientId: userData?.clientId,
+            },
+          })
+          .then((res) => {
+            setTotal(res.data.users.length);
+            setRows(loadServerRows(page, res.data.users));
+            setCompany(res.data.company);
+            setIsLoading(false);
+          });
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [page, pageSize]
+  );
+
+  useEffect(() => {
+    fetchTableData(sort, sortColumn, userData);
+  }, [fetchTableData, sort, sortColumn]);
+
+  const handleSortModel = (newModel) => {
+    if (newModel.length) {
+      setSort(newModel[0].sort);
+      setSortColumn(newModel[0].field);
+      fetchTableData(newModel[0].sort, newModel[0].field);
+    } else {
+      setSort("DESC");
+      setSortColumn("id");
+    }
+  };
 
   const columns = [
     {
@@ -124,46 +157,6 @@ const RegisteredUsers = () => {
     },
   ];
 
-  const fetchTableData = useCallback(
-    async (sort, column, userData) => {
-      if (!open) {
-        setIsLoading(true);
-
-        await axios
-          .get(`${BASE_URL}user/users`, {
-            params: {
-              sort,
-              column,
-              clientId: userData?.clientId,
-            },
-          })
-          .then((res) => {
-            setTotal(res.data.users.length);
-            setRows(loadServerRows(page, res.data.users));
-            setCompany(res.data.company);
-            setIsLoading(false);
-          });
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [page, pageSize]
-  );
-
-  useEffect(() => {
-    fetchTableData(sort, sortColumn, userData);
-  }, [fetchTableData, sort, sortColumn]);
-
-  const handleSortModel = (newModel) => {
-    if (newModel.length) {
-      setSort(newModel[0].sort);
-      setSortColumn(newModel[0].field);
-      fetchTableData(newModel[0].sort, newModel[0].field);
-    } else {
-      setSort("DESC");
-      setSortColumn("id");
-    }
-  };
-
   const openDialog = (fields) => {
     setOpen(true);
     setDialogFields(fields);
@@ -174,25 +167,14 @@ const RegisteredUsers = () => {
   };
 
   return (
-    <Card>
-      <>
-        <MyDialog
-          open={open}
-          handleClose={handleCloseDialog}
-          fields={dialogFields}
-          company={company}
-        />
-        <Snackbar
-          open={snackOpen}
-          onClose={() => {
-            setSnackOpen(false);
-
-            fetchTableData(sort, sortColumn);
-          }}
-          message="Address updated successfully."
-          autoHideDuration={3000}
-          anchorOrigin={{ horizontal: "right", vertical: "top" }}
-        />
+    <>
+      <MyDialog
+        open={open}
+        handleClose={handleCloseDialog}
+        fields={dialogFields}
+        company={company}
+      />
+      <Card>
         <CardHeader
           action={
             <Box sx={{ display: "flex", gap: "1rem" }}>
@@ -200,19 +182,9 @@ const RegisteredUsers = () => {
                 <Button
                   size="small"
                   variant="contained"
-                  onClick={() => openDialog("INVITE USER")}
+                  onClick={() => openDialog("INVITE TELE-MARKETER")}
                 >
-                  Invite New User
-                </Button>
-              ) : null}
-
-              {userData.clientId == 1 ? (
-                <Button
-                  size="small"
-                  variant="contained"
-                  onClick={() => openDialog("REGISTER COMPANY")}
-                >
-                  REGISTER COMPANY
+                  INVITE TELE-MARKETER
                 </Button>
               ) : null}
             </Box>
@@ -235,9 +207,9 @@ const RegisteredUsers = () => {
           components={{ Toolbar: ServerSideToolbar }}
           onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         />
-      </>
-    </Card>
+      </Card>
+    </>
   );
 };
 
-export default RegisteredUsers;
+export default TeleMarketers;
