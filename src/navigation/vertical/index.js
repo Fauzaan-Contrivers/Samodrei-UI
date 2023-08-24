@@ -68,7 +68,7 @@ const navigation = () => {
       path: "/users",
       action: "read",
       icon: ShieldOutline,
-      title: "Registered Users",
+      title: "Dashboard Users",
     },
     {
       path: "/prescribers-list",
@@ -81,6 +81,12 @@ const navigation = () => {
       action: "read",
       icon: ShieldOutline,
       title: "Training Prescribers",
+    },
+    {
+      path: "/tele-marketers",
+      action: "read",
+      icon: ShieldOutline,
+      title: "Tele-Marketers",
     },
     {
       path: "/phonebook",
