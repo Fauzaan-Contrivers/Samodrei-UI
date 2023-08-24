@@ -114,7 +114,6 @@ const App = (props) => {
             type="text/javascript"
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsVl710owW1U2WT-SItNAO9U0Q9AS5XkQ&libraries=places"
           ></script>
-          <script src="https://ringcentral.github.io/ringcentral-embeddable/adapter.js"></script>
         </Head>
 
         <AuthProvider>

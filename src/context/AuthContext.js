@@ -83,7 +83,7 @@ const AuthProvider = ({ children }) => {
               roleId: userData?.roleId,
             };
             setUser({ ...data });
-            RCAdapter.setClosed(true);
+            // RCAdapter.setClosed(true);
           });
         loadInitials();
       } else {
@@ -134,7 +134,7 @@ const AuthProvider = ({ children }) => {
           roleId: userData?.roleId,
         };
         setUser({ ...data });
-        RCAdapter.setClosed(true);
+        // RCAdapter.setClosed(true);
         await window.localStorage.setItem(
           "userData",
           JSON.stringify(response.data.userData)

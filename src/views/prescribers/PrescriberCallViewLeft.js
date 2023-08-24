@@ -18,6 +18,15 @@ import CustomAvatar from "src/@core/components/mui/avatar";
 import { getInitials } from "src/@core/utils/get-initials";
 
 const PrescriberCallViewLeft = ({ data }) => {
+  useEffect(() => {
+    RCAdapter.setClosed(false);
+    RCAdapter.setMinimized(true);
+
+    return () => {
+      RCAdapter.setClosed(true);
+    };
+  }, []);
+
   const makeCall = (phoneNumber) => {
     RCAdapter.setMinimized(false);
     document

@@ -37,15 +37,6 @@ const Preview = ({ id, invoiceData }) => {
   };
 
   useEffect(() => {
-    RCAdapter.setClosed(false);
-    RCAdapter.setMinimized(true);
-
-    return () => {
-      RCAdapter.setClosed(true);
-    };
-  }, []);
-
-  useEffect(() => {
     console.log("USe effect Id", id);
     fetchData(id);
   }, [id]);
