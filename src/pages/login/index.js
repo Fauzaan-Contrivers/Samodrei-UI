@@ -141,6 +141,7 @@ const LoginPage = () => {
   //   RCAdapter.setClosed(true);
   // }, []);
 
+
   const onSubmit = async (data) => {
     const { email, password } = data;
     login({ email: email, password: password });

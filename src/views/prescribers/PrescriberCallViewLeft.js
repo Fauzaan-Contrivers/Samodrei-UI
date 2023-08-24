@@ -28,7 +28,7 @@ const PrescriberCallViewLeft = ({ data }) => {
   }, []);
 
   const makeCall = (phoneNumber) => {
-    RCAdapter.setMinimized(false);
+    // RCAdapter.setMinimized(false);
     document
       .querySelector("#rc-widget-adapter-frame")
       .contentWindow.postMessage(
