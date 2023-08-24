@@ -22,6 +22,7 @@ import Check from "mdi-material-ui/Check";
 import Close from "mdi-material-ui/Close";
 import ServerSideToolbar from "src/views/table/data-grid/ServerSideToolbar";
 import MyDialog from "src/views/components/dialogs/UserDialog";
+import toast from "react-hot-toast";
 
 const TeleMarketers = () => {
   const [page, setPage] = useState(0);
@@ -64,6 +65,38 @@ const TeleMarketers = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [page, pageSize]
   );
+
+  const handleStatusUpdateHandler = async (
+    tele_marketer_id,
+    is_active,
+    is_verified
+  ) => {
+    try {
+      const response = await fetch(
+        `${BASE_URL}user/disable-tele-marketer-user`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            tele_prescriber_id: tele_marketer_id,
+            is_active: is_active,
+            is_verified: is_verified,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.status == 200) {
+        toast.success(data.message, {
+          duration: 2000,
+        });
+        fetchTableData(sort, sortColumn, userData);
+      }
+    } catch (error) {
+      console.log("CHECK", error);
+    }
+  };
 
   useEffect(() => {
     fetchTableData(sort, sortColumn, userData);
@@ -153,6 +186,45 @@ const TeleMarketers = () => {
             <Close sx={{ fontSize: "1rem" }} />
           )}
         </Typography>
+      ),
+    },
+    {
+      flex: 0.2,
+      minWidth: 140,
+      headerName: "Actions",
+      field: "action",
+      renderCell: (params) => (
+        <>
+          {params.row.is_active ? (
+            <Button
+              onClick={() =>
+                handleStatusUpdateHandler(
+                  params.row.id,
+                  !params.row.is_active,
+                  false
+                )
+              }
+            >
+              <Typography variant="body2" sx={{ color: "red" }}>
+                Inactive
+              </Typography>
+            </Button>
+          ) : (
+            <Button
+              onClick={() =>
+                handleStatusUpdateHandler(
+                  params.row.id,
+                  !params.row.is_active,
+                  true
+                )
+              }
+            >
+              <Typography variant="body2" sx={{ color: "green" }}>
+                Active
+              </Typography>
+            </Button>
+          )}
+        </>
       ),
     },
   ];
