@@ -64,6 +64,27 @@ const PhoneBook = () => {
   }, [page, pageSize]);
 
   useEffect(() => {
+    const rcs = document.createElement("script");
+    rcs.src =
+      "https://ringcentral.github.io/ringcentral-embeddable/adapter.js?clientId=aKXzeEpbpVsbhShFAJBoDw&appServer=https://platform.devtest.ringcentral.com";
+
+    const scriptLoaded = () => {
+      RCAdapter.setClosed(true);
+      console.log("Script has been loaded successfully!");
+    };
+
+    rcs.onload = scriptLoaded;
+
+    const rcs0 = document.getElementsByTagName("script")[0];
+    rcs0.parentNode.insertBefore(rcs, rcs0);
+
+    // Clean up the script when the component unmounts
+    return () => {
+      rcs.parentNode.removeChild(rcs);
+    };
+  }, []);
+
+  useEffect(() => {
     const newSocket = io.connect(BASE_URL, {
       transports: ["websocket"],
     });

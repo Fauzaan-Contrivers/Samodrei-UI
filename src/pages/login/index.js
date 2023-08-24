@@ -137,9 +137,10 @@ const LoginPage = () => {
   // ** Vars
   const hidden = useMediaQuery(theme.breakpoints.down("md"));
 
-  useEffect(() => {
-    // RCAdapter.setClosed(true);
-  }, []);
+  // useEffect(() => {
+  //   RCAdapter.setClosed(true);
+  // }, []);
+
 
   const onSubmit = async (data) => {
     const { email, password } = data;
