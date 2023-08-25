@@ -200,6 +200,7 @@ export const prescribersSlice = createSlice({
     PhonebookPrescribersData: [],
     TelePrescriberData: [],
     totalRecords: 0,
+    disabledPrescribers: {},
     states: [],
     cities: [],
     speciality: [],
@@ -215,6 +216,10 @@ export const prescribersSlice = createSlice({
   reducers: {
     onPrescriberFilterChangeHandler(state, action) {
       state.filter[action.payload.filter] = action.payload.value;
+    },
+    addDisabledPrescriber(state, action) {
+      const prescriberId = action.payload;
+      state.disabledPrescribers[prescriberId] = true;
     },
   },
   extraReducers: (builder) => {
@@ -271,6 +276,7 @@ export const prescribersSlice = createSlice({
   },
 });
 
-export const { onPrescriberFilterChangeHandler } = prescribersSlice.actions;
+export const { onPrescriberFilterChangeHandler, addDisabledPrescriber } =
+  prescribersSlice.actions;
 
 export default prescribersSlice.reducer;

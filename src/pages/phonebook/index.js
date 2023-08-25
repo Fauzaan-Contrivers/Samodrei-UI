@@ -5,7 +5,10 @@ import { AbilityContext } from "src/layouts/components/acl/Can";
 
 // ** Store & Actions Imports
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPrescribersforPhoneLogs } from "src/store/prescribers";
+import {
+  addDisabledPrescriber,
+  fetchPrescribersforPhoneLogs,
+} from "src/store/prescribers";
 import { debounce } from "lodash";
 import authConfig from "src/configs/auth";
 import { BASE_URL } from "src/configs/config";
@@ -26,12 +29,11 @@ import Link from "next/link";
 
 const PhoneBook = () => {
   const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(20);
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [dialogFields, setDialogFields] = useState([]);
   const [socket, setSocket] = useState(null);
-  const [disabledPrescribers, setDisabledPrescribers] = useState({});
 
   const ability = useContext(AbilityContext);
 
@@ -98,20 +100,40 @@ const PhoneBook = () => {
   useEffect(() => {
     if (socket) {
       socket.on("message", (prescriberId) => {
-        setDisabledPrescribers((prevDisabledPrescribers) => ({
-          ...prevDisabledPrescribers,
-          [prescriberId]: true,
-        }));
+        dispatch(addDisabledPrescriber(prescriberId));
+        onClickHandler(prescriberId, true);
       });
     }
   }, [socket]);
+
+  const onClickHandler = async (prescriberId, flag) => {
+    try {
+      const response = await fetch(
+        `${BASE_URL}tele-prescribers/update_tele_prescriber_call_status`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            prescriberId: prescriberId,
+            flagged: flag,
+          }),
+        }
+      );
+      const data = await response.json();
+      console.log("DATA", data);
+    } catch (error) {
+      console.log("CHECK", error);
+    }
+  };
 
   const onActionClick = (prescriberId) => {
     socket.emit("message", prescriberId);
   };
 
   const isActionDisabled = (prescriberId) => {
-    return disabledPrescribers[prescriberId];
+    return store.prescribers.disabledPrescribers[prescriberId];
   };
 
   const defaultColumns = [
@@ -168,9 +190,15 @@ const PhoneBook = () => {
               component="a"
               sx={{ textDecoration: "none", cursor: "pointer" }}
               onClick={() => onActionClick(row.Id)}
-              disabled={isActionDisabled(row.Id)}
+              disabled={isActionDisabled(row.Id) || row.isOnCall}
             >
-              <EyeOutline fontSize="small" />
+              <EyeOutline
+                fontSize="small"
+                sx={{
+                  color:
+                    isActionDisabled(row.Id) || row.isOnCall ? "red" : null,
+                }}
+              />
             </IconButton>
           </Link>
         </Grid>
@@ -213,7 +241,7 @@ const PhoneBook = () => {
                 rowCount={store.prescribers.totalRecords}
                 disableSelectionOnClick
                 pageSize={Number(pageSize)}
-                rowsPerPageOptions={[10, 25, 50]}
+                rowsPerPageOptions={[20, 30, 50]}
                 onPageChange={(newPage) => {
                   setPage(newPage);
                 }}

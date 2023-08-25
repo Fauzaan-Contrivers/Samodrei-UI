@@ -93,7 +93,7 @@ const navigation = () => {
       action: "read",
       subject: "acl-page",
       icon: ShieldOutline,
-      title: "Phone Book",
+      title: "Call Logs",
     },
     {
       path: "/flagged_numbers",
