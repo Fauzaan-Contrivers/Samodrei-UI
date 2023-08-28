@@ -18,6 +18,9 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import { BASE_URL } from "src/configs/config";
 import toast from "react-hot-toast";
+import { useRouter } from "next/router";
+import { AuthContext } from "src/context/AuthContext";
+import { useContext } from "react";
 
 // ** Icons Imports
 import EyeOutline from "mdi-material-ui/EyeOutline";
@@ -93,21 +96,22 @@ const LinkStyled = styled("a")(({ theme }) => ({
   color: theme.palette.primary.main,
 }));
 
-const ResetPasswordV2 = () => {
+const ResetPasswordForm = ({ email }) => {
   // ** States
   const [values, setValues] = useState({
-    email: "",
+    email: email,
     password: "",
     showNewPassword: false,
     confirmPassword: "",
     showConfirmNewPassword: false,
+    token: null,
   });
-
-  useEffect(() => {}, []);
+  const { login } = useContext(AuthContext);
 
   // ** Hooks
   const theme = useTheme();
   const { settings } = useSettings();
+  const router = useRouter();
 
   // ** Vars
   const hidden = useMediaQuery(theme.breakpoints.down("md"));
@@ -127,6 +131,7 @@ const ResetPasswordV2 = () => {
         toast.success(data.message, {
           duration: 2000,
         });
+        login({ email: values.email, password: values.password });
       }
       if (data.statusCode == 404) {
         toast.error(data.message, {
@@ -315,13 +320,7 @@ const ResetPasswordV2 = () => {
                 <InputLabel htmlFor="auth-reset-password-v2-email">
                   Email
                 </InputLabel>
-                <OutlinedInput
-                  label="Email"
-                  value={values.email}
-                  id="auth-reset-password-v2-email"
-                  onChange={handleEmailChange("email")}
-                  type="email"
-                />
+                <OutlinedInput label="Email" value={email} disabled={true} />
               </FormControl>
 
               <FormControl sx={{ display: "flex", marginBottom: 4 }}>
@@ -389,21 +388,6 @@ const ResetPasswordV2 = () => {
               >
                 Set New Password
               </Button>
-              <Typography
-                variant="body2"
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Link passHref href="/login">
-                  <LinkStyled>
-                    <ChevronLeft />
-                    <span>Back to login</span>
-                  </LinkStyled>
-                </Link>
-              </Typography>
             </form>
           </BoxWrapper>
         </Box>
@@ -412,7 +396,7 @@ const ResetPasswordV2 = () => {
   );
 };
 
-ResetPasswordV2.getLayout = (page) => <BlankLayout>{page}</BlankLayout>;
-ResetPasswordV2.guestGuard = true;
+ResetPasswordForm.getLayout = (page) => <BlankLayout>{page}</BlankLayout>;
+ResetPasswordForm.guestGuard = true;
 
-export default ResetPasswordV2;
+export default ResetPasswordForm;

@@ -93,11 +93,11 @@ const PrescriberCallViewLeft = ({ data }) => {
               <CustomChip
                 skin="light"
                 size="small"
-                label="Prescriber"
+                label={data?.Specialty}
                 color={"success"}
                 sx={{
                   height: 20,
-                  fontSize: "0.875rem",
+                  fontSize: "1rem",
                   fontWeight: 600,
                   borderRadius: "5px",
                   textTransform: "capitalize",
@@ -119,7 +119,7 @@ const PrescriberCallViewLeft = ({ data }) => {
                   {data.Phone}
                 </Typography>
                 <Phone
-                  sx={{ cursor: "pointer" }}
+                  sx={{ cursor: "pointer", color: "green", fontSize: "2rem" }}
                   onClick={() => makeCall(data.Phone)}
                 />
               </Box>
@@ -137,34 +137,13 @@ const PrescriberCallViewLeft = ({ data }) => {
                       fontSize: "0.875rem",
                     }}
                   >
-                    NPI:
+                    Soaanz Prescriber:
                   </Typography>
-                  <Typography variant="body2">{data?.NPI}</Typography>
-                </Box>
-                <Box sx={{ display: "flex", marginBottom: 2.7 }}>
-                  <Typography
-                    sx={{
-                      marginRight: 2,
-                      fontWeight: 500,
-                      fontSize: "0.875rem",
-                    }}
-                  >
-                    FAX:
+                  <Typography variant="body2">
+                    {data?.isSoaanzPrescriber ? "YES" : "NO"}
                   </Typography>
-                  <Typography variant="body2">{data?.Fax}</Typography>
                 </Box>
-                {/* <Box sx={{ display: "flex", marginBottom: 2.7 }}>
-                  <Typography
-                    sx={{
-                      marginRight: 2,
-                      fontWeight: 500,
-                      fontSize: "0.875rem",
-                    }}
-                  >
-                    Speciality:
-                  </Typography>
-                  <Typography variant="body2">{data?.Speciality}</Typography>
-                </Box>
+
                 <Box sx={{ display: "flex", marginBottom: 2.7 }}>
                   <Typography
                     sx={{
@@ -175,9 +154,7 @@ const PrescriberCallViewLeft = ({ data }) => {
                   >
                     Furosemide TRX:
                   </Typography>
-                  <Typography variant="body2">
-                    {data?.Furosemide_Trx}
-                  </Typography>
+                  <Typography variant="body2">{data?.F_TRX}</Typography>
                 </Box>
                 <Box sx={{ display: "flex", marginBottom: 2.7 }}>
                   <Typography
@@ -189,7 +166,7 @@ const PrescriberCallViewLeft = ({ data }) => {
                   >
                     Market Decile:
                   </Typography>
-                  <Typography variant="body2">{data?.Market_Decile}</Typography>
+                  <Typography variant="body2">{data?.Decile}</Typography>
                 </Box>
                 <Box sx={{ display: "flex" }}>
                   <Typography
@@ -207,7 +184,7 @@ const PrescriberCallViewLeft = ({ data }) => {
                       ${data?.State},
                       ${data?.Zip}`}
                   </Typography>
-                </Box> */}
+                </Box>
               </Box>
             </CardContent>
           </Card>

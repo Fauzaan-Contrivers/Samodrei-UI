@@ -39,7 +39,6 @@ const Tab = styled(MuiTab)(({ theme }) => ({
 
 const PrescriberCallViewRight = ({ prescriber }) => {
   const [feedbackText, setFeedbackText] = useState("");
-  const [isChecked, setIsChecked] = useState(false);
   const [phoneNumberFeedbackArray, setPhoneNumberFeedbackArray] = useState([]);
   const [receiverName, setReceiverName] = useState("");
   const [receiverPosition, setReceiverPosition] = useState("");
@@ -57,10 +56,6 @@ const PrescriberCallViewRight = ({ prescriber }) => {
       setPhoneNumberFeedbackArray(prescriber.CallFeedback.split(", "));
     }
   }, []);
-
-  const handleCheckboxChange = () => {
-    setIsChecked(!isChecked);
-  };
 
   const onSubmitFeedbackHandler = async () => {
     try {
@@ -88,7 +83,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
           ...prevArray,
           feedbackText,
         ]);
-
+        updateTelePrescriberCallStatus(prescriber.Id, false);
         toast.success(data.message, {
           duration: 2000,
         });
@@ -124,8 +119,31 @@ const PrescriberCallViewRight = ({ prescriber }) => {
         toast.success(data.message, {
           duration: 2000,
         });
+        updateTelePrescriberCallStatus(prescriber.Id, false);
         router.replace("/phonebook");
       }
+    } catch (error) {
+      console.log("CHECK", error);
+    }
+  };
+
+  const updateTelePrescriberCallStatus = async (prescriberId, flag) => {
+    try {
+      const response = await fetch(
+        `${BASE_URL}tele-prescribers/update_tele_prescriber_call_status`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            prescriberId: prescriberId,
+            flagged: flag,
+          }),
+        }
+      );
+      const data = await response.json();
+      console.log("DATA", data);
     } catch (error) {
       console.log("CHECK", error);
     }
