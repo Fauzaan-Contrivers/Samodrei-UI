@@ -94,8 +94,6 @@ const CRMDashboard = () => {
 
   if (dashboardData?.totalVisits?.length > 0) {
     dashboardData?.totalVisits.map((item) => {
-      console.log(item.question_2);
-
       if (item.question_2 == null || item.question_2 == "Front Desk Staff") {
         fd_Count += parseInt(item.count);
       }
@@ -221,7 +219,6 @@ const CRMDashboard = () => {
       // icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
     },
   ];
-  // console.log(bestAdvData)
 
   if (jobs.length !== 0) {
     const filterObjArray = [];
@@ -242,7 +239,6 @@ const CRMDashboard = () => {
     }, {});
     let maxCount = Math.max(...Object.values(objectCount));
   }
-  console.log();
   const bestAdvName =
     dashboardData?.bestProductAdvocate?.productAdvocate[0]?.Name || "";
   bestAdvData[0].stats = dashboardData?.bestProductAdvocate?.count;

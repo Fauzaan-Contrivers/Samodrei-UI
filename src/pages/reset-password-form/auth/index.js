@@ -1,14 +1,10 @@
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import Grid from "@mui/material/Grid";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
-import axios from "axios";
-import UserViewLeft from "src/views/product_advocates/UserViewLeft";
-import UserViewRight from "src/views/product_advocates/UserViewRight";
-import { fetchProductAdvocateData } from "src/store/product_advocates";
 import { BASE_URL } from "src/configs/config";
 import ResetPasswordForm from "../form";
+import Error404 from "src/pages/404";
 
 const Preview = ({ email }) => {
   const [data, setData] = useState(null);
@@ -31,7 +27,7 @@ const Preview = ({ email }) => {
         });
         const data = await response.json();
 
-        if (data.statusCode == 200) {
+        if (data) {
           setData(data);
           setLoading(false);
         }
@@ -65,7 +61,11 @@ const Preview = ({ email }) => {
       </Grid>
     );
   } else if (data) {
-    return <ResetPasswordForm email={email} />;
+    if (data.statusCode == 200) {
+      return <ResetPasswordForm email={email} />;
+    } else {
+      return <Error404 />;
+    }
   } else {
     return <div>No data available.</div>;
   }
