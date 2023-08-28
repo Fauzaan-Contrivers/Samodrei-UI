@@ -69,18 +69,16 @@ import { styled } from "@mui/material/styles";
 import { convertDateToReadableFormat } from "src/configs/utils";
 
 import DatePickerWrapper from "src/@core/styles/libs/react-datepicker";
-import {
-  cancelJob,
-  onCancelJobHandler,
-  onJobFilterChangeHandler,
-  onRevisitFilterChangeHandler,
-} from "src/store/jobs";
+
 import Autocomplete from "@mui/material/Autocomplete";
 
 import moment from "moment";
 import { Button, Checkbox, FormControlLabel } from "@mui/material";
 import { FastForward } from "mdi-material-ui";
-import { fetchCallLogsData } from "src/store/call_logs";
+import {
+  fetchCallLogsData,
+  onCallLogFilterChangeHandler,
+} from "src/store/call_logs";
 
 /* eslint-enable */
 const CallLogs = () => {
@@ -120,12 +118,32 @@ const CallLogs = () => {
       fetchCallLogsData({
         page_num: page + 1,
         page_size: pageSize,
+        tele_marketer: store.call_logs.filter.teleMarketerValue,
+        tele_prescreiber: store.call_logs.filter.telePrescriberValue,
       })
     ).then(() => {
-      console.log("DATA", store.call_logs.callLogData);
+      console.log("DATA", store.call_logs);
       setIsLoading(false);
     });
-  }, [page, pageSize, store.jobs.filter]);
+  }, [page, pageSize, store.call_logs.filter]);
+
+  const handleTeleMarkterValue = (e) => {
+    dispatch(
+      onCallLogFilterChangeHandler({
+        filter: "teleMarketerValue",
+        value: e.target.value,
+      })
+    );
+  };
+
+  const handleTelePrescriberValue = (e) => {
+    dispatch(
+      onCallLogFilterChangeHandler({
+        filter: "telePrescriberValue",
+        value: e.target.value,
+      })
+    );
+  };
 
   const callLogsListViewColumns = [
     {
@@ -242,28 +260,59 @@ const CallLogs = () => {
   const columns = [...callLogsListViewColumns];
 
   return (
-    <Grid item xs={12}>
-      <Card>
-        {/* <TableHeader onClick={() => handleClickDownloadDataCSV()} /> */}
-        <DataGrid
-          autoHeight
-          pagination
-          rows={isLoading ? [] : store.call_logs.callLogData}
-          columns={columns}
-          loading={isLoading}
-          rowCount={store.call_logs.totalRecords}
-          getRowId={(row) => row?.Id}
-          disableSelectionOnClick
-          pageSize={Number(pageSize)}
-          rowsPerPageOptions={[10, 25, 50]}
-          onPageChange={(newPage) => {
-            setPage(newPage);
-          }}
-          onSelectionModelChange={(rows) => setSelectedRow(rows)}
-          onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-          paginationMode="server"
-        />
-      </Card>
+    <Grid container spacing={6}>
+      <Grid item xs={12}>
+        <Card>
+          <CardHeader title="Filters" />
+          <CardContent>
+            <Grid container spacing={6}>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <TextField
+                    id="outlined-basic"
+                    label="Tele-Marketer"
+                    onChange={handleTeleMarkterValue}
+                    value={store.call_logs.filter.teleMarketerValue}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <TextField
+                    value={store.jobs.filter.telePrescriberValue}
+                    id="outlined-basic"
+                    label="Tele-Prescriber"
+                    onChange={handleTelePrescriberValue}
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid item xs={12}>
+        <Card>
+          {/* <TableHeader onClick={() => handleClickDownloadDataCSV()} /> */}
+          <DataGrid
+            autoHeight
+            pagination
+            rows={isLoading ? [] : store.call_logs.callLogData}
+            columns={columns}
+            loading={isLoading}
+            rowCount={store.call_logs.totalRecords}
+            getRowId={(row) => row?.Id}
+            disableSelectionOnClick
+            pageSize={Number(pageSize)}
+            rowsPerPageOptions={[10, 25, 50]}
+            onPageChange={(newPage) => {
+              setPage(newPage);
+            }}
+            onSelectionModelChange={(rows) => setSelectedRow(rows)}
+            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+            paginationMode="server"
+          />
+        </Card>
+      </Grid>
     </Grid>
   );
 };
