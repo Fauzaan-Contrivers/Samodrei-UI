@@ -76,7 +76,12 @@ const navigation = () => {
       icon: ShieldOutline,
       title: "Tele-Marketers",
     },
-
+    {
+      path: "/call_logs/list",
+      action: "read",
+      icon: ShieldOutline,
+      title: "Call Logs",
+    },
     {
       path: "/flagged_numbers",
       icon: ShieldOutline,
