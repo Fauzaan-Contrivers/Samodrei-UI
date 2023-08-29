@@ -21,7 +21,6 @@ export const fetchCallLogsData = createAsyncThunk(
       // lunch_meeting: params.lunch_meeting,
       // radius: params.radius,
     });
-    console.log("CALL LOGS", response.data.result);
     return {
       result: response.data.result.data,
       totalRecords: response.data.result.count,
@@ -46,6 +45,9 @@ export const callLogsSlice = createSlice({
     filter: {
       teleMarketerValue: "",
       telePrescriberValue: "",
+      startDateRange: "",
+      endDateRange: "",
+      dates: [],
     },
   },
   reducers: {
