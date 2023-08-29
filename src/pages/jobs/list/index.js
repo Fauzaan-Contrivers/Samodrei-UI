@@ -290,12 +290,6 @@ const InvoiceList = () => {
     }
 
     if (jobs_with_lunches_only) {
-      // data = data.filter(val => val.question_1 == true)
-      // var lunchSum = 0
-      // data.forEach(a => {
-      //   const temp = isNaN(a.question_l_2) ? 0 : a.question_l_2
-      //   lunchSum += temp
-      // })
       setTotalLunchSpent(Math.round(store.jobs.LunchesSum));
     } else {
       setTotalLunchSpent(0);

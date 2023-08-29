@@ -80,26 +80,39 @@ import {
   onCallLogFilterChangeHandler,
 } from "src/store/call_logs";
 
+/* eslint-disable */
+const CustomInput = forwardRef((props, ref) => {
+  const startDate = Boolean(props.start)
+    ? format(props.start, "MM/dd/yyyy")
+    : "";
+  const endDate = Boolean(props.end)
+    ? ` - ${format(props.end, "MM/dd/yyyy")}`
+    : null;
+  const value = `${startDate}${endDate !== null ? endDate : ""}`;
+  props.start === null && props.dates.length && props.setDates
+    ? props.setDates([])
+    : null;
+  const updatedProps = { ...props };
+  delete updatedProps.setDates;
+  return (
+    <TextField
+      fullWidth
+      inputRef={ref}
+      {...updatedProps}
+      label={props.label || ""}
+      value={value}
+    />
+  );
+});
+
 /* eslint-enable */
 const CallLogs = () => {
   // ** State
   const [pageSize, setPageSize] = useState(10);
-  const [filteredRows, setFilteredRows] = useState([]);
-  const [whoDidYouMeetWith, setWhoDidYouMeetWith] = useState([]);
-  const [prescribers, setPrescribers] = useState([]);
-  const [prescriberText, setPrescriberText] = useState("");
-  const [selectedPrescriber, setSelectedPrescriber] = useState("");
-  const [totalLunchSpent, setTotalLunchSpent] = useState("0");
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  // const [status, setStatus] = useState('')
-  const [jobsWithLunches, setJobsWithLunches] = useState("null");
-  const [meetWith, setMeetWith] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [seed, setSeed] = useState(10);
-  const ability = useContext(AbilityContext);
-  const [dataCSV, setDataCSV] = useState(false);
 
   // ** Hooks
   const dispatch = useDispatch();
@@ -119,10 +132,10 @@ const CallLogs = () => {
         page_num: page + 1,
         page_size: pageSize,
         tele_marketer: store.call_logs.filter.teleMarketerValue,
-        tele_prescreiber: store.call_logs.filter.telePrescriberValue,
+        start_date: isNaN(Date.parse(startDate)) ? "" : startDate,
+        end_date: isNaN(Date.parse(endDate)) ? "" : endDate,
       })
     ).then(() => {
-      console.log("DATA", store.call_logs);
       setIsLoading(false);
     });
   }, [page, pageSize, store.call_logs.filter]);
@@ -136,12 +149,30 @@ const CallLogs = () => {
     );
   };
 
-  const handleTelePrescriberValue = (e) => {
+  const setDatesHandler = (val) => {
+    dispatch(onCallLogFilterChangeHandler({ filter: "dates", value: val }));
+  };
+
+  const handleOnChangeRange = (dates) => {
+    const [start, end] = dates;
+
+    const startDate = moment(start, "YYYY-MM-DD");
+    const formattedStartDate = startDate.format("YYYY-MM-DD");
+
+    const endDate = moment(end, "YYYY-MM-DD");
+    const formattedEndStartDate = endDate.format("YYYY-MM-DD");
+    if (formattedStartDate && formattedEndStartDate) {
+      setStartDate(formattedStartDate);
+      setEndDate(formattedEndStartDate);
+    }
+    if (start !== null && end !== null) {
+      dispatch(onCallLogFilterChangeHandler({ filter: "dates", value: dates }));
+    }
     dispatch(
-      onCallLogFilterChangeHandler({
-        filter: "telePrescriberValue",
-        value: e.target.value,
-      })
+      onCallLogFilterChangeHandler({ filter: "startDateRange", value: start })
+    );
+    dispatch(
+      onCallLogFilterChangeHandler({ filter: "endDateRange", value: end })
     );
   };
 
@@ -277,14 +308,28 @@ const CallLogs = () => {
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <TextField
-                    value={store.jobs.filter.telePrescriberValue}
-                    id="outlined-basic"
-                    label="Tele-Prescriber"
-                    onChange={handleTelePrescriberValue}
+                <DatePickerWrapper>
+                  <DatePicker
+                    isClearable
+                    selectsRange
+                    monthsShown={2}
+                    endDate={store.call_logs.filter.endDateRange}
+                    selected={store.call_logs.filter.startDateRange}
+                    startDate={store.call_logs.filter.startDateRange}
+                    shouldCloseOnSelect={false}
+                    id="date-range-picker-months"
+                    onChange={handleOnChangeRange}
+                    customInput={
+                      <CustomInput
+                        dates={store.call_logs.filter.dates}
+                        setDates={setDatesHandler}
+                        label="Feedback submitted at"
+                        end={store.call_logs.filter.endDateRange}
+                        start={store.call_logs.filter.startDateRange}
+                      />
+                    }
                   />
-                </FormControl>
+                </DatePickerWrapper>
               </Grid>
             </Grid>
           </CardContent>
