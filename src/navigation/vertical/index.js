@@ -4,7 +4,7 @@ import ShieldOutline from "mdi-material-ui/ShieldOutline";
 // ** Config
 import authConfig from "src/configs/auth";
 
-const navigation = () => {
+const Navigation = () => {
   const userData = JSON?.parse(
     window.localStorage.getItem(authConfig.userData)
   );
@@ -102,4 +102,4 @@ const navigation = () => {
   return navigation;
 };
 
-export default navigation;
+export default Navigation;

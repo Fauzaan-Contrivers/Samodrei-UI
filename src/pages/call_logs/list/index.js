@@ -1,41 +1,17 @@
 // ** React Imports
-import { Fragment, useState, useEffect, forwardRef } from "react";
-
-// ** Next Import
-import Link from "next/link";
+import { useState, useEffect, forwardRef } from "react";
 
 // ** MUI Imports
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import Menu from "@mui/material/Menu";
 import Tooltip from "@mui/material/Tooltip";
-import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import CardHeader from "@mui/material/CardHeader";
-import IconButton from "@mui/material/IconButton";
-import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import CardContent from "@mui/material/CardContent";
 import { DataGrid } from "@mui/x-data-grid";
-import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
-
-// ** Icons
-import Send from "mdi-material-ui/Send";
-import Check from "mdi-material-ui/Check";
-import Close from "mdi-material-ui/Close";
-import ChartPie from "mdi-material-ui/ChartPie";
-import Download from "mdi-material-ui/Download";
-import ArrowDown from "mdi-material-ui/ArrowDown";
-import EyeOutline from "mdi-material-ui/EyeOutline";
-import TrendingUp from "mdi-material-ui/TrendingUp";
-import ContentCopy from "mdi-material-ui/ContentCopy";
-import DotsVertical from "mdi-material-ui/DotsVertical";
-import PencilOutline from "mdi-material-ui/PencilOutline";
-import DeleteOutline from "mdi-material-ui/DeleteOutline";
-import InformationOutline from "mdi-material-ui/InformationOutline";
-import ContentSaveOutline from "mdi-material-ui/ContentSaveOutline";
 
 // ** Third Party Imports
 import format from "date-fns/format";
@@ -43,21 +19,7 @@ import DatePicker from "react-datepicker";
 
 // ** Store & Actions Imports
 import { useDispatch, useSelector } from "react-redux";
-import { fetchData, deleteInvoice } from "src/store/apps/invoice";
-import { fetchJobsData } from "src/store/jobs";
 
-// ** Utils Import
-import { getInitials } from "src/@core/utils/get-initials";
-
-import { useContext } from "react";
-
-// ** Context Imports
-import { AbilityContext } from "src/layouts/components/acl/Can";
-
-// ** Custom Components Imports
-import CustomChip from "src/@core/components/mui/chip";
-import CustomAvatar from "src/@core/components/mui/avatar";
-import TableHeader from "src/views/jobs/TableHeader";
 // ** Third Party Styles Imports
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -66,15 +28,10 @@ import authConfig from "src/configs/auth";
 
 // ** Styled Components
 import { styled } from "@mui/material/styles";
-import { convertDateToReadableFormat } from "src/configs/utils";
 
 import DatePickerWrapper from "src/@core/styles/libs/react-datepicker";
 
-import Autocomplete from "@mui/material/Autocomplete";
-
 import moment from "moment";
-import { Button, Checkbox, FormControlLabel } from "@mui/material";
-import { FastForward } from "mdi-material-ui";
 import {
   fetchCallLogsData,
   onCallLogFilterChangeHandler,
@@ -178,7 +135,7 @@ const CallLogs = () => {
 
   const callLogsListViewColumns = [
     {
-      minWidth: 160,
+      minWidth: 80,
       field: "call_logs_Id",
       headerName: "Id",
       renderCell: ({ row }) => (
@@ -267,11 +224,13 @@ const CallLogs = () => {
       field: "CallDisposition",
       headerName: "Call Disposition",
       renderCell: ({ row }) => (
-        <Typography variant="caption">{row?.CallDisposition}</Typography>
+        <Tooltip title={row?.CallDisposition}>
+          <Typography variant="caption">{row?.CallDisposition}</Typography>
+        </Tooltip>
       ),
     },
     {
-      minWidth: 160,
+      minWidth: 80,
       field: "CallTime",
       headerName: "Call Time",
       renderCell: ({ row }) => (
@@ -279,11 +238,24 @@ const CallLogs = () => {
       ),
     },
     {
-      minWidth: 160,
+      minWidth: 400,
       field: "CallFeedback",
       headerName: "Comment",
       renderCell: ({ row }) => (
-        <Typography variant="caption">{row?.CallFeedback}</Typography>
+        <Tooltip title={row?.CallFeedback}>
+          <Typography
+            variant="caption"
+            style={{
+              whiteSpace: "normal",
+              wordWrap: "break-word",
+              padding: "1px",
+              margin: "1px",
+              overflow: "auto",
+            }}
+          >
+            {row?.CallFeedback}
+          </Typography>
+        </Tooltip>
       ),
     },
   ];

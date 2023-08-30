@@ -253,22 +253,34 @@ const PrescriberCallViewRight = ({ prescriber }) => {
               label="Disposition"
             >
               <MenuItem value="">Select Disposition</MenuItem>
-              <MenuItem value="Interested 1">Interested 1</MenuItem>
-              <MenuItem value="Interested 2">Interested 2</MenuItem>
-              <MenuItem value="Not Interested">Not Interested</MenuItem>
-              <MenuItem value="No Answer">No Answer</MenuItem>
-              <MenuItem value="Callback">Callback</MenuItem>
-              <MenuItem value="Not in Service">Not in Service</MenuItem>
-              <MenuItem value="Not Available">Not available</MenuItem>
-              <MenuItem value="Number Busy">Number Busy</MenuItem>
-              <MenuItem value="Voicemail 1">Voicemail 1</MenuItem>
-              <MenuItem value="Voicemail 2">Voicemail 2</MenuItem>
-              <MenuItem value="Voicemail 3">Voicemail 3</MenuItem>
-              <MenuItem value="Hung up 1">Hung up 1</MenuItem>
-              <MenuItem value="Hung up 2">Hung up 2</MenuItem>
-              <MenuItem value="Hung up 3">Hung up 3</MenuItem>
-              <MenuItem value="Wrong Number">Wrong Number</MenuItem>
-              <MenuItem value="Do not Call">Do not Call</MenuItem>
+              <MenuItem value="Wrong Number/not-in-Service">
+                Wrong Number/not-in-Service
+              </MenuItem>
+              <MenuItem value="No Answer/phone Keeping Ringing for more 5 minutes">
+                No Answer/phone Keeping Ringing for more 5 minutes
+              </MenuItem>
+              <MenuItem value="Call Answered but goes Direct to Voicemail (recorded VM option)">
+                Call Answered but goes Direct to Voicemail (recorded VM option)
+              </MenuItem>
+              <MenuItem value="Call Answered with Do Not call/not interested in SOAANZ request">
+                Call Answered with Do Not call/not interested in SOAANZ request
+              </MenuItem>
+              <MenuItem value="Call Answered with a Call Back Request (Call Scheduling Option)">
+                Call Answered with a Call Back Request (Call Scheduling Option)
+              </MenuItem>
+              <MenuItem value="Call Answered and Directed to a Prescriber's Voicemail (recorded VM option)">
+                Call Answered and Directed to a Prescriber's Voicemail (recorded
+                VM option)
+              </MenuItem>
+              <MenuItem value="Call Answered and Detailed the listener about SOAANZ">
+                Call Answered and Detailed the listener about SOAANZ
+              </MenuItem>
+              <MenuItem value="Call Answered and Samples Requested">
+                Call Answered and Samples Requested
+              </MenuItem>
+              <MenuItem value="Call Answered and Fax Information Requested">
+                Call Answered and Fax Information Requested
+              </MenuItem>
             </Select>
           </FormControl>
         </Grid>
