@@ -67,8 +67,7 @@ const PhoneBook = () => {
 
   useEffect(() => {
     const rcs = document.createElement("script");
-    rcs.src =
-      "https://ringcentral.github.io/ringcentral-embeddable/adapter.js?clientId=aKXzeEpbpVsbhShFAJBoDw&appServer=https://platform.devtest.ringcentral.com";
+    rcs.src = "https://ringcentral.github.io/ringcentral-embeddable/adapter.js";
 
     const scriptLoaded = () => {
       RCAdapter.setClosed(true);
