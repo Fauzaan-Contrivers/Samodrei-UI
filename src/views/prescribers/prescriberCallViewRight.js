@@ -2,10 +2,7 @@
 import { useState, useEffect } from "react";
 
 // ** MUI Imports
-import Box from "@mui/material/Box";
-import TabList from "@mui/lab/TabList";
-import TabPanel from "@mui/lab/TabPanel";
-import TabContext from "@mui/lab/TabContext";
+
 import { styled } from "@mui/material/styles";
 import MuiTab from "@mui/material/Tab";
 import InputLabel from "@mui/material/InputLabel";
@@ -14,7 +11,6 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 
 import Grid from "@mui/material/Grid";
-import Checkbox from "@mui/material/Checkbox";
 import TextField from "@mui/material/TextField";
 import { Button } from "@mui/material";
 import Divider from "@mui/material/Divider";
@@ -26,6 +22,11 @@ import { useRouter } from "next/router";
 import { BASE_URL } from "src/configs/config";
 import toast from "react-hot-toast";
 import authConfig from "src/configs/auth";
+
+import { useDispatch, useSelector } from "react-redux";
+import { updateDisabledPrescriber } from "src/store/prescribers";
+import io from "socket.io-client";
+import DialogSetMeeting from "../components/dialogs/DialogSetMeeting";
 
 // ** Styled Tab component
 const Tab = styled(MuiTab)(({ theme }) => ({
@@ -45,6 +46,12 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   const [disposition, setDisposition] = useState("");
   const [startTime, setStartTime] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [isCalled, setIsCalled] = useState(false);
+  const [socket, setSocket] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  // ** Hooks
+  const dispatch = useDispatch();
   const router = useRouter();
 
   const userData = JSON?.parse(
@@ -52,46 +59,77 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   );
 
   useEffect(() => {
+    const newSocket = io.connect(BASE_URL, {
+      transports: ["websocket"],
+    });
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
     if (prescriber.CallFeedback) {
       setPhoneNumberFeedbackArray(prescriber.CallFeedback.split(", "));
     }
   }, []);
 
-  const onSubmitFeedbackHandler = async () => {
-    try {
-      const response = await fetch(
-        `${BASE_URL}tele-prescribers/add_call_logs`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            telemarketerId: userData.id,
-            prescriberId: prescriber.Id,
-            feedback: feedbackText,
-            call_time: elapsedTime,
-            call_receiver_name: receiverName,
-            call_receiver_position: receiverPosition,
-            call_disposition: disposition,
-          }),
-        }
-      );
-      const data = await response.json();
-      if (data.status == 200) {
-        setPhoneNumberFeedbackArray((prevArray) => [
-          ...prevArray,
-          feedbackText,
-        ]);
-        updateTelePrescriberCallStatus(prescriber.Id, false);
-        toast.success(data.message, {
-          duration: 2000,
-        });
-        router.replace("/phonebook");
-      }
-    } catch (error) {
-      console.log("CHECK", error);
+  useEffect(() => {
+    if (
+      disposition ==
+      "Call Answered with a Call Back Request (Call Scheduling Option)"
+    ) {
+      setOpen(true);
     }
+  }, [disposition]);
+
+  const onSubmitFeedbackHandler = async () => {
+    if (isCalled) {
+      try {
+        const response = await fetch(
+          `${BASE_URL}tele-prescribers/add_call_logs`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              telemarketerId: userData.id,
+              prescriberId: prescriber.Id,
+              feedback: feedbackText,
+              call_time: elapsedTime,
+              call_receiver_name: receiverName,
+              call_receiver_position: receiverPosition,
+              call_disposition: disposition,
+            }),
+          }
+        );
+        const data = await response.json();
+        if (data.status == 200) {
+          setPhoneNumberFeedbackArray((prevArray) => [
+            ...prevArray,
+            feedbackText,
+          ]);
+          updateTelePrescriberCallStatus(prescriber.Id, false);
+          toast.success(data.message, {
+            duration: 2000,
+          });
+          router.replace("/phonebook");
+        }
+      } catch (error) {
+        console.log("CHECK", error);
+      }
+    } else {
+      onCloseClickHandler();
+    }
+  };
+
+  const onCloseClickHandler = () => {
+    dispatch(updateDisabledPrescriber(prescriber.Id));
+    socket.emit("enable_prescriber", prescriber.Id);
+    updateTelePrescriberCallStatus(prescriber.Id, false);
+    router.replace("/phonebook");
   };
 
   const onFlaggedClickHandler = async () => {
@@ -168,6 +206,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
         case "rc-call-init-notify":
           // get call when user creates a call from dial
           startTimer();
+          setIsCalled(true);
           break;
         case "rc-call-end-notify":
           // get call on call end event
@@ -186,8 +225,20 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     return `${minutes} min ${remainingSeconds} sec`;
   };
 
+  const handleCloseDialog = () => {
+    setOpen(false);
+    dispatch(updateDisabledPrescriber(prescriber.Id));
+    // socket.emit("enable_prescriber", prescriber.Id);
+    router.replace("/phonebook");
+  };
+
   return (
     <>
+      <DialogSetMeeting
+        open={open}
+        handleClose={handleCloseDialog}
+        prescriberId={prescriber.Id}
+      />
       <div
         style={{
           display: "flex",
@@ -298,26 +349,36 @@ const PrescriberCallViewRight = ({ prescriber }) => {
           />
         </Grid>
       </Grid>
-      <Grid
-        container
-        alignItems="center"
-        justifyContent="center"
-        marginBottom="15px"
-      >
-        <Button
-          variant="contained"
-          onClick={() => onSubmitFeedbackHandler()}
-          sx={{ marginLeft: 2, backgroundColor: "green" }}
-        >
-          Submit
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => onFlaggedClickHandler()}
-          sx={{ marginLeft: 2 }}
-        >
-          Flag Number
-        </Button>
+      <Grid container spacing={2} sx={{ marginBottom: "10px" }}>
+        <Grid item xs={6}>
+          <FormControl fullWidth variant="outlined" margin="dense">
+            <Button
+              variant="contained"
+              onClick={() => onSubmitFeedbackHandler()}
+              sx={{ backgroundColor: "green" }}
+            >
+              Submit
+            </Button>
+          </FormControl>
+        </Grid>
+        <Grid item xs={6}>
+          <FormControl fullWidth variant="outlined" margin="dense">
+            <Button variant="contained" onClick={() => onFlaggedClickHandler()}>
+              Flag Number
+            </Button>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12}>
+          <FormControl fullWidth variant="outlined" margin="dense">
+            <Button
+              variant="contained"
+              onClick={() => onCloseClickHandler()}
+              sx={{ backgroundColor: "red" }}
+            >
+              Close
+            </Button>
+          </FormControl>
+        </Grid>
       </Grid>
       <Typography variant="h6">Comments</Typography>
       <Divider />
