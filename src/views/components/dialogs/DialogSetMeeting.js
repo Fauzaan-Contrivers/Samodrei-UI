@@ -19,7 +19,7 @@ const DialogSetMeeting = ({ open, handleClose, prescriberId }) => {
   const updateTelePrescriberMeetDate = async () => {
     try {
       const response = await fetch(
-        `${BASE_URL}tele-prescribers/update_tele_prescriber_call_status`,
+        `${BASE_URL}tele-prescribers/update_tele_prescriber_meeting`,
         {
           method: "POST",
           headers: {

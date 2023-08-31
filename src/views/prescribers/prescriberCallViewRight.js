@@ -76,6 +76,21 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   }, []);
 
   useEffect(() => {
+    router.beforePopState(({ as }) => {
+      if (as !== router.asPath) {
+        dispatch(updateDisabledPrescriber(prescriber.Id));
+        socket.emit("enable_prescriber", prescriber.Id);
+        updateTelePrescriberCallStatus(prescriber.Id, false);
+      }
+      return true;
+    });
+
+    return () => {
+      router.beforePopState(() => true);
+    };
+  }, [router, socket]);
+
+  useEffect(() => {
     if (
       disposition ==
       "Call Answered with a Call Back Request (Call Scheduling Option)"
