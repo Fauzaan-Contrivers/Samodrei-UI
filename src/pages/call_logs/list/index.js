@@ -256,7 +256,7 @@ const CallLogs = () => {
       field: "CallTime",
       headerName: "Call Time",
       renderCell: ({ row }) => (
-        <Typography variant="caption">{row?.CallTime}</Typography>
+        <Typography variant="caption">{row?.CallTime / 60}</Typography>
       ),
     },
     {
