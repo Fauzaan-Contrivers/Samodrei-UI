@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   addDisabledPrescriber,
   fetchPrescribersforPhoneLogs,
+  updateDisabledPrescriber,
 } from "src/store/prescribers";
 import { debounce } from "lodash";
 import authConfig from "src/configs/auth";
@@ -18,11 +19,10 @@ import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import { DataGrid } from "@mui/x-data-grid";
 import Typography from "@mui/material/Typography";
-import Tooltip from "@mui/material/Tooltip";
-import DialogShowPhone from "src/views/components/dialogs/DialogShowPhone";
 import io from "socket.io-client";
 import IconButton from "@mui/material/IconButton";
 import EyeOutline from "mdi-material-ui/EyeOutline";
+import moment from "moment";
 
 // ** Next Import
 import Link from "next/link";
@@ -102,6 +102,9 @@ const PhoneBook = () => {
         dispatch(addDisabledPrescriber(prescriberId));
         onClickHandler(prescriberId, true);
       });
+      socket.on("enable_prescriber", (prescriberId) => {
+        dispatch(updateDisabledPrescriber(prescriberId));
+      });
     }
   }, [socket]);
 
@@ -177,6 +180,18 @@ const PhoneBook = () => {
       ),
     },
     {
+      field: "MeetingData",
+      minWidth: 210,
+      headerName: "Meeting Date",
+      renderCell: ({ row }) => (
+        <Typography variant="body2">
+          {row?.MeetingData
+            ? moment(row.MeetingData).local().format("YYYY-MM-DD HH:mm:ss")
+            : ""}
+        </Typography>
+      ),
+    },
+    {
       flex: 0.1,
       minWidth: 50,
       field: "Action",
@@ -207,12 +222,10 @@ const PhoneBook = () => {
   const columns = [...defaultColumns];
 
   const openShowPhoneNumberDialog = (prescriber) => {
-    // if (socket) {
     setOpen(true);
     setDialogFields(prescriber);
-    // socket.emit("message", prescriber);
-    // }
   };
+
   const handleCloseDialog = () => {
     setOpen(false);
   };
@@ -221,11 +234,6 @@ const PhoneBook = () => {
     <div>
       {ability?.can("read", "acl-page") ? (
         <>
-          <DialogShowPhone
-            open={open}
-            handleClose={handleCloseDialog}
-            prescriber={dialogFields}
-          />
           <Grid item xs={12}>
             <Card>
               <DataGrid

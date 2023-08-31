@@ -12,6 +12,9 @@ import FormControl from "@mui/material/FormControl";
 import CardContent from "@mui/material/CardContent";
 import { DataGrid } from "@mui/x-data-grid";
 import Typography from "@mui/material/Typography";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 
 // ** Third Party Imports
 import format from "date-fns/format";
@@ -91,6 +94,8 @@ const CallLogs = () => {
         tele_marketer: store.call_logs.filter.teleMarketerValue,
         start_date: isNaN(Date.parse(startDate)) ? "" : startDate,
         end_date: isNaN(Date.parse(endDate)) ? "" : endDate,
+        call_disposition: store.call_logs.filter.disposition,
+        receiver_position: store.call_logs.filter.receiverPosition,
       })
     ).then(() => {
       setIsLoading(false);
@@ -106,6 +111,23 @@ const CallLogs = () => {
     );
   };
 
+  const handleDispositionValue = (e) => {
+    dispatch(
+      onCallLogFilterChangeHandler({
+        filter: "disposition",
+        value: e.target.value,
+      })
+    );
+  };
+
+  const handleReceiverPositionValue = (e) => {
+    dispatch(
+      onCallLogFilterChangeHandler({
+        filter: "receiverPosition",
+        value: e.target.value,
+      })
+    );
+  };
   const setDatesHandler = (val) => {
     dispatch(onCallLogFilterChangeHandler({ filter: "dates", value: val }));
   };
@@ -132,7 +154,7 @@ const CallLogs = () => {
       onCallLogFilterChangeHandler({ filter: "endDateRange", value: end })
     );
   };
-
+  console.log(store.call_logs.callLogData);
   const callLogsListViewColumns = [
     {
       minWidth: 80,
@@ -302,6 +324,81 @@ const CallLogs = () => {
                     }
                   />
                 </DatePickerWrapper>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth variant="outlined" margin="dense">
+                  <InputLabel id="disposition-label">Disposition</InputLabel>
+                  <Select
+                    labelId="disposition-label"
+                    id="disposition"
+                    value={store.call_logs.filter.disposition}
+                    onChange={handleDispositionValue}
+                    label="Disposition"
+                  >
+                    <MenuItem value="">Select Disposition</MenuItem>
+                    <MenuItem value="Wrong Number/not-in-Service">
+                      Wrong Number/not-in-Service
+                    </MenuItem>
+                    <MenuItem value="No Answer/phone Keeping Ringing for more 5 minutes">
+                      No Answer/phone Keeping Ringing for more 5 minutes
+                    </MenuItem>
+                    <MenuItem value="Call Answered but goes Direct to Voicemail (recorded VM option)">
+                      Call Answered but goes Direct to Voicemail (recorded VM
+                      option)
+                    </MenuItem>
+                    <MenuItem value="Call Answered with Do Not call/not interested in SOAANZ request">
+                      Call Answered with Do Not call/not interested in SOAANZ
+                      request
+                    </MenuItem>
+                    <MenuItem value="Call Answered with a Call Back Request (Call Scheduling Option)">
+                      Call Answered with a Call Back Request (Call Scheduling
+                      Option)
+                    </MenuItem>
+                    <MenuItem value="Call Answered and Directed to a Prescriber's Voicemail (recorded VM option)">
+                      Call Answered and Directed to a Prescriber's Voicemail
+                      (recorded VM option)
+                    </MenuItem>
+                    <MenuItem value="Call Answered and Detailed the listener about SOAANZ">
+                      Call Answered and Detailed the listener about SOAANZ
+                    </MenuItem>
+                    <MenuItem value="Call Answered and Samples Requested">
+                      Call Answered and Samples Requested
+                    </MenuItem>
+                    <MenuItem value="Call Answered and Fax Information Requested">
+                      Call Answered and Fax Information Requested
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth variant="outlined" margin="dense">
+                  <InputLabel id="receiver-position-label">
+                    Receiver Position
+                  </InputLabel>
+                  <Select
+                    labelId="receiver-position-label"
+                    id="receiver-position"
+                    value={store.call_logs.filter.receiverPosition}
+                    onChange={handleReceiverPositionValue}
+                    label="Receiver Position"
+                  >
+                    <MenuItem value="">Select Receiver Position</MenuItem>
+                    <MenuItem value="Front Desk">Front Desk</MenuItem>
+                    <MenuItem value="Operator">Operator</MenuItem>
+                    <MenuItem value="Nurse">Nurse</MenuItem>
+                    <MenuItem value="Nurse Practitioner">
+                      Nurse Practitioner
+                    </MenuItem>
+                    <MenuItem value="Medical Assistant">
+                      Medical Assistant
+                    </MenuItem>
+                    <MenuItem value="Physician Assistant">
+                      Physician Assistant
+                    </MenuItem>
+                    <MenuItem value="Physician">Physician</MenuItem>
+                    <MenuItem value="Other">Other</MenuItem>
+                  </Select>
+                </FormControl>
               </Grid>
             </Grid>
           </CardContent>

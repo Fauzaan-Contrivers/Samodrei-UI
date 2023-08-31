@@ -221,6 +221,10 @@ export const prescribersSlice = createSlice({
       const prescriberId = action.payload;
       state.disabledPrescribers[prescriberId] = true;
     },
+    updateDisabledPrescriber(state, action) {
+      const prescriberId = action.payload;
+      state.disabledPrescribers[prescriberId] = false;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchPrescribersData.fulfilled, (state, action) => {
@@ -276,7 +280,10 @@ export const prescribersSlice = createSlice({
   },
 });
 
-export const { onPrescriberFilterChangeHandler, addDisabledPrescriber } =
-  prescribersSlice.actions;
+export const {
+  onPrescriberFilterChangeHandler,
+  addDisabledPrescriber,
+  updateDisabledPrescriber,
+} = prescribersSlice.actions;
 
 export default prescribersSlice.reducer;
