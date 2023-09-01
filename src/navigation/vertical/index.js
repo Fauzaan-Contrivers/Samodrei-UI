@@ -76,7 +76,7 @@ const Navigation = () => {
       path: "/prescribers-list",
       action: "read",
       icon: ShieldOutline,
-      title: "Prescriber's List",
+      title: "Training List",
     },
     {
       path: "/training_prescribers",
