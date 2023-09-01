@@ -17,6 +17,12 @@ const Navigation = () => {
       title: "Call Logs",
     },
     {
+      path: "/tele-prescribers",
+      action: "read",
+      icon: ShieldOutline,
+      title: "Tele-Prescribers",
+    },
+    {
       path: "/flagged_numbers",
       icon: ShieldOutline,
       title: "Flagged Numbers",
@@ -89,6 +95,12 @@ const Navigation = () => {
       action: "read",
       icon: ShieldOutline,
       title: "Tele-Marketers",
+    },
+    {
+      path: "/tele-prescribers",
+      action: "read",
+      icon: ShieldOutline,
+      title: "Tele-Prescribers",
     },
     {
       path: "/call_logs/list",
