@@ -244,7 +244,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     setOpen(false);
     dispatch(updateDisabledPrescriber(prescriber.Id));
     // socket.emit("enable_prescriber", prescriber.Id);
-    router.replace("/phonebook");
+    // router.replace("/phonebook");
   };
 
   return (
@@ -310,7 +310,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
         </Grid>
         <Grid item xs={6}>
           <FormControl fullWidth variant="outlined" margin="dense">
-            <InputLabel id="disposition-label">Disposition</InputLabel>
+            <InputLabel id="disposition-label">Call Disposition</InputLabel>
             <Select
               labelId="disposition-label"
               id="disposition"

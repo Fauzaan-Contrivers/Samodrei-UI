@@ -9,6 +9,26 @@ const Navigation = () => {
     window.localStorage.getItem(authConfig.userData)
   );
 
+  const TeleMarketerNavigation = [
+    {
+      path: "/call_logs/list",
+      action: "read",
+      icon: ShieldOutline,
+      title: "Call Logs",
+    },
+    {
+      path: "/tele-prescribers",
+      action: "read",
+      icon: ShieldOutline,
+      title: "Tele-Prescribers",
+    },
+    {
+      path: "/flagged_numbers",
+      icon: ShieldOutline,
+      title: "Flagged Numbers",
+    },
+  ];
+
   const navigation = [
     {
       path: "/dashboard",
@@ -62,7 +82,7 @@ const Navigation = () => {
       path: "/prescribers-list",
       action: "read",
       icon: ShieldOutline,
-      title: "Prescriber's List",
+      title: "Training List",
     },
     {
       path: "/training_prescribers",
@@ -75,6 +95,12 @@ const Navigation = () => {
       action: "read",
       icon: ShieldOutline,
       title: "Tele-Marketers",
+    },
+    {
+      path: "/tele-prescribers",
+      action: "read",
+      icon: ShieldOutline,
+      title: "Tele-Prescribers",
     },
     {
       path: "/call_logs/list",
@@ -95,11 +121,15 @@ const Navigation = () => {
       action: "read",
       subject: "acl-page",
       icon: ShieldOutline,
-      title: "Phonebook",
+      title: "Tele-Prescribers",
     });
   }
 
-  return navigation;
+  if (userData?.roleId === 5) {
+    return TeleMarketerNavigation;
+  } else {
+    return navigation;
+  }
 };
 
 export default Navigation;

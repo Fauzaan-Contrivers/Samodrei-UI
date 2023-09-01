@@ -13,8 +13,9 @@ import { useAuth } from "src/hooks/useAuth";
 /**
  *  Set Home URL based on User Roles
  */
-export const getHomeRoute = (role) => {
+export const getHomeRoute = (role, roleId) => {
   if (role === "client") return "/phonebook";
+  else if (role === "admin" && roleId === 5) return "/call_logs/list";
   else return "/dashboard";
 };
 
@@ -27,7 +28,7 @@ const Home = () => {
       return;
     }
     if (auth.user && auth.user.role) {
-      const homeRoute = getHomeRoute(auth.user.role);
+      const homeRoute = getHomeRoute(auth.user.role, auth.user.roleId);
 
       // Redirect user to Home URL
       router.replace(homeRoute);

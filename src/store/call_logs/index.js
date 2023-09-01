@@ -45,8 +45,8 @@ export const callLogsSlice = createSlice({
     filter: {
       teleMarketerValue: "",
       telePrescriberValue: "",
-      disposition: "",
-      receiverPosition: "",
+      disposition: [],
+      receiverPosition: [],
       startDateRange: "",
       endDateRange: "",
       dates: [],

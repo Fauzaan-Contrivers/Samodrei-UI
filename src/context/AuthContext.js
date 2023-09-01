@@ -65,10 +65,13 @@ const AuthProvider = ({ children }) => {
           .then(async (response) => {
             setLoading(false);
             const { userData } = response?.data;
-            console.log("USER DATA", userData);
 
             const role = "";
-            if (userData?.roleId === 1 || userData.roleId === 3) {
+            if (
+              userData?.roleId === 1 ||
+              userData.roleId === 3 ||
+              userData.roleId === 5
+            ) {
               role = "admin";
             }
             if (userData?.roleId === 4) {
@@ -116,9 +119,12 @@ const AuthProvider = ({ children }) => {
         const returnUrl = router.query.returnUrl;
         const { userData } = response.data;
         const role = "";
-        console.log("USER DATA", userData);
 
-        if (userData.roleId === 1 || userData.roleId === 3) {
+        if (
+          userData.roleId === 1 ||
+          userData.roleId === 3 ||
+          userData.roleId === 5
+        ) {
           role = "admin";
         }
         if (userData.roleId === 4) {

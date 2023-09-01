@@ -13,13 +13,11 @@ import Typography from "@mui/material/Typography";
 import { DataGrid } from "@mui/x-data-grid";
 import EditIcon from "mdi-material-ui/Pencil";
 import ServerSideToolbar from "src/views/table/data-grid/ServerSideToolbar";
-import PrescriberEditDialog from "../prescribers/list/edit-dialog";
-import Snackbar from "@mui/material/Snackbar";
 import moment from "moment";
-import Tooltip from "@mui/material/Tooltip";
 
 // ** Config
 import authConfig from "src/configs/auth";
+import DialogUpdateFlagNumber from "src/views/components/dialogs/DialogUpdateFlagNumber";
 
 const FlaggedNumbers = () => {
   // ** State
@@ -30,10 +28,9 @@ const FlaggedNumbers = () => {
   const [searchValue, setSearchValue] = useState("");
   const [sortColumn, setSortColumn] = useState("id");
   const [sort, setSort] = useState("asc");
-  const [prescriber, setPrescriber] = useState({});
+  const [prescriberId, setPrescriberId] = useState({});
   const [open, setOpen] = useState(false);
-  const handleClose = () => setOpen(false);
-  const [snackOpen, setSnackOpen] = useState(false);
+
   const [isLoading, setIsLoading] = useState(false);
 
   const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
@@ -46,17 +43,6 @@ const FlaggedNumbers = () => {
   const ability = useContext(AbilityContext);
 
   const columns = [
-    {
-      flex: 0.2,
-      minWidth: 70,
-      headerName: "Id",
-      field: "Id",
-      renderCell: (params) => (
-        <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.Id}
-        </Typography>
-      ),
-    },
     {
       flex: 0.2,
       minWidth: 70,
@@ -105,30 +91,45 @@ const FlaggedNumbers = () => {
         </Typography>
       ),
     },
+    {
+      flex: 0.2,
+      minWidth: 60,
+      field: "edit",
+      headerName: "Edit",
+      renderCell: ({ row }) => (
+        <EditIcon
+          onClick={() => {
+            setPrescriberId(row.Id), setOpen(true);
+          }}
+        />
+      ),
+    },
   ];
 
   const fetchTableData = useCallback(
-    async (sort, column, clientId) => {
-      setIsLoading(true);
-      await axios
-        .post(`${BASE_URL}tele-prescribers/get_prescriber_flagged_number`, {
-          sort,
-          column,
-          clientId,
-        })
-        .then((res) => {
-          setTotal(res.data.prescribers.length);
-          setRows(loadServerRows(page, res.data.prescribers));
-          setIsLoading(false);
-        });
+    async (sort, column, clientId, open) => {
+      if (!open) {
+        setIsLoading(true);
+        await axios
+          .post(`${BASE_URL}tele-prescribers/get_prescriber_flagged_number`, {
+            sort,
+            column,
+            clientId,
+          })
+          .then((res) => {
+            setTotal(res.data.prescribers.length);
+            setRows(loadServerRows(page, res.data.prescribers));
+            setIsLoading(false);
+          });
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [page, pageSize]
+    [page, pageSize, open]
   );
 
   useEffect(() => {
-    fetchTableData(sort, sortColumn, userData.clientId);
-  }, [fetchTableData, sort, sortColumn]);
+    fetchTableData(sort, sortColumn, userData.clientId, open);
+  }, [fetchTableData, sort, sortColumn, open]);
 
   const handleSortModel = (newModel) => {
     if (newModel.length) {
@@ -150,29 +151,16 @@ const FlaggedNumbers = () => {
     setSearchValue(value);
     fetchTableData(sort, value, sortColumn, userData.clientId);
   };
-
+  const handleCloseDialog = () => {
+    setOpen(false);
+  };
   return (
     <Card>
       <>
-        <PrescriberEditDialog
-          prescriber={prescriber}
-          onPrescriberUpdate={() => {
-            setSnackOpen(true);
-            setOpen(false);
-          }}
+        <DialogUpdateFlagNumber
           open={open}
-          handleClose={handleClose}
-        />
-        <Snackbar
-          open={snackOpen}
-          onClose={() => {
-            setSnackOpen(false);
-
-            fetchTableData(sort, sortColumn, userData.clientId);
-          }}
-          message="Address updated successfully."
-          autoHideDuration={3000}
-          anchorOrigin={{ horizontal: "right", vertical: "top" }}
+          handleClose={handleCloseDialog}
+          prescriberId={prescriberId}
         />
         <CardHeader title="Flagged Numbers List" />
         <DataGrid

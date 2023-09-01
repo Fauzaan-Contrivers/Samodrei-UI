@@ -7,7 +7,7 @@ import { AbilityContext } from "src/layouts/components/acl/Can";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addDisabledPrescriber,
-  fetchPrescribersforPhoneLogs,
+  fetchAllTelePrescribers,
   updateDisabledPrescriber,
 } from "src/store/prescribers";
 import { debounce } from "lodash";
@@ -27,7 +27,7 @@ import moment from "moment";
 // ** Next Import
 import Link from "next/link";
 
-const PhoneBook = () => {
+const TelePrescriber = () => {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(20);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,7 +50,7 @@ const PhoneBook = () => {
       setIsLoading(true);
       const fetchPrescribersDataWithDebounce = debounce(() => {
         dispatch(
-          fetchPrescribersforPhoneLogs({
+          fetchAllTelePrescribers({
             page_num: page + 1,
             page_size: pageSize,
           })
@@ -198,7 +198,7 @@ const PhoneBook = () => {
       headerName: "Action",
       renderCell: ({ row }) => (
         <Grid container alignItems="center">
-          <Link href={`/phonebook/preview/${row.Id}`} passHref>
+          <Link href={`/TelePrescriber/preview/${row.Id}`} passHref>
             <IconButton
               size="small"
               component="a"
@@ -264,9 +264,9 @@ const PhoneBook = () => {
   );
 };
 
-PhoneBook.acl = {
+TelePrescriber.acl = {
   action: "read",
   subject: "acl-page",
 };
 
-export default PhoneBook;
+export default TelePrescriber;

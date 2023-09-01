@@ -28,7 +28,7 @@ const DialogSetMeeting = ({ open, handleClose, prescriberId }) => {
           body: JSON.stringify({
             prescriberId: prescriberId,
             flagged: false,
-            meetingData: timedate,
+            meetingDate: timedate,
           }),
         }
       );

@@ -15,6 +15,11 @@ import Typography from "@mui/material/Typography";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import Delete from "mdi-material-ui/Delete";
+import IconButton from "@mui/material/IconButton";
+import axios from "axios";
+import { BASE_URL } from "src/configs/config";
+import toast from "react-hot-toast";
 
 // ** Third Party Imports
 import format from "date-fns/format";
@@ -70,7 +75,7 @@ const CallLogs = () => {
   // ** State
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
@@ -86,21 +91,22 @@ const CallLogs = () => {
   }));
 
   useEffect(() => {
-    setIsLoading(true);
-    dispatch(
-      fetchCallLogsData({
-        page_num: page + 1,
-        page_size: pageSize,
-        tele_marketer: store.call_logs.filter.teleMarketerValue,
-        start_date: isNaN(Date.parse(startDate)) ? "" : startDate,
-        end_date: isNaN(Date.parse(endDate)) ? "" : endDate,
-        call_disposition: store.call_logs.filter.disposition,
-        receiver_position: store.call_logs.filter.receiverPosition,
-      })
-    ).then(() => {
-      setIsLoading(false);
-    });
-  }, [page, pageSize, store.call_logs.filter]);
+    if (isLoading) {
+      dispatch(
+        fetchCallLogsData({
+          page_num: page + 1,
+          page_size: pageSize,
+          tele_marketer: store.call_logs.filter.teleMarketerValue,
+          start_date: isNaN(Date.parse(startDate)) ? "" : startDate,
+          end_date: isNaN(Date.parse(endDate)) ? "" : endDate,
+          call_disposition: store.call_logs.filter.disposition.join(","),
+          receiver_position: store.call_logs.filter.receiverPosition.join(","),
+        })
+      ).then(() => {
+        setIsLoading(false);
+      });
+    }
+  }, [page, pageSize, store.call_logs.filter, isLoading]);
 
   const handleTeleMarkterValue = (e) => {
     dispatch(
@@ -256,7 +262,9 @@ const CallLogs = () => {
       field: "CallTime",
       headerName: "Call Time",
       renderCell: ({ row }) => (
-        <Typography variant="caption">{row?.CallTime / 60}</Typography>
+        <Typography variant="caption">
+          {parseFloat(row?.CallTime / 60).toFixed(2)}
+        </Typography>
       ),
     },
     {
@@ -280,10 +288,46 @@ const CallLogs = () => {
         </Tooltip>
       ),
     },
+    {
+      minWidth: 150,
+      field: "isAvailable",
+      headerName: "Release Prescriber",
+      renderCell: ({ row }) => (
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Tooltip title="Release">
+            <Box>
+              <IconButton
+                color="secondary"
+                size="small"
+                component="a"
+                sx={{ textDecoration: "none" }}
+                onClick={() => handleClick(row.call_logs_Id)}
+              >
+                <Delete />
+              </IconButton>
+            </Box>
+          </Tooltip>
+        </Box>
+      ),
+    },
   ];
 
   const columns = [...callLogsListViewColumns];
 
+  const handleClick = async (logId) => {
+    await axios
+      .post(`${BASE_URL}call-logs/update-call-logs`, {
+        logId,
+      })
+      .then((res) => {
+        if (res.data.status == 200) {
+          toast.success(res.data.message, {
+            duration: 2000,
+          });
+          setIsLoading(true);
+        }
+      });
+  };
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
@@ -334,6 +378,7 @@ const CallLogs = () => {
                     value={store.call_logs.filter.disposition}
                     onChange={handleDispositionValue}
                     label="Disposition"
+                    multiple
                   >
                     <MenuItem value="">Select Disposition</MenuItem>
                     <MenuItem value="Wrong Number/not-in-Service">
@@ -381,6 +426,7 @@ const CallLogs = () => {
                     value={store.call_logs.filter.receiverPosition}
                     onChange={handleReceiverPositionValue}
                     label="Receiver Position"
+                    multiple
                   >
                     <MenuItem value="">Select Receiver Position</MenuItem>
                     <MenuItem value="Front Desk">Front Desk</MenuItem>
