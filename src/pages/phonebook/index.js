@@ -180,13 +180,13 @@ const PhoneBook = () => {
       ),
     },
     {
-      field: "MeetingData",
+      field: "MeetingDate",
       minWidth: 210,
       headerName: "Meeting Date",
       renderCell: ({ row }) => (
         <Typography variant="body2">
-          {row?.MeetingData
-            ? moment(row.MeetingData).local().format("YYYY-MM-DD HH:mm:ss")
+          {row?.MeetingDate
+            ? moment(row.MeetingDate).local().format("YYYY-MM-DD HH:mm:ss")
             : ""}
         </Typography>
       ),

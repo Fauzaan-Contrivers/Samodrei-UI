@@ -92,6 +92,8 @@ const RegisteredUsers = () => {
             ? "Super Admin"
             : params.row.roleId === 4
             ? "Tele-Marketer"
+            : params.row.roleId === 5
+            ? "Tele-Marketer (Manager)"
             : "Admin"}
         </Typography>
       ),

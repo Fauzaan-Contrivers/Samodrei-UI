@@ -9,6 +9,20 @@ const Navigation = () => {
     window.localStorage.getItem(authConfig.userData)
   );
 
+  const TeleMarketerNavigation = [
+    {
+      path: "/call_logs/list",
+      action: "read",
+      icon: ShieldOutline,
+      title: "Call Logs",
+    },
+    {
+      path: "/flagged_numbers",
+      icon: ShieldOutline,
+      title: "Flagged Numbers",
+    },
+  ];
+
   const navigation = [
     {
       path: "/dashboard",
@@ -95,11 +109,15 @@ const Navigation = () => {
       action: "read",
       subject: "acl-page",
       icon: ShieldOutline,
-      title: "Phonebook",
+      title: "Tele-Prescribers",
     });
   }
 
-  return navigation;
+  if (userData?.roleId === 5) {
+    return TeleMarketerNavigation;
+  } else {
+    return navigation;
+  }
 };
 
 export default Navigation;

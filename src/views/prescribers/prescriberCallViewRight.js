@@ -244,7 +244,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     setOpen(false);
     dispatch(updateDisabledPrescriber(prescriber.Id));
     // socket.emit("enable_prescriber", prescriber.Id);
-    router.replace("/phonebook");
+    // router.replace("/phonebook");
   };
 
   return (

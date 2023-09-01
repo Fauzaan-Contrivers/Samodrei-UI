@@ -94,8 +94,8 @@ const CallLogs = () => {
         tele_marketer: store.call_logs.filter.teleMarketerValue,
         start_date: isNaN(Date.parse(startDate)) ? "" : startDate,
         end_date: isNaN(Date.parse(endDate)) ? "" : endDate,
-        call_disposition: store.call_logs.filter.disposition,
-        receiver_position: store.call_logs.filter.receiverPosition,
+        call_disposition: store.call_logs.filter.disposition.join(","),
+        receiver_position: store.call_logs.filter.receiverPosition.join(","),
       })
     ).then(() => {
       setIsLoading(false);
@@ -256,7 +256,9 @@ const CallLogs = () => {
       field: "CallTime",
       headerName: "Call Time",
       renderCell: ({ row }) => (
-        <Typography variant="caption">{row?.CallTime / 60}</Typography>
+        <Typography variant="caption">
+          {parseFloat(row?.CallTime / 60).toFixed(2)}
+        </Typography>
       ),
     },
     {
@@ -334,6 +336,7 @@ const CallLogs = () => {
                     value={store.call_logs.filter.disposition}
                     onChange={handleDispositionValue}
                     label="Disposition"
+                    multiple
                   >
                     <MenuItem value="">Select Disposition</MenuItem>
                     <MenuItem value="Wrong Number/not-in-Service">
@@ -381,6 +384,7 @@ const CallLogs = () => {
                     value={store.call_logs.filter.receiverPosition}
                     onChange={handleReceiverPositionValue}
                     label="Receiver Position"
+                    multiple
                   >
                     <MenuItem value="">Select Receiver Position</MenuItem>
                     <MenuItem value="Front Desk">Front Desk</MenuItem>
