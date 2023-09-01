@@ -46,17 +46,6 @@ const FlaggedNumbers = () => {
     {
       flex: 0.2,
       minWidth: 70,
-      headerName: "Id",
-      field: "Id",
-      renderCell: (params) => (
-        <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.Id}
-        </Typography>
-      ),
-    },
-    {
-      flex: 0.2,
-      minWidth: 70,
       headerName: "NPI",
       field: "NPI",
       renderCell: (params) => (
