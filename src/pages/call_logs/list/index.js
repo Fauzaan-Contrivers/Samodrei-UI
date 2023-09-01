@@ -75,7 +75,7 @@ const CallLogs = () => {
   // ** State
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
@@ -91,22 +91,21 @@ const CallLogs = () => {
   }));
 
   useEffect(() => {
-    if (isLoading) {
-      dispatch(
-        fetchCallLogsData({
-          page_num: page + 1,
-          page_size: pageSize,
-          tele_marketer: store.call_logs.filter.teleMarketerValue,
-          start_date: isNaN(Date.parse(startDate)) ? "" : startDate,
-          end_date: isNaN(Date.parse(endDate)) ? "" : endDate,
-          call_disposition: store.call_logs.filter.disposition.join(","),
-          receiver_position: store.call_logs.filter.receiverPosition.join(","),
-        })
-      ).then(() => {
-        setIsLoading(false);
-      });
-    }
-  }, [page, pageSize, store.call_logs.filter, isLoading]);
+    setIsLoading(true);
+    dispatch(
+      fetchCallLogsData({
+        page_num: page + 1,
+        page_size: pageSize,
+        tele_marketer: store.call_logs.filter.teleMarketerValue,
+        start_date: isNaN(Date.parse(startDate)) ? "" : startDate,
+        end_date: isNaN(Date.parse(endDate)) ? "" : endDate,
+        call_disposition: store.call_logs.filter.disposition.join(","),
+        receiver_position: store.call_logs.filter.receiverPosition.join(","),
+      })
+    ).then(() => {
+      setIsLoading(false);
+    });
+  }, [page, pageSize, store.call_logs.filter]);
 
   const handleTeleMarkterValue = (e) => {
     dispatch(
