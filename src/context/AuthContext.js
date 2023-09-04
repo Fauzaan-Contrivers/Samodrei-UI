@@ -171,9 +171,8 @@ const AuthProvider = ({ children }) => {
 
   const handleLogout = () => {
     const { socket } = store.call_logs.filter;
-    if (socket.connected) {
+    if (socket && socket.connected) {
       socket.disconnect();
-      console.log("Socket", socket);
     }
     setUser(null);
     setIsInitialized(false);
