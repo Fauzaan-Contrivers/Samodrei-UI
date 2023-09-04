@@ -371,6 +371,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
               variant="contained"
               onClick={() => onSubmitFeedbackHandler()}
               sx={{ backgroundColor: "green" }}
+              disabled={elapsedTime == 0 ? true : false}
             >
               Submit
             </Button>

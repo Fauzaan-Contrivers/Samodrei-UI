@@ -9,6 +9,7 @@ import {
   addDisabledPrescriber,
   fetchPrescribersforPhoneLogs,
   updateDisabledPrescriber,
+  onPrescriberFilterChangeHandler,
 } from "src/store/prescribers";
 import { debounce } from "lodash";
 import authConfig from "src/configs/auth";
@@ -29,10 +30,7 @@ import Link from "next/link";
 
 const PhoneBook = () => {
   const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(20);
   const [isLoading, setIsLoading] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [dialogFields, setDialogFields] = useState([]);
   const [socket, setSocket] = useState(null);
 
   const ability = useContext(AbilityContext);
@@ -46,25 +44,23 @@ const PhoneBook = () => {
   );
 
   useEffect(() => {
-    if (!open) {
-      setIsLoading(true);
-      const fetchPrescribersDataWithDebounce = debounce(() => {
-        dispatch(
-          fetchPrescribersforPhoneLogs({
-            page_num: page + 1,
-            page_size: pageSize,
-          })
-        ).then(() => {
-          setIsLoading(false);
-        });
-      }, 2000);
+    setIsLoading(true);
+    const fetchPrescribersDataWithDebounce = debounce(() => {
+      dispatch(
+        fetchPrescribersforPhoneLogs({
+          page_num: store.prescribers.filter.page + 1,
+          page_size: store.prescribers.filter.pageSize,
+        })
+      ).then(() => {
+        setPage(store.prescribers.filter.page);
+        setIsLoading(false);
+      });
+    }, 2000);
 
-      fetchPrescribersDataWithDebounce();
+    fetchPrescribersDataWithDebounce();
 
-      return fetchPrescribersDataWithDebounce.cancel;
-    }
-  }, [page, pageSize]);
-
+    return fetchPrescribersDataWithDebounce.cancel;
+  }, [store.prescribers.filter.page, store.prescribers.filter.pageSize]);
   useEffect(() => {
     const rcs = document.createElement("script");
     rcs.src = "https://ringcentral.github.io/ringcentral-embeddable/adapter.js";
@@ -173,7 +169,7 @@ const PhoneBook = () => {
     },
     {
       field: "Fax",
-      minWidth: 210,
+      minWidth: 120,
       headerName: "FAX",
       renderCell: ({ row }) => (
         <Typography variant="body2">{`${row?.Fax}`}</Typography>
@@ -193,7 +189,7 @@ const PhoneBook = () => {
     },
     {
       flex: 0.1,
-      minWidth: 50,
+      minWidth: 100,
       field: "Action",
       headerName: "Action",
       renderCell: ({ row }) => (
@@ -221,13 +217,22 @@ const PhoneBook = () => {
   ];
   const columns = [...defaultColumns];
 
-  const openShowPhoneNumberDialog = (prescriber) => {
-    setOpen(true);
-    setDialogFields(prescriber);
+  const pageSizeChangeHandler = (newPageSize) => {
+    dispatch(
+      onPrescriberFilterChangeHandler({
+        filter: "pageSize",
+        value: newPageSize,
+      })
+    );
   };
 
-  const handleCloseDialog = () => {
-    setOpen(false);
+  const pageChangeHandler = (newPage) => {
+    dispatch(
+      onPrescriberFilterChangeHandler({
+        filter: "page",
+        value: newPage,
+      })
+    );
   };
 
   return (
@@ -247,13 +252,13 @@ const PhoneBook = () => {
                 getRowId={(row) => row?.Id}
                 rowCount={store.prescribers.totalRecords}
                 disableSelectionOnClick
-                pageSize={Number(pageSize)}
+                page={page}
+                pageSize={store.prescribers.filter.pageSize}
                 rowsPerPageOptions={[20, 30, 50]}
-                onPageChange={(newPage) => {
-                  setPage(newPage);
-                }}
-                onSelectionModelChange={(rows) => setSelectedRow(rows)}
-                onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+                onPageChange={(newPage) => pageChangeHandler(newPage)}
+                onPageSizeChange={(newPageSize) =>
+                  pageSizeChangeHandler(newPageSize)
+                }
                 paginationMode="server"
               />
             </Card>

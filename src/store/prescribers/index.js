@@ -229,6 +229,8 @@ export const prescribersSlice = createSlice({
     filter: {
       State: "",
       Name: "",
+      page: 0,
+      pageSize: 20,
       is_soaanz_prescriber: "",
     },
   },
