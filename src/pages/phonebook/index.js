@@ -27,17 +27,19 @@ import moment from "moment";
 
 // ** Next Import
 import Link from "next/link";
+import { onCallLogFilterChangeHandler } from "src/store/call_logs";
 
 const PhoneBook = () => {
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [socket, setSocket] = useState(null);
 
   const ability = useContext(AbilityContext);
 
   // ** Hooks
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
+
+  const { socket } = store.call_logs.filter;
 
   const userData = JSON?.parse(
     window.localStorage.getItem(authConfig.userData)
@@ -85,11 +87,13 @@ const PhoneBook = () => {
     const newSocket = io.connect(BASE_URL, {
       transports: ["websocket"],
     });
-    setSocket(newSocket);
 
-    return () => {
-      newSocket.disconnect();
-    };
+    dispatch(
+      onCallLogFilterChangeHandler({
+        filter: "socket",
+        value: newSocket,
+      })
+    );
   }, []);
 
   useEffect(() => {
@@ -200,7 +204,7 @@ const PhoneBook = () => {
               component="a"
               sx={{ textDecoration: "none", cursor: "pointer" }}
               onClick={() => onActionClick(row.Id)}
-              disabled={isActionDisabled(row.Id) || row.isOnCall}
+              disabled={isActionDisabled(row.Id) || row.isOnCall ? true : false}
             >
               <EyeOutline
                 fontSize="small"
