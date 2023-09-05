@@ -1,6 +1,6 @@
 // ** React Imports
 import { createContext, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 // ** Next Import
 import { useRouter } from "next/router";
@@ -48,6 +48,8 @@ const AuthProvider = ({ children }) => {
   // ** Hooks
   const dispatch = useDispatch();
   const router = useRouter();
+  const store = useSelector((state) => state);
+
   useEffect(() => {
     const initAuth = async () => {
       setIsInitialized(true);
@@ -168,6 +170,10 @@ const AuthProvider = ({ children }) => {
   };
 
   const handleLogout = () => {
+    const { socket } = store.call_logs.filter;
+    if (socket && socket.connected) {
+      socket.disconnect();
+    }
     setUser(null);
     setIsInitialized(false);
     window.localStorage.removeItem("userData");

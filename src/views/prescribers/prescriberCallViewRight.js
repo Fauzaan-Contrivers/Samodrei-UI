@@ -25,7 +25,6 @@ import authConfig from "src/configs/auth";
 
 import { useDispatch, useSelector } from "react-redux";
 import { updateDisabledPrescriber } from "src/store/prescribers";
-import io from "socket.io-client";
 import DialogSetMeeting from "../components/dialogs/DialogSetMeeting";
 
 // ** Styled Tab component
@@ -47,27 +46,18 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   const [startTime, setStartTime] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isCalled, setIsCalled] = useState(false);
-  const [socket, setSocket] = useState(null);
   const [open, setOpen] = useState(false);
 
   // ** Hooks
   const dispatch = useDispatch();
   const router = useRouter();
+  const store = useSelector((state) => state);
+
+  const { socket } = store.call_logs.filter;
 
   const userData = JSON?.parse(
     window.localStorage.getItem(authConfig.userData)
   );
-
-  useEffect(() => {
-    const newSocket = io.connect(BASE_URL, {
-      transports: ["websocket"],
-    });
-    setSocket(newSocket);
-
-    return () => {
-      newSocket.disconnect();
-    };
-  }, []);
 
   useEffect(() => {
     if (prescriber.CallFeedback) {
@@ -371,6 +361,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
               variant="contained"
               onClick={() => onSubmitFeedbackHandler()}
               sx={{ backgroundColor: "green" }}
+              disabled={elapsedTime == 0 ? true : false}
             >
               Submit
             </Button>

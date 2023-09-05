@@ -26,6 +26,7 @@ import moment from "moment";
 
 // ** Next Import
 import Link from "next/link";
+import { onCallLogFilterChangeHandler } from "src/store/call_logs";
 
 const TelePrescriber = () => {
   const [page, setPage] = useState(0);
@@ -33,13 +34,14 @@ const TelePrescriber = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [dialogFields, setDialogFields] = useState([]);
-  const [socket, setSocket] = useState(null);
 
   const ability = useContext(AbilityContext);
 
   // ** Hooks
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
+
+  const { socket } = store.call_logs.filter;
 
   const userData = JSON?.parse(
     window.localStorage.getItem(authConfig.userData)
@@ -89,11 +91,13 @@ const TelePrescriber = () => {
     const newSocket = io.connect(BASE_URL, {
       transports: ["websocket"],
     });
-    setSocket(newSocket);
 
-    return () => {
-      newSocket.disconnect();
-    };
+    dispatch(
+      onCallLogFilterChangeHandler({
+        filter: "socket",
+        value: newSocket,
+      })
+    );
   }, []);
 
   useEffect(() => {

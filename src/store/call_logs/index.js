@@ -44,6 +44,7 @@ export const callLogsSlice = createSlice({
     totalRecords: 0,
     filter: {
       teleMarketerValue: "",
+      socket: null,
       telePrescriberValue: "",
       disposition: [],
       receiverPosition: [],
