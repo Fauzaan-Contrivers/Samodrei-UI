@@ -65,7 +65,8 @@ const PhoneBook = () => {
   }, [store.prescribers.filter.page, store.prescribers.filter.pageSize]);
   useEffect(() => {
     const rcs = document.createElement("script");
-    rcs.src = "https://ringcentral.github.io/ringcentral-embeddable/adapter.js";
+    rcs.src =
+      "https://ringcentral.github.io/ringcentral-embeddable/adapter.js?newAdapterUI=1";
 
     const scriptLoaded = () => {
       RCAdapter.setClosed(true);
