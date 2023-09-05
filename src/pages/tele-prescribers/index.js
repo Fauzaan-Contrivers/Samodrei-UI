@@ -102,7 +102,7 @@ const TelePrescriber = () => {
 
   useEffect(() => {
     if (socket) {
-      socket.on("message", (prescriberId) => {
+      socket.on("disable_prescriber", (prescriberId) => {
         dispatch(addDisabledPrescriber(prescriberId));
         onClickHandler(prescriberId, true);
       });
@@ -135,7 +135,7 @@ const TelePrescriber = () => {
   };
 
   const onActionClick = (prescriberId) => {
-    socket.emit("message", prescriberId);
+    socket.emit("disable_prescriber", prescriberId);
   };
 
   const isActionDisabled = (prescriberId) => {

@@ -93,7 +93,7 @@ const PhoneBook = () => {
 
   const configureSocketEvents = (socket) => {
     if (socket) {
-      socket.on("message", (prescriberId) => {
+      socket.on("disable_prescriber", (prescriberId) => {
         dispatch(addDisabledPrescriber(prescriberId));
         updatePrescriberCallStatus(prescriberId, true);
       });
@@ -119,7 +119,8 @@ const PhoneBook = () => {
     }
   };
 
-  const onActionClick = (prescriberId) => socket.emit("message", prescriberId);
+  const onActionClick = (prescriberId) =>
+    socket.emit("disable_prescriber", prescriberId);
   const isActionDisabled = (prescriberId) =>
     store.prescribers.disabledPrescribers[prescriberId];
 
