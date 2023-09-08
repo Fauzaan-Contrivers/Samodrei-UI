@@ -95,7 +95,6 @@ const PhoneBook = () => {
     if (socket) {
       socket.on("disable_prescriber", (prescriberId) => {
         dispatch(addDisabledPrescriber(prescriberId));
-        updatePrescriberCallStatus(prescriberId, true);
       });
       socket.on("enable_prescriber", (prescriberId) => {
         dispatch(updateDisabledPrescriber(prescriberId));
@@ -114,13 +113,22 @@ const PhoneBook = () => {
         }
       );
       console.log("DATA", await response.json());
+      if (response.status == 200) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (error) {
       console.error("CHECK", error);
     }
   };
 
-  const onActionClick = (prescriberId) =>
-    socket.emit("disable_prescriber", prescriberId);
+  const onActionClick = async (prescriberId) => {
+    const updateStatus = await updatePrescriberCallStatus(prescriberId, true);
+    if (updateStatus) {
+      socket.emit("disable_prescriber", prescriberId);
+    }
+  };
   const isActionDisabled = (prescriberId) =>
     store.prescribers.disabledPrescribers[prescriberId];
 

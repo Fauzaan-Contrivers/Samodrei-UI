@@ -68,9 +68,11 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   useEffect(() => {
     router.beforePopState(({ as }) => {
       if (as !== router.asPath) {
-        dispatch(updateDisabledPrescriber(prescriber.Id));
-        socket.emit("enable_prescriber", prescriber.Id);
-        updateTelePrescriberCallStatus(prescriber.Id, false);
+        const isUpdated = updateTelePrescriberCallStatus(prescriber.Id, false);
+        if (isUpdated) {
+          dispatch(updateDisabledPrescriber(prescriber.Id));
+          socket.emit("enable_prescriber", prescriber.Id);
+        }
       }
       return true;
     });
@@ -116,11 +118,16 @@ const PrescriberCallViewRight = ({ prescriber }) => {
             ...prevArray,
             feedbackText,
           ]);
-          updateTelePrescriberCallStatus(prescriber.Id, false);
-          toast.success(data.message, {
-            duration: 2000,
-          });
-          router.replace("/phonebook");
+          const isUpdated = updateTelePrescriberCallStatus(
+            prescriber.Id,
+            false
+          );
+          if (isUpdated) {
+            toast.success(data.message, {
+              duration: 2000,
+            });
+            router.replace("/phonebook");
+          }
         }
       } catch (error) {
         console.log("CHECK", error);
@@ -131,10 +138,12 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   };
 
   const onCloseClickHandler = () => {
-    dispatch(updateDisabledPrescriber(prescriber.Id));
-    socket.emit("enable_prescriber", prescriber.Id);
-    updateTelePrescriberCallStatus(prescriber.Id, false);
-    router.replace("/phonebook");
+    const isUpdated = updateTelePrescriberCallStatus(prescriber.Id, false);
+    if (isUpdated) {
+      dispatch(updateDisabledPrescriber(prescriber.Id));
+      socket.emit("enable_prescriber", prescriber.Id);
+      router.replace("/phonebook");
+    }
   };
 
   const onFlaggedClickHandler = async () => {
@@ -159,11 +168,13 @@ const PrescriberCallViewRight = ({ prescriber }) => {
           feedbackText,
         ]);
 
-        toast.success(data.message, {
-          duration: 2000,
-        });
-        updateTelePrescriberCallStatus(prescriber.Id, false);
-        router.replace("/phonebook");
+        const isUpdated = updateTelePrescriberCallStatus(prescriber.Id, false);
+        if (isUpdated) {
+          toast.success(data.message, {
+            duration: 2000,
+          });
+          router.replace("/phonebook");
+        }
       }
     } catch (error) {
       console.log("CHECK", error);
@@ -187,6 +198,11 @@ const PrescriberCallViewRight = ({ prescriber }) => {
       );
       const data = await response.json();
       console.log("DATA", data);
+      if (data.status == 200) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (error) {
       console.log("CHECK", error);
     }
