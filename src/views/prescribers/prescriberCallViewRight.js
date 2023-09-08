@@ -26,6 +26,7 @@ import authConfig from "src/configs/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { updateDisabledPrescriber } from "src/store/prescribers";
 import DialogSetMeeting from "../components/dialogs/DialogSetMeeting";
+import DialogFlagNumber from "../components/dialogs/DialogFlagNumber";
 
 // ** Styled Tab component
 const Tab = styled(MuiTab)(({ theme }) => ({
@@ -47,6 +48,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isCalled, setIsCalled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [openFlagDialog, setOpenFlagDialog] = useState(false);
 
   // ** Hooks
   const dispatch = useDispatch();
@@ -146,41 +148,6 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     }
   };
 
-  const onFlaggedClickHandler = async () => {
-    try {
-      const response = await fetch(
-        `${BASE_URL}tele-prescribers/update_tele_prescriber_flag_number`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            prescriberId: prescriber.Id,
-            flagged: true,
-          }),
-        }
-      );
-      const data = await response.json();
-      if (data.status == 200) {
-        setPhoneNumberFeedbackArray((prevArray) => [
-          ...prevArray,
-          feedbackText,
-        ]);
-
-        const isUpdated = updateTelePrescriberCallStatus(prescriber.Id, false);
-        if (isUpdated) {
-          toast.success(data.message, {
-            duration: 2000,
-          });
-          router.replace("/phonebook");
-        }
-      }
-    } catch (error) {
-      console.log("CHECK", error);
-    }
-  };
-
   const updateTelePrescriberCallStatus = async (prescriberId, flag) => {
     try {
       const response = await fetch(
@@ -253,12 +220,22 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     // router.replace("/phonebook");
   };
 
+  const handleCloseFlagDialog = () => {
+    setOpenFlagDialog(false);
+  };
+
   return (
     <>
       <DialogSetMeeting
         open={open}
         handleClose={handleCloseDialog}
         prescriberId={prescriber.Id}
+      />
+      <DialogFlagNumber
+        open={openFlagDialog}
+        handleClose={handleCloseFlagDialog}
+        prescriberId={prescriber.Id}
+        teleMarketerId={userData.id}
       />
       <div
         style={{
@@ -385,7 +362,11 @@ const PrescriberCallViewRight = ({ prescriber }) => {
         </Grid>
         <Grid item xs={6}>
           <FormControl fullWidth variant="outlined" margin="dense">
-            <Button variant="contained" onClick={() => onFlaggedClickHandler()}>
+            <Button
+              variant="contained"
+              onClick={() => setOpenFlagDialog(true)}
+              disabled={elapsedTime == 0 ? true : false}
+            >
               Flag Number
             </Button>
           </FormControl>
