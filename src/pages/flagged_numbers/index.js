@@ -14,6 +14,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import EditIcon from "mdi-material-ui/Pencil";
 import ServerSideToolbar from "src/views/table/data-grid/ServerSideToolbar";
 import moment from "moment";
+import Tooltip from "@mui/material/Tooltip";
 
 // ** Config
 import authConfig from "src/configs/auth";
@@ -74,6 +75,24 @@ const FlaggedNumbers = () => {
         <Typography variant="body2" sx={{ color: "text.primary" }}>
           {params.row.Phone}
         </Typography>
+      ),
+    },
+    {
+      minWidth: 160,
+      field: "TeleMarketer",
+      headerName: "TeleMarkterId",
+      renderCell: ({ row }) => (
+        <Typography variant="caption">{row?.name}</Typography>
+      ),
+    },
+    {
+      minWidth: 260,
+      field: "FlagDisposition",
+      headerName: "Disposition",
+      renderCell: ({ row }) => (
+        <Tooltip title={row?.FlagDisposition}>
+          <Typography variant="caption">{row?.FlagDisposition}</Typography>
+        </Tooltip>
       ),
     },
     {
