@@ -195,33 +195,33 @@ const TelePrescriber = () => {
         </Typography>
       ),
     },
-    {
-      flex: 0.1,
-      minWidth: 50,
-      field: "Action",
-      headerName: "Action",
-      renderCell: ({ row }) => (
-        <Grid container alignItems="center">
-          <Link href={`/TelePrescriber/preview/${row.Id}`} passHref>
-            <IconButton
-              size="small"
-              component="a"
-              sx={{ textDecoration: "none", cursor: "pointer" }}
-              onClick={() => onActionClick(row.Id)}
-              disabled={isActionDisabled(row.Id) || row.isOnCall}
-            >
-              <EyeOutline
-                fontSize="small"
-                sx={{
-                  color:
-                    isActionDisabled(row.Id) || row.isOnCall ? "red" : null,
-                }}
-              />
-            </IconButton>
-          </Link>
-        </Grid>
-      ),
-    },
+    // {
+    //   flex: 0.1,
+    //   minWidth: 50,
+    //   field: "Action",
+    //   headerName: "Action",
+    //   renderCell: ({ row }) => (
+    //     <Grid container alignItems="center">
+    //       <Link href={`/TelePrescriber/preview/${row.Id}`} passHref>
+    //         <IconButton
+    //           size="small"
+    //           component="a"
+    //           sx={{ textDecoration: "none", cursor: "pointer" }}
+    //           onClick={() => onActionClick(row.Id)}
+    //           disabled={isActionDisabled(row.Id) || row.isOnCall}
+    //         >
+    //           <EyeOutline
+    //             fontSize="small"
+    //             sx={{
+    //               color:
+    //                 isActionDisabled(row.Id) || row.isOnCall ? "red" : null,
+    //             }}
+    //           />
+    //         </IconButton>
+    //       </Link>
+    //     </Grid>
+    //   ),
+    // },
   ];
   const columns = [...defaultColumns];
 
