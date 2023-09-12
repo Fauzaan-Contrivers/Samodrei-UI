@@ -90,8 +90,35 @@ const PrescriberCallViewRight = ({ prescriber }) => {
       "Call Answered with a Call Back Request (Call Scheduling Option)"
     ) {
       setOpen(true);
+    } else {
+      updateTelePrescriberMeetDate();
     }
   }, [disposition]);
+
+  const updateTelePrescriberMeetDate = async () => {
+    try {
+      const response = await fetch(
+        `${BASE_URL}tele-prescribers/update_tele_prescriber_meeting`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            prescriberId: prescriber.Id,
+            flagged: false,
+            meetingDate: null,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.status == 200) {
+        console.log("CHECK", data);
+      }
+    } catch (error) {
+      console.log("CHECK", error);
+    }
+  };
 
   const onSubmitFeedbackHandler = async () => {
     if (isCalled) {

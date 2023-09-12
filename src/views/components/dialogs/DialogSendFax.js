@@ -12,6 +12,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import { CloseBox } from "mdi-material-ui";
 var FormData = require("form-data");
+import toast from "react-hot-toast";
 
 const DialogSendFax = ({ open, handleClose, FaxNumber, platform }) => {
   const defaultFaxNumber = FaxNumber == 0 ? "" : FaxNumber;
@@ -36,12 +37,8 @@ const DialogSendFax = ({ open, handleClose, FaxNumber, platform }) => {
       });
 
       formData.append("json", jsonBlob, "request.json");
-      console.log(file);
 
       formData.append("attachment", file);
-      // const file = new File(["test.pdf"], "test.pdf", {
-      //   type: "application/pdf",
-      // });
 
       let endpoint = "/restapi/v1.0/account/~/extension/~/fax";
       var resp = await platform
@@ -49,8 +46,11 @@ const DialogSendFax = ({ open, handleClose, FaxNumber, platform }) => {
         .then(async function (resp) {
           var jsonObj = await resp.json();
           handleClose();
-          console.log("DATA: ", jsonObj);
-          console.log("FAX sent. Message id: " + jsonObj.id);
+          // console.log("DATA: ", jsonObj);
+          // console.log("FAX sent. Message id: " + jsonObj.id);
+          toast.success(jsonObj.messageStatus, {
+            duration: 2000,
+          });
           check_fax_message_status(jsonObj.id);
         });
     } catch (e) {
@@ -63,10 +63,18 @@ const DialogSendFax = ({ open, handleClose, FaxNumber, platform }) => {
       let endpoint = `/restapi/v1.0/account/~/extension/~/message-store/${messageId}`;
       let resp = await platform.get(endpoint);
       let jsonObj = await resp.json();
-      console.log("Message status: ", jsonObj.messageStatus);
+      // console.log("Message status: ", jsonObj.messageStatus);
       if (jsonObj.messageStatus == "Queued") {
         await sleep(10000);
         check_fax_message_status(jsonObj.id);
+      } else if (jsonObj.messageStatus == "Sent") {
+        toast.success(jsonObj.messageStatus, {
+          duration: 2000,
+        });
+      } else {
+        toast.success(jsonObj.messageStatus, {
+          duration: 2000,
+        });
       }
     } catch (e) {
       console.log(e);

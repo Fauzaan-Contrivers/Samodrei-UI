@@ -232,6 +232,11 @@ export const prescribersSlice = createSlice({
       page: 0,
       pageSize: 20,
       is_soaanz_prescriber: "",
+      teleMarketerValue: "",
+      disposition: [],
+      startDateRange: "",
+      endDateRange: "",
+      dates: [],
     },
   },
   reducers: {

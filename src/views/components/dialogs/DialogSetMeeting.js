@@ -40,6 +40,7 @@ const DialogSetMeeting = ({ open, handleClose, prescriberId }) => {
       console.log("CHECK", error);
     }
   };
+
   return (
     <>
       <Dialog
