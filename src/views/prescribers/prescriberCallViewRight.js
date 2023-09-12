@@ -91,7 +91,9 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     ) {
       setOpen(true);
     } else {
-      updateTelePrescriberMeetDate();
+      if (disposition !== "") {
+        updateTelePrescriberMeetDate();
+      }
     }
   }, [disposition]);
 
