@@ -91,6 +91,10 @@ const CallLogs = () => {
   }));
 
   useEffect(() => {
+    fetchData();
+  }, [page, pageSize, store.call_logs.filter]);
+
+  const fetchData = () => {
     setIsLoading(true);
     dispatch(
       fetchCallLogsData({
@@ -105,7 +109,7 @@ const CallLogs = () => {
     ).then(() => {
       setIsLoading(false);
     });
-  }, [page, pageSize, store.call_logs.filter]);
+  };
 
   const handleTeleMarkterValue = (e) => {
     dispatch(
@@ -133,6 +137,7 @@ const CallLogs = () => {
       })
     );
   };
+
   const setDatesHandler = (val) => {
     dispatch(onCallLogFilterChangeHandler({ filter: "dates", value: val }));
   };
@@ -159,7 +164,7 @@ const CallLogs = () => {
       onCallLogFilterChangeHandler({ filter: "endDateRange", value: end })
     );
   };
-  console.log(store.call_logs.callLogData);
+
   const callLogsListViewColumns = [
     {
       minWidth: 80,
@@ -323,10 +328,11 @@ const CallLogs = () => {
           toast.success(res.data.message, {
             duration: 2000,
           });
-          setIsLoading(true);
+          fetchData();
         }
       });
   };
+
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
