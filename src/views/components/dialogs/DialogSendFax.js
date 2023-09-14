@@ -17,8 +17,19 @@ import toast from "react-hot-toast";
 const DialogSendFax = ({ open, handleClose, FaxNumber, platform }) => {
   const defaultFaxNumber = FaxNumber == 0 ? "" : FaxNumber;
   const [faxNumber, setFaxNumber] = useState(defaultFaxNumber);
-  const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
+  const [imgBlob, setBlob] = useState(null);
+
+  useEffect(() => {
+    fetch("https://dashboard.samodrei.com/files/fax.jpg")
+      .then((response) => response.blob())
+      .then((blob) => {
+        setBlob(blob);
+      })
+      .catch((error) => {
+        console.error("Error fetching the file:", error);
+      });
+  }, []);
 
   const handleSend = async () => {
     try {
@@ -38,22 +49,27 @@ const DialogSendFax = ({ open, handleClose, FaxNumber, platform }) => {
 
       formData.append("json", jsonBlob, "request.json");
 
+      const file = new File([imgBlob], "fax.jpg", { type: "image/jpeg" });
+
       formData.append("attachment", file);
 
       let endpoint = "/restapi/v1.0/account/~/extension/~/fax";
       var resp = await platform
         .post(endpoint, formData)
+        .then(handleClose())
         .then(async function (resp) {
           var jsonObj = await resp.json();
-          handleClose();
           // console.log("DATA: ", jsonObj);
           // console.log("FAX sent. Message id: " + jsonObj.id);
-          toast.success(jsonObj.messageStatus, {
-            duration: 2000,
+          toast.success("Success", {
+            duration: 5000,
           });
           check_fax_message_status(jsonObj.id);
         });
     } catch (e) {
+      toast.error("Error", {
+        duration: 5000,
+      });
       console.log(e.message);
     }
   };
@@ -69,14 +85,17 @@ const DialogSendFax = ({ open, handleClose, FaxNumber, platform }) => {
         check_fax_message_status(jsonObj.id);
       } else if (jsonObj.messageStatus == "Sent") {
         toast.success(jsonObj.messageStatus, {
-          duration: 2000,
+          duration: 5000,
         });
       } else {
-        toast.success(jsonObj.messageStatus, {
-          duration: 2000,
+        toast.error(jsonObj.messageStatus, {
+          duration: 5000,
         });
       }
     } catch (e) {
+      toast.error("Error", {
+        duration: 5000,
+      });
       console.log(e);
     }
   }
@@ -89,12 +108,12 @@ const DialogSendFax = ({ open, handleClose, FaxNumber, platform }) => {
     setFaxNumber(e.target.value);
   };
 
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-    }
-  };
+  // const handleFileChange = (e) => {
+  //   const selectedFile = e.target.files[0];
+  //   if (selectedFile) {
+  //     setFile(selectedFile);
+  //   }
+  // };
 
   const handleMessageChange = (e) => {
     setMessage(e.target.value);
@@ -111,7 +130,7 @@ const DialogSendFax = ({ open, handleClose, FaxNumber, platform }) => {
         PaperProps={{
           style: {
             width: "500px",
-            height: "400px",
+            height: "320px",
             maxWidth: "100%",
           },
         }}
@@ -142,7 +161,7 @@ const DialogSendFax = ({ open, handleClose, FaxNumber, platform }) => {
                 fullWidth
               />
             </Grid>
-            <Grid item xs={12} sx={{ marginBottom: "10px" }}>
+            {/* <Grid item xs={12} sx={{ marginBottom: "10px" }}>
               <TextField
                 type="file"
                 id="file"
@@ -150,7 +169,7 @@ const DialogSendFax = ({ open, handleClose, FaxNumber, platform }) => {
                 onChange={handleFileChange}
                 fullWidth
               />
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} sx={{ marginBottom: "10px" }}>
               <TextField
                 type="text"
