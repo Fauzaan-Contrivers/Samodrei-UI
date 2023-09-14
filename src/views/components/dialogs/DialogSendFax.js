@@ -48,12 +48,16 @@ const DialogSendFax = ({ open, handleClose, FaxNumber, platform }) => {
           handleClose();
           // console.log("DATA: ", jsonObj);
           // console.log("FAX sent. Message id: " + jsonObj.id);
-          toast.success(jsonObj.messageStatus, {
-            duration: 2000,
+          toast.success("Success", {
+            duration: 5000,
           });
           check_fax_message_status(jsonObj.id);
         });
     } catch (e) {
+      toast.error("Error", {
+        duration: 5000,
+      });
+      handleClose();
       console.log(e.message);
     }
   };
@@ -69,14 +73,17 @@ const DialogSendFax = ({ open, handleClose, FaxNumber, platform }) => {
         check_fax_message_status(jsonObj.id);
       } else if (jsonObj.messageStatus == "Sent") {
         toast.success(jsonObj.messageStatus, {
-          duration: 2000,
+          duration: 5000,
         });
       } else {
-        toast.success(jsonObj.messageStatus, {
-          duration: 2000,
+        toast.error(jsonObj.messageStatus, {
+          duration: 5000,
         });
       }
     } catch (e) {
+      toast.error("Error", {
+        duration: 5000,
+      });
       console.log(e);
     }
   }
