@@ -1,0 +1,30 @@
+name: Samodrei UI AWS Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install SSH key
+        uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.AWS_SSH_KEY }}
+
+      - name: Deploy to Lightsail
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} <<EOF
+            cd /home/bitnami/Samodrei-UI
+            git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Fauzaan-Contrivers/Samodrei-UI.git
+            git pull
+            npm install --legacy-peer-deps
+            npm run build  
+            pm2 restart sam-portal
+          EOF
