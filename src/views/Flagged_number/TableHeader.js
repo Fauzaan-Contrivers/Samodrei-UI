@@ -1,3 +1,4 @@
+// ** Next Import
 import Link from "next/link";
 import { forwardRef, Fragment, useState } from "react";
 
@@ -136,7 +137,7 @@ const DialogBox = ({
 };
 
 const TableHeader = (props) => {
-    // console.log("props in flagged number", props.dataCSV);
+    console.log("props in flagged number", props.dataCSV);
   const store = useSelector((state) => state);
 
   const handleClickDownloadDataCSV = () => {
@@ -146,7 +147,7 @@ const TableHeader = (props) => {
   
   const downloadCSV = (start, end) => {
     let jobsData = props.dataCSV;
-    // console.log("jobs data", jobsData);
+    console.log("jobs data", jobsData);
     // if (start) {
     //   jobsData = jobsData.filter((val) =>
     //     moment(val.question_l_0).isSameOrAfter(moment(start), "D")
@@ -165,7 +166,7 @@ const TableHeader = (props) => {
 
 
     jobsData.forEach(function (row) {
-        // console.log('row.NPI', row.name);
+        console.log('row.NPI', row.name);
       csv += `${row.NPI},`;
       csv += `${row.First_Name} ${row.Last_Name},`;
       csv += `${row.Phone},`;
