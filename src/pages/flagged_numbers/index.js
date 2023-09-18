@@ -28,6 +28,7 @@ import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import TableHeader from "src/views/Flagged_number/TableHeader";
 
 // ** Third Party Styles Imports
 import format from "date-fns/format";
@@ -82,6 +83,7 @@ const FlaggedNumbers = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [dataCSV, setDataCSV] = useState(false);
 
   // ** Hooks
   const dispatch = useDispatch();
@@ -178,6 +180,90 @@ const FlaggedNumbers = () => {
     },
   ];
 
+  const handleClickDownloadDataCSV = () => {
+    const startDate = moment(store.jobs.filter.startDateRange, "YYYY-MM-DD");
+    const formattedStartDate = startDate.format("YYYY-MM-DD");
+    const endDate = moment(store.jobs.filter.endDateRange, "YYYY-MM-DD");
+    const formattedEndStartDate = endDate.format("YYYY-MM-DD");
+    let fetchPageSize = pageSize;
+
+    const check = store.jobs.filter.jobs_with_lunches_only;
+    if (!store.jobs.filter.jobs_with_lunches_only) {
+      check = "null";
+    }
+
+    if (store.jobs.filter.dates.length === 0) {
+      formattedStartDate = "";
+      formattedEndStartDate = "";
+    }
+  };
+
+  // console.log('dataCSV',dataCSV);
+  // useEffect(() => {
+  //   if (dataCSV) {
+  //     toCSVForm(store.jobs.dataCSV);
+  //   }
+  // }, [dataCSV]);
+
+  // const toCSVForm = (data) => {
+  //   let csv = "";
+
+  //   const csvDataArray = [
+  //     {
+  //       key: "NPI",
+  //       header: "NPI",
+  //     },
+  //     {
+  //       key: "Name",
+  //       header: "Name",
+  //     },
+  //     {
+  //       key: "Flagged Nmber",
+  //       header: "Flagged Number",
+  //     },
+  //     {
+  //       key: "Tele-Marketer",
+  //       header: "Tele-Marketer",
+  //     },
+  //     {
+  //       key: "Disposition",
+  //       header: "Disposition",
+  //     },
+  //     {
+  //       key: "Flagged date",
+  //       header: "Flagged date",
+  //     },
+  //   ];
+
+  //   csvDataArray.map((head) => {
+  //     csv += `${String(head["header"].replace(/,/g, " "))},`;
+  //   });
+  //   csv += `\n`;
+  //  console.log('datata', data);
+  //   data.map((job) => {
+  //     csvDataArray.map((item) => {
+  //       if ("key2" in item) {
+  //         csv += `${String(job[item["key"]][item.key2]).replace(
+  //           /,|#|\n/gi,
+  //           " "
+  //         )},`;
+  //       } else {
+  //         csv += `${String(job[item["key"]]).replace(/,|#|\n/gi, " ")},`;
+  //       }
+  //     });
+  //     csv += `\n`;
+  //   });
+
+  //   var hiddenElement = document.createElement("a");
+  //   hiddenElement.href =
+  //     "data:text/csv;charset=utf-8,%EF%BB%BF" + encodeURI(csv);
+  //   hiddenElement.target = "_blank";
+
+  //   //provide the name for the CSV file to be downloaded
+  //   hiddenElement.download = "Data.csv";
+  //   hiddenElement.click();
+  // };
+
   const fetchTableData = useCallback(
     async (sort, column, clientId, open) => {
       if (!open) {
@@ -193,6 +279,8 @@ const FlaggedNumbers = () => {
             clientId,
           })
           .then((res) => {
+            // console.log('res.data.prescribers.length', res.data.prescribers.length);
+            setDataCSV(res.data.prescribers);
             setTotal(res.data.prescribers.length);
             setRows(loadServerRows(page, res.data.prescribers));
             setIsLoading(false);
@@ -202,6 +290,8 @@ const FlaggedNumbers = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [page, pageSize, open, store.prescribers.filter]
   );
+
+  // console.log('data csv', dataCSV)
 
   useEffect(() => {
     fetchTableData(sort, sortColumn, userData.clientId, open);
@@ -381,6 +471,11 @@ const FlaggedNumbers = () => {
             prescriberId={prescriberId}
           />
           <CardHeader title="Flagged Numbers List" />
+          <TableHeader
+            dataCSV={dataCSV}
+            onClick={() => handleClickDownloadDataCSV()}
+          />
+
           <DataGrid
             autoHeight
             pagination
@@ -395,7 +490,7 @@ const FlaggedNumbers = () => {
             rowsPerPageOptions={[10, 25, 50]}
             getRowId={(row) => row?.Id}
             onPageChange={(newPage) => setPage(newPage)}
-            components={{ Toolbar: ServerSideToolbar }}
+            // components={{ Toolbar: ServerSideToolbar }}
             onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
             componentsProps={{
               toolbar: {
