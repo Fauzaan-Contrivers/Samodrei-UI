@@ -21,7 +21,7 @@ const DialogSendFax = ({ open, handleClose, FaxNumber, platform }) => {
   const [imgBlob, setBlob] = useState(null);
 
   useEffect(() => {
-    fetch("https://dashboard.samodrei.com/files/fax.jpg")
+    fetch("https://dashboard.samodrei.com/files/faxNew.jpg")
       .then((response) => response.blob())
       .then((blob) => {
         setBlob(blob);
@@ -49,7 +49,7 @@ const DialogSendFax = ({ open, handleClose, FaxNumber, platform }) => {
 
       formData.append("json", jsonBlob, "request.json");
 
-      const file = new File([imgBlob], "fax.jpg", { type: "image/jpeg" });
+      const file = new File([imgBlob], "faxNew.jpg", { type: "image/jpeg" });
 
       formData.append("attachment", file);
 
