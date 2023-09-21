@@ -11,6 +11,7 @@ import { CloseBox } from "mdi-material-ui";
 import DialogTitle from "@mui/material/DialogTitle";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
+import TextField from "@mui/material/TextField";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import toast from "react-hot-toast";
@@ -23,6 +24,8 @@ const DialogFlagNumber = ({
   teleMarketerId,
 }) => {
   const [disposition, setDisposition] = useState("");
+  const [feedbackText, setFeedbackText] = useState("");
+
   const router = useRouter();
 
   const updateFlagNumber = async () => {
@@ -38,6 +41,7 @@ const DialogFlagNumber = ({
             prescriberId: prescriberId,
             teleMarketerId: teleMarketerId,
             disposition: disposition,
+            feedbackText: feedbackText,
             flagged: true,
           }),
         }
@@ -64,7 +68,7 @@ const DialogFlagNumber = ({
         PaperProps={{
           style: {
             width: "500px",
-            height: "200px",
+            height: "300px",
             maxWidth: "100%",
           },
         }}
@@ -126,6 +130,18 @@ const DialogFlagNumber = ({
                   Call Answered and Fax Information Requested
                 </MenuItem>
               </Select>
+
+                <TextField
+                  id="feedback-text"
+                  label="Feedback"
+                  variant="outlined"
+                  multiline
+                  fullWidth
+                  margin="dense"
+                  rows={3}
+                  value={feedbackText}
+                  onChange={(e) => setFeedbackText(e.target.value)}
+                />
             </FormControl>
           </Grid>
         </DialogContent>

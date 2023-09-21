@@ -84,7 +84,7 @@ const FlaggedNumbers = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [dataCSV, setDataCSV] = useState(false);
-
+  //  console.log("dataCSV", dataCSV);
   // ** Hooks
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
@@ -147,6 +147,16 @@ const FlaggedNumbers = () => {
       renderCell: ({ row }) => (
         <Tooltip title={row?.FlagDisposition}>
           <Typography variant="caption">{row?.FlagDisposition}</Typography>
+        </Tooltip>
+      ),
+    },
+    {
+      minWidth: 260,
+      field: "FlagFeedback",
+      headerName: "Feedback",
+      renderCell: ({ row }) => (
+        <Tooltip title={row?.FlagFeedback}>
+          <Typography variant="caption">{row?.FlagFeedback}</Typography>
         </Tooltip>
       ),
     },

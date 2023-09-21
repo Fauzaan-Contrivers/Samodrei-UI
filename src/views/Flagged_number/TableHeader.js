@@ -159,7 +159,7 @@ const TableHeader = (props) => {
     // }
     // let lunchData = jobsData.filter((val) => val.question_1);
     let csv =
-      "NPI,Name,Flagged Number, Tele-Marketer,Disposition,Flagged Date\n";
+      "NPI,Name,Flagged Number, Tele-Marketer,Disposition, Street_Address,Flagged Date\n";
     // csv +=
     //   'NPI,Name,Flagged Number,Tele-Marketer,Disposition,Flagged date\n';
 
@@ -170,6 +170,8 @@ const TableHeader = (props) => {
       csv += `${row.Phone},`;
       csv += `${row.name},`;
       csv += `${row.FlagDisposition},`;
+            csv += `${row.Street_Address} ${row.City} ${row.State},`;
+
       csv += `${row.FlaggedPhoneNumberDate},`;
       //   csv += ","; // unit
       //   csv += `"${row.prescriber.Street_Address?.replace(/#/g, "")}",`;

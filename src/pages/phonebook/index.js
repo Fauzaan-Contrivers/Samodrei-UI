@@ -18,13 +18,16 @@ import {
 import { onCallLogFilterChangeHandler } from "src/store/call_logs";
 
 // ** MUI Imports
+import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import { DataGrid } from "@mui/x-data-grid";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import EyeOutline from "mdi-material-ui/EyeOutline";
-
+import { onFaxLogFilterChangeHandler } from "src/store/fax_logs";
+import { ringCentralConfig } from "src/configs/config";
+const RC = require("@ringcentral/sdk").SDK;
 // ** Configs
 import authConfig from "src/configs/auth";
 import { BASE_URL } from "src/configs/config";
@@ -35,20 +38,64 @@ import Link from "next/link";
 const PhoneBook = () => {
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [pageNumber, setPageNumber] = useState(null);
+  const [platform, setPlatform] = useState(null);
   const ability = useContext(AbilityContext);
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
   const { socket } = store.call_logs.filter;
   const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
+   dispatch(
+     onFaxLogFilterChangeHandler({ filter: "platform", value: platform })
+   );
+
+   const { RC_SERVER_URL, RC_CLIENT_ID, RC_CLIENT_SECRET, RC_JWT } =
+     ringCentralConfig;
 
   useEffect(
     () => fetchPrescribersOnUpdate(),
     [store.prescribers.filter.page, store.prescribers.filter.pageSize]
   );
+  useEffect(() => fetchPrescribersOnUpdatePageNumber(), [pageNumber]);
   useEffect(() => setupRingCentralScript(), []);
   useEffect(() => initializeSocket(), []);
   useEffect(() => configureSocketEvents(socket), [socket]);
+ useEffect(() => {
+   var rcsdk = new RC({
+     server: RC_SERVER_URL,
+     clientId: RC_CLIENT_ID,
+     clientSecret: RC_CLIENT_SECRET,
+   });
+
+   var p = rcsdk.platform();
+
+   p.login({
+     jwt: RC_JWT,
+   });
+
+   p.on(p.events.loginSuccess, function (e) {
+     console.log("User logged in successfully");
+     setPlatform(p);
+   });
+ }, []);
+
+const fetchPrescribersOnUpdatePageNumber = () => {
+  setIsLoading(true);
+  const fetchPrescribersDataWithDebounce = debounce(() => {
+    dispatch(
+      fetchPrescribersforPhoneLogs({
+        page_num: pageNumber,
+        page_size: store.prescribers.filter.pageSize,
+      })
+    ).then(() => {
+      setPageNumber(store.prescribers.filter.page);
+      setIsLoading(false);
+    });
+  }, 2000);
+
+  fetchPrescribersDataWithDebounce();
+  return fetchPrescribersDataWithDebounce.cancel;
+};
 
   const fetchPrescribersOnUpdate = () => {
     setIsLoading(true);
@@ -81,6 +128,10 @@ const PhoneBook = () => {
     return () => rcs.remove();
   };
 
+  console.log(
+    "store.prescribers.PhonebookPrescribersData",
+    store.prescribers.PhonebookPrescribersData
+  );
   const initializeSocket = () => {
     const newSocket = io.connect(BASE_URL, { transports: ["websocket"] });
     dispatch(
@@ -243,6 +294,26 @@ const PhoneBook = () => {
     <div>
       {ability?.can("read", "acl-page") ? (
         <>
+          <div style={{marginBottom: "10px", width: "200px"}}>
+            <TextField
+              id="outlined-basic"
+              label="Go to page number"
+              variant="outlined"
+              onChange={(e) =>
+                {
+                  const newPageNumbr= e.target.value;
+                  setPageNumber(newPageNumbr)
+                
+                  dispatch(
+                    onPrescriberFilterChangeHandler({
+                      filter: "page",
+                      value: newPageNumbr,
+                    })
+                  );
+                  } 
+                }
+            />
+          </div>
           <Grid item xs={12}>
             <Card>
               <DataGrid

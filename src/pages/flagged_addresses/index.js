@@ -132,7 +132,7 @@ const FlaggedAddresses = () => {
           clientId,
         })
         .then((res) => {
-          console.log(res.data.prescribers);
+          // console.log(res.data.prescribers);
           setTotal(res.data.prescribers.length);
           setRows(loadServerRows(page, res.data.prescribers));
           setIsLoading(false);

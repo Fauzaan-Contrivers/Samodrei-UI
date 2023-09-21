@@ -116,13 +116,29 @@ const Navigation = () => {
   ];
 
   if (userData?.roleId === 4) {
-    navigation.push({
-      path: "/phonebook",
-      action: "read",
-      subject: "acl-page",
-      icon: ShieldOutline,
-      title: "Tele-Prescribers",
-    });
+    navigation.push(
+      {
+        path: "/phonebook",
+        action: "read",
+        subject: "acl-page",
+        icon: ShieldOutline,
+        title: "Tele-Prescribers",
+      },
+      {
+        path: "/fax_logs/list",
+        action: "read",
+        subject: "acl-page",
+        icon: ShieldOutline,
+        title: "Fax Logs",
+      },
+      {
+        path: "/call_scheduled/list",
+        action: "read",
+        subject: "acl-page",
+        icon: ShieldOutline,
+        title: "Call Scheduled",
+      }
+    );
   }
 
   if (userData?.roleId === 5) {

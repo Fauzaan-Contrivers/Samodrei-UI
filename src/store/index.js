@@ -13,7 +13,8 @@ import product_advocates from "src/store/product_advocates/";
 import prescribers from "src/store/prescribers/";
 import samples from "src/store/samples";
 import call_logs from "src/store/call_logs";
-
+import fax_logs from "./fax_logs";
+import call_scheduled from "./call_scheduled";
 export const store = configureStore({
   reducer: {
     user,
@@ -27,6 +28,8 @@ export const store = configureStore({
     prescribers,
     samples,
     call_logs,
+    fax_logs,
+    call_scheduled,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
