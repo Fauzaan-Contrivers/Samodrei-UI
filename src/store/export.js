@@ -7,3 +7,5 @@ export * from "src/store/prescribers/";
 export * from "src/store/samples";
 
 export * from "src/store/call_logs";
+export * from "src/store/fax_logs";
+export * from 'src/store/call_scheduled';

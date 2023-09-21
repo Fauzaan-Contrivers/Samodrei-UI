@@ -49,18 +49,21 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   const [isCalled, setIsCalled] = useState(false);
   const [open, setOpen] = useState(false);
   const [openFlagDialog, setOpenFlagDialog] = useState(false);
-
+  const [commentData, setCommentData] = useState(false);
   // ** Hooks
   const dispatch = useDispatch();
   const router = useRouter();
   const store = useSelector((state) => state);
-
+  const meetingDate = useSelector(
+    (state) => state.prescribers.TelePrescriberData.result[0].MeetingDate
+  );
+  // console.log("meeting date", meetingDate)
   const { socket } = store.call_logs.filter;
 
   const userData = JSON?.parse(
     window.localStorage.getItem(authConfig.userData)
   );
-
+//  console.log("phoneNumberFeedbackArray", phoneNumberFeedbackArray);
   useEffect(() => {
     if (prescriber.CallFeedback) {
       setPhoneNumberFeedbackArray(prescriber.CallFeedback.split(", "));
@@ -96,6 +99,32 @@ const PrescriberCallViewRight = ({ prescriber }) => {
       }
     }
   }, [disposition]);
+
+ useEffect(() => {
+   getFeedback();
+ }, []);
+
+ const getFeedback = async () => {
+   try {
+     const response = await fetch(
+       `${BASE_URL}tele-prescribers/get_call_logs_feedback?prescriberId=${prescriber.Id}`,
+       {
+         method: "GET",
+         headers: {
+           "Content-Type": "application/json",
+         },
+       }
+     );
+
+  if (response.ok) {
+    const data = await response.json();
+    setCommentData(data)
+  } else {
+    console.error("Request failed with status:", response.status);
+  }   } catch (error) {
+     console.log("CHECK", error);
+   }
+ };
 
   const updateTelePrescriberMeetDate = async () => {
     try {
@@ -414,12 +443,19 @@ const PrescriberCallViewRight = ({ prescriber }) => {
       </Grid>
       <Typography variant="h6">Comments</Typography>
       <Divider />
-      <Grid border="1px solid gray">
-        {phoneNumberFeedbackArray.map((phoneNumber, index) => (
-          <Grid marginLeft="10px" item key={index}>
-            <h6>{phoneNumber}</h6>
-          </Grid>
-        ))}
+      <Grid>
+        {/* {phoneNumberFeedbackArray.map((phoneNumber, index) => ( */}
+        {/*<Grid marginLeft="10px" item key={index}>
+             <h6>{phoneNumber}</h6> 
+           </Grid>
+         ))}*/}
+        {meetingDate &&
+          commentData &&
+          commentData?.message.map((data) => (
+            <Grid paddingLeft="10px" border="1px solid gray">
+              <p>{data.CallFeedback}</p>
+            </Grid>
+          ))}
       </Grid>
     </>
   );

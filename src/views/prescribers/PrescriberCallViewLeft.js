@@ -20,36 +20,45 @@ import { getInitials } from "src/@core/utils/get-initials";
 import DialogSendFax from "../components/dialogs/DialogSendFax";
 import { ringCentralConfig } from "src/configs/config";
 const RC = require("@ringcentral/sdk").SDK;
+import { onFaxLogFilterChangeHandler } from "src/store/fax_logs";
+import { useDispatch, useSelector } from "react-redux";
 
 const PrescriberCallViewLeft = ({ data }) => {
   const [open, setOpen] = useState(false);
-  const [platform, setPlatform] = useState(null);
+  const { platform } = useSelector((state) => state.fax_logs.filter);
 
-  const { RC_SERVER_URL, RC_CLIENT_ID, RC_CLIENT_SECRET, RC_JWT } =
-    ringCentralConfig;
+  // const [platform, setPlatform] = useState(null);
+  // console.log("platform ledt", platform);
+  const dispatch = useDispatch();
+  // dispatch(
+  //   onFaxLogFilterChangeHandler({ filter: "platform", value: platform })
+  // );
+
+  // const { RC_SERVER_URL, RC_CLIENT_ID, RC_CLIENT_SECRET, RC_JWT } =
+  //   ringCentralConfig;
 
   const handleClose = () => {
     setOpen(false);
   };
 
-  useEffect(() => {
-    var rcsdk = new RC({
-      server: RC_SERVER_URL,
-      clientId: RC_CLIENT_ID,
-      clientSecret: RC_CLIENT_SECRET,
-    });
+  // useEffect(() => {
+  //   var rcsdk = new RC({
+  //     server: RC_SERVER_URL,
+  //     clientId: RC_CLIENT_ID,
+  //     clientSecret: RC_CLIENT_SECRET,
+  //   });
 
-    var p = rcsdk.platform();
+  //   var p = rcsdk.platform();
 
-    p.login({
-      jwt: RC_JWT,
-    });
+  //   p.login({
+  //     jwt: RC_JWT,
+  //   });
 
-    p.on(p.events.loginSuccess, function (e) {
-      console.log("User logged in successfully");
-      setPlatform(p);
-    });
-  }, []);
+  //   p.on(p.events.loginSuccess, function (e) {
+  //     console.log("User logged in successfully");
+  //     setPlatform(p);
+  //   });
+  // }, []);
 
   useEffect(() => {
     RCAdapter.setClosed(false);

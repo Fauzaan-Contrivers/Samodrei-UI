@@ -11,6 +11,7 @@ import TextField from "@mui/material/TextField";
 import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import { CloseBox } from "mdi-material-ui";
+import authConfig from "src/configs/auth"
 var FormData = require("form-data");
 import toast from "react-hot-toast";
 
@@ -20,8 +21,11 @@ const DialogSendFax = ({ open, handleClose, FaxNumber, platform }) => {
   const [message, setMessage] = useState("");
   const [imgBlob, setBlob] = useState(null);
 
+  const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
+
   useEffect(() => {
-    fetch("https://dashboard.samodrei.com/files/faxNew.jpg")
+    // fetch("http://localhost:3000/files/fax.jpg")
+    fetch("https://dashboard.samodrei.com/files/faxImage.jpg")
       .then((response) => response.blob())
       .then((blob) => {
         setBlob(blob);
@@ -61,6 +65,8 @@ const DialogSendFax = ({ open, handleClose, FaxNumber, platform }) => {
           var jsonObj = await resp.json();
           // console.log("DATA: ", jsonObj);
           // console.log("FAX sent. Message id: " + jsonObj.id);
+          send_fax_number_data(jsonObj.id, faxNumber, jsonObj.messageStatus);
+
           toast.success("Success", {
             duration: 5000,
           });
@@ -73,26 +79,74 @@ const DialogSendFax = ({ open, handleClose, FaxNumber, platform }) => {
       console.log(e.message);
     }
   };
+  async function send_fax_number_data(id, faxNumber, messageStatus) {
+    try {
+      console.log("CALLED");
+      const response = await fetch(`${BASE_URL}call-logs/create-fax-logs`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          faxId: id,
+          faxNumber: faxNumber,
+          status: messageStatus,
+          TeleMarketerId: userData.id,
+        }),
+      });
+      const data = await response.json();
+      if (data.status == 200) {
+        console.log("Table Updated", data);
+      }
+    } catch (error) {
+      console.log("CHECK", error);
+    }
+  }
 
+  async function update_fax_number_data(id, messageStatus) {
+    try {
+      console.log("CALLED");
+      const response = await fetch(`${BASE_URL}call-logs/update-fax-logs`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          faxId: id,
+          status: messageStatus,
+        }),
+      });
+      const data = await response.json();
+      if (data.status == 200) {
+        console.log("Table Updated", data);
+      }
+    } catch (error) {
+      console.log("CHECK", error);
+    }
+  }
   async function check_fax_message_status(messageId) {
     try {
       let endpoint = `/restapi/v1.0/account/~/extension/~/message-store/${messageId}`;
       let resp = await platform.get(endpoint);
       let jsonObj = await resp.json();
-      // console.log("Message status: ", jsonObj.messageStatus);
+      console.log("Message status: ", jsonObj.messageStatus);
       if (jsonObj.messageStatus == "Queued") {
         await sleep(10000);
+        update_fax_number_data(jsonObj.id, jsonObj.messageStatus);
         check_fax_message_status(jsonObj.id);
       } else if (jsonObj.messageStatus == "Sent") {
+        update_fax_number_data(jsonObj.id, jsonObj.messageStatus);
         toast.success(jsonObj.messageStatus, {
           duration: 5000,
         });
       } else {
+        update_fax_number_data(jsonObj.id, jsonObj.messageStatus);
         toast.error(jsonObj.messageStatus, {
           duration: 5000,
         });
       }
     } catch (e) {
+      update_fax_number_data(jsonObj.id, faxNumber, jsonObj.messageStatus);
       toast.error("Error", {
         duration: 5000,
       });
