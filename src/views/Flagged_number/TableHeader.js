@@ -159,20 +159,23 @@ const TableHeader = (props) => {
     // }
     // let lunchData = jobsData.filter((val) => val.question_1);
     let csv =
-      "NPI,Name,Flagged Number, Tele-Marketer,Disposition, Street_Address,Flagged Date\n";
+      "NPI,Name,Flagged Number, Tele-Marketer,Disposition,Address,,,,Flagged Date\n";
     // csv +=
     //   'NPI,Name,Flagged Number,Tele-Marketer,Disposition,Flagged date\n';
 
     jobsData.forEach(function (row) {
-      // console.log('row.NPI', row.name);
       csv += `${row.NPI},`;
       csv += `${row.First_Name} ${row.Last_Name},`;
       csv += `${row.Phone},`;
       csv += `${row.name},`;
       csv += `${row.FlagDisposition},`;
-            csv += `${row.Street_Address} ${row.City} ${row.State},`;
+            csv += `"${row.Street_Address?.replace(/#/g, "")} ${row.City} ${
+              row.State
+            }",`;
 
-      csv += `${row.FlaggedPhoneNumberDate},`;
+      // csv += ` ${row.Street_Address} ${row.City} ${row.State}`;
+
+      csv += `${row.FlaggedPhoneNumberDate}`;
       //   csv += ","; // unit
       //   csv += `"${row.prescriber.Street_Address?.replace(/#/g, "")}",`;
       //   csv += `${row.prescriber.City},`;
