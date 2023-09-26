@@ -122,7 +122,9 @@ const FaxLogs = () => {
   //  }, []);
   const fetchData = () => {
     setIsLoading(true);
-    dispatch(fetchFaxLogsData()).then(() => {
+    dispatch(
+      fetchFaxLogsData({ page_num: page + 1, page_size: pageSize })
+    ).then(() => {
       setIsLoading(false);
     });
   };
@@ -429,7 +431,7 @@ const FaxLogs = () => {
             rows={isLoading ? [] : store.fax_logs.faxLogData}
             columns={columns}
             loading={isLoading}
-            rowCount={store.call_logs.totalRecords}
+            rowCount={store.fax_logs.totalRecords}
             getRowId={(row) => row?.Id}
             disableSelectionOnClick
             pageSize={Number(pageSize)}

@@ -38,19 +38,23 @@ import Link from "next/link";
 const PhoneBook = () => {
   const [page, setPage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [pageNumber, setPageNumber] = useState(null);
   const [platform, setPlatform] = useState(null);
+  const [limitExceeds, setLimitExceeds] = useState(false);
+  const [filterPage, setFilterPage] = useState("");
   const ability = useContext(AbilityContext);
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
+  const [pageNumber, setPageNumber] = useState(
+    store.prescribers.filter.page || null
+  );
   const { socket } = store.call_logs.filter;
   const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
-   dispatch(
-     onFaxLogFilterChangeHandler({ filter: "platform", value: platform })
-   );
+  dispatch(
+    onFaxLogFilterChangeHandler({ filter: "platform", value: platform })
+  );
 
-   const { RC_SERVER_URL, RC_CLIENT_ID, RC_CLIENT_SECRET, RC_JWT } =
-     ringCentralConfig;
+  const { RC_SERVER_URL, RC_CLIENT_ID, RC_CLIENT_SECRET, RC_JWT } =
+    ringCentralConfig;
 
   useEffect(
     () => fetchPrescribersOnUpdate(),
@@ -60,45 +64,47 @@ const PhoneBook = () => {
   useEffect(() => setupRingCentralScript(), []);
   useEffect(() => initializeSocket(), []);
   useEffect(() => configureSocketEvents(socket), [socket]);
- useEffect(() => {
-   var rcsdk = new RC({
-     server: RC_SERVER_URL,
-     clientId: RC_CLIENT_ID,
-     clientSecret: RC_CLIENT_SECRET,
-   });
-
-   var p = rcsdk.platform();
-
-   p.login({
-     jwt: RC_JWT,
-   });
-
-   p.on(p.events.loginSuccess, function (e) {
-     console.log("User logged in successfully");
-     setPlatform(p);
-   });
- }, []);
-
-const fetchPrescribersOnUpdatePageNumber = () => {
-  setIsLoading(true);
-  const fetchPrescribersDataWithDebounce = debounce(() => {
-    dispatch(
-      fetchPrescribersforPhoneLogs({
-        page_num: pageNumber,
-        page_size: store.prescribers.filter.pageSize,
-      })
-    ).then(() => {
-      setPageNumber(store.prescribers.filter.page);
-      setIsLoading(false);
+  useEffect(() => {
+    var rcsdk = new RC({
+      server: RC_SERVER_URL,
+      clientId: RC_CLIENT_ID,
+      clientSecret: RC_CLIENT_SECRET,
     });
-  }, 2000);
 
-  fetchPrescribersDataWithDebounce();
-  return fetchPrescribersDataWithDebounce.cancel;
-};
+    var p = rcsdk.platform();
+
+    p.login({
+      jwt: RC_JWT,
+    });
+
+    p.on(p.events.loginSuccess, function (e) {
+      console.log("User logged in successfully");
+      setPlatform(p);
+    });
+  }, []);
+
+  const fetchPrescribersOnUpdatePageNumber = () => {
+    setIsLoading(true);
+    // console.log("page numbr", pageNumber);
+    const fetchPrescribersDataWithDebounce = debounce(() => {
+      dispatch(
+        fetchPrescribersforPhoneLogs({
+          page_num: pageNumber + 1,
+          page_size: store.prescribers.filter.pageSize,
+        })
+      ).then(() => {
+        setPageNumber(store.prescribers.filter.page);
+        setIsLoading(false);
+      });
+    }, 2000);
+
+    fetchPrescribersDataWithDebounce();
+    return fetchPrescribersDataWithDebounce.cancel;
+  };
 
   const fetchPrescribersOnUpdate = () => {
     setIsLoading(true);
+    // console.log("store.prescribers.filter.page", store.prescribers.filter.page);
     const fetchPrescribersDataWithDebounce = debounce(() => {
       dispatch(
         fetchPrescribersforPhoneLogs({
@@ -128,10 +134,10 @@ const fetchPrescribersOnUpdatePageNumber = () => {
     return () => rcs.remove();
   };
 
-  console.log(
-    "store.prescribers.PhonebookPrescribersData",
-    store.prescribers.PhonebookPrescribersData
-  );
+  // console.log(
+  //   "store.prescribers.PhonebookPrescribersData",
+  //   store.prescribers.PhonebookPrescribersData
+  // );
   const initializeSocket = () => {
     const newSocket = io.connect(BASE_URL, { transports: ["websocket"] });
     dispatch(
@@ -273,6 +279,7 @@ const fetchPrescribersOnUpdatePageNumber = () => {
   const columns = defineColumns();
 
   const pageSizeChangeHandler = (newPageSize) => {
+
     dispatch(
       onPrescriberFilterChangeHandler({
         filter: "pageSize",
@@ -290,29 +297,46 @@ const fetchPrescribersOnUpdatePageNumber = () => {
     );
   };
 
+  const pageNumberChangeHandler = (newPageNumber) => {
+          
+    const totalRecords =
+      store.prescribers.totalRecords / store.prescribers.filter.pageSize;
+    
+
+    if (newPageNumber <= totalRecords) {
+      console.log("HERE");
+      setPageNumber(newPageNumber);
+      setLimitExceeds(false);
+      dispatch(
+        onPrescriberFilterChangeHandler({
+          filter: "page",
+          value: newPageNumber,
+        })
+      );
+    } else {
+            setLimitExceeds(true);
+
+      // console.log("The page number exceeds the limit.");
+    }
+  };
+
   return (
     <div>
       {ability?.can("read", "acl-page") ? (
         <>
-          <div style={{marginBottom: "10px", width: "200px"}}>
+          <div style={{ marginBottom: "10px", width: "200px" }}>
             <TextField
               id="outlined-basic"
               label="Go to page number"
               variant="outlined"
-              onChange={(e) =>
-                {
-                  const newPageNumbr= e.target.value;
-                  setPageNumber(newPageNumbr)
-                
-                  dispatch(
-                    onPrescriberFilterChangeHandler({
-                      filter: "page",
-                      value: newPageNumbr,
-                    })
-                  );
-                  } 
-                }
+              onChange={(e) => {
+                const newPageNumbr = e.target.value;
+                pageNumberChangeHandler(newPageNumbr);
+              }}
             />
+            {limitExceeds && (
+              <Typography color="error">Page limit exceeds</Typography>
+            )}
           </div>
           <Grid item xs={12}>
             <Card>

@@ -30,20 +30,30 @@ import { useDispatch, useSelector } from "react-redux";
 
 // ** Third Party Styles Imports
 import "react-datepicker/dist/react-datepicker.css";
+import {
+  addDisabledPrescriber,
+  fetchPrescribersforPhoneLogs,
+  updateDisabledPrescriber,
+  onPrescriberFilterChangeHandler,
+} from "src/store/prescribers";
 
 // ** Config
 import authConfig from "src/configs/auth";
 
 // ** Styled Components
 import { styled } from "@mui/material/styles";
+import io from "socket.io-client";
+import Link from "next/link";
+import EyeOutline from "mdi-material-ui/EyeOutline";
 
 import DatePickerWrapper from "src/@core/styles/libs/react-datepicker";
 
 import moment from "moment";
 import {
   fetchCallLogsMeetingDate,
-  onCallLogFilterChangeHandler,
+  // onCallLogFilterChangeHandler,
 } from "src/store/call_scheduled";
+import { onCallLogFilterChangeHandler } from "src/store/call_logs";
 
 /* eslint-disable */
 const CustomInput = forwardRef((props, ref) => {
@@ -82,6 +92,7 @@ const CallLogs = () => {
   // ** Hooks
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
+  const { socket } = store.call_logs.filter;
 
   const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
 
@@ -93,6 +104,8 @@ const CallLogs = () => {
   useEffect(() => {
     fetchData();
   }, [page, pageSize, store.call_scheduled.filter]);
+   useEffect(() => initializeSocket(), []);
+   useEffect(() => configureSocketEvents(socket), [socket]);
   const fetchData = async () => {
     // try {
     //   const response = await fetch(
@@ -118,7 +131,7 @@ const CallLogs = () => {
     //   console.log("CHECK", error);
     // }
     setIsLoading(true);
-    console.log("I am called");
+    // console.log("I am called");
     dispatch(
       fetchCallLogsMeetingDate({
         page_num: page + 1,
@@ -182,6 +195,58 @@ const CallLogs = () => {
       onCallLogFilterChangeHandler({ filter: "endDateRange", value: end })
     );
   };
+
+  const initializeSocket = () => {
+    const newSocket = io.connect(BASE_URL, { transports: ["websocket"] });
+    dispatch(
+      onCallLogFilterChangeHandler({
+        filter: "socket",
+        value: newSocket,
+      })
+    );
+  };
+// 
+  const configureSocketEvents = (socket) => {
+    if (socket) {
+      socket.on("disable_prescriber", (prescriberId) => {
+        dispatch(addDisabledPrescriber(prescriberId));
+      });
+      socket.on("enable_prescriber", (prescriberId) => {
+        dispatch(updateDisabledPrescriber(prescriberId));
+      });
+    }
+  };
+
+  const updatePrescriberCallStatus = async (prescriberId, flag) => {
+    try {
+      const response = await fetch(
+        `${BASE_URL}tele-prescribers/update_tele_prescriber_call_status`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prescriberId, flagged: flag }),
+        }
+      );
+      console.log("DATA", await response.json());
+      if (response.status == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error("CHECK", error);
+    }
+  };
+
+    const onActionClick = async (prescriberId) => {
+      const updateStatus = await updatePrescriberCallStatus(prescriberId, true);
+      if (updateStatus) {
+        socket.emit("disable_prescriber", prescriberId);
+      }
+    };
+    const isActionDisabled = (prescriberId) =>
+      store.prescribers.disabledPrescribers[prescriberId];
+
 
   const callLogsListViewColumns = [
     {
@@ -254,6 +319,33 @@ const CallLogs = () => {
             ? moment(row.MeetingDate).local().format("YYYY-MM-DD HH:mm:ss")
             : " "}
         </Typography>
+      ),
+    },
+    {
+      flex: 0.1,
+      minWidth: 100,
+      field: "Action",
+      headerName: "Action",
+      renderCell: ({ row }) => (
+        <Grid container alignItems="center">
+          <Link href={`/phonebook/preview/${row.Id}`} passHref>
+            <IconButton
+              size="small"
+              component="a"
+              sx={{ textDecoration: "none", cursor: "pointer" }}
+              onClick={() => onActionClick(row.Id)}
+              disabled={isActionDisabled(row.Id) || row.isOnCall ? true : false}
+            >
+              <EyeOutline
+                fontSize="small"
+                sx={{
+                  color:
+                    isActionDisabled(row.Id) || row.isOnCall ? "red" : null,
+                }}
+              />
+            </IconButton>
+          </Link>
+        </Grid>
       ),
     },
   ];

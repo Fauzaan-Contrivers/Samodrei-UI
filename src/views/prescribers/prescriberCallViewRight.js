@@ -202,7 +202,8 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     if (isUpdated) {
       dispatch(updateDisabledPrescriber(prescriber.Id));
       socket.emit("enable_prescriber", prescriber.Id);
-      router.replace("/phonebook");
+          window.history.back();
+      // router.replace("/phonebook");
     }
   };
 
@@ -256,6 +257,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
           break;
         case "rc-call-end-notify":
           // get call on call end event
+
           endTimer();
           break;
         default:
