@@ -8,10 +8,10 @@ import { apiCall } from "src/configs/utils";
 export const fetchFaxLogsData = createAsyncThunk(
   "call-logs/fetch-all-fax-logs",
   async (params) => {
-    let response = await apiCall("GET", "call-logs/fetch-all-fax-logs", {
+    let response = await apiCall("POST", "call-logs/fetch-all-fax-logs", {
       ...params,
-      //   limit: params.page_size,
-      //   page_num: params.page_num,
+        limit: params.page_size,
+        page_num: params.page_num,
       // status: params.status,
       // product_advocate: params.product_advocate,
       // start_date: params.start_date,
@@ -21,9 +21,10 @@ export const fetchFaxLogsData = createAsyncThunk(
       // lunch_meeting: params.lunch_meeting,
       // radius: params.radius,
     });
+    // console.log("response in fax logs", response)
     return {
-      result: response.data,
-      totalRecords: response.data,
+      result: response.data.result.records,
+      totalRecords: response.data.result.totalRecords,
     };
   }
 );

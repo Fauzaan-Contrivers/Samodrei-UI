@@ -25,6 +25,7 @@ export const fetchPrescribersData = createAsyncThunk(
 export const fetchPrescribersforPhoneLogs = createAsyncThunk(
   "tele-prescribers/fetch_prescribers_for_Logs",
   async (params) => {
+    // console.log("CALLED", params);
     let response = await apiCall(
       "POST",
       "tele-prescribers/fetch_prescribers_for_Logs",
