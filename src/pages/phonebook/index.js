@@ -16,6 +16,7 @@ import {
 } from "src/store/prescribers";
 
 import { onCallLogFilterChangeHandler } from "src/store/call_logs";
+import Button from "@mui/material/Button";
 
 // ** MUI Imports
 import TextField from "@mui/material/TextField";
@@ -41,6 +42,7 @@ const PhoneBook = () => {
   const [platform, setPlatform] = useState(null);
   const [limitExceeds, setLimitExceeds] = useState(false);
   const [filterPage, setFilterPage] = useState("");
+  const [namePrescriber, setNamePrescriber] = useState("");
   const ability = useContext(AbilityContext);
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
@@ -60,7 +62,7 @@ const PhoneBook = () => {
     () => fetchPrescribersOnUpdate(),
     [store.prescribers.filter.page, store.prescribers.filter.pageSize]
   );
-  useEffect(() => fetchPrescribersOnUpdatePageNumber(), [pageNumber]);
+  useEffect(() => fetchPrescribersOnName(), [pageNumber]);
   useEffect(() => setupRingCentralScript(), []);
   useEffect(() => initializeSocket(), []);
   useEffect(() => configureSocketEvents(socket), [socket]);
@@ -101,6 +103,41 @@ const PhoneBook = () => {
     fetchPrescribersDataWithDebounce();
     return fetchPrescribersDataWithDebounce.cancel;
   };
+
+    const fetchPrescribersOnName = () => {
+      setIsLoading(true);
+      const fetchPrescribersDataWithDebounce = debounce(() => {
+    
+      if (namePrescriber) {
+      
+        dispatch(
+          fetchPrescribersforPhoneLogs({
+            page_num: pageNumber + 1,
+            page_size: store.prescribers.filter.pageSize,
+            Search: namePrescriber,
+          })
+        ).then(() => {
+          setPageNumber(store.prescribers.filter.page);
+          setIsLoading(false);
+        });
+      } else {
+        dispatch(
+          fetchPrescribersforPhoneLogs({
+            page_num: pageNumber + 1,
+            page_size: store.prescribers.filter.pageSize,
+          })
+        ).then(() => {
+          setPageNumber(store.prescribers.filter.page);
+          setIsLoading(false);
+        });
+      }
+
+      }, 2000);
+
+      fetchPrescribersDataWithDebounce();
+      return fetchPrescribersDataWithDebounce.cancel;
+    };
+
 
   const fetchPrescribersOnUpdate = () => {
     setIsLoading(true);
@@ -320,24 +357,52 @@ const PhoneBook = () => {
     }
   };
 
+
   return (
     <div>
       {ability?.can("read", "acl-page") ? (
         <>
-          <div style={{ marginBottom: "10px", width: "200px" }}>
-            <TextField
-              id="outlined-basic"
-              label="Go to page number"
-              variant="outlined"
-              onChange={(e) => {
-                const newPageNumbr = e.target.value;
-                pageNumberChangeHandler(newPageNumbr);
+          <div style={{ display: "flex" }}>
+            <div style={{ marginBottom: "10px", width: "200px" }}>
+              <TextField
+                id="outlined-basic"
+                label="Go to page number"
+                variant="outlined"
+                onChange={(e) => {
+                  const newPageNumbr = e.target.value;
+                  pageNumberChangeHandler(newPageNumbr);
+                }}
+              />
+              {limitExceeds && (
+                <Typography color="error">Page limit exceeds</Typography>
+              )}
+            </div>
+            <div
+              style={{
+                marginBottom: "10px",
+                width: "200px",
+                marginLeft: "10px",
               }}
-            />
-            {limitExceeds && (
-              <Typography color="error">Page limit exceeds</Typography>
-            )}
+            >
+              <TextField
+                id="outlined-basic"
+                label="Search by Name"
+                variant="outlined"
+                onChange={(e) => {
+                  setNamePrescriber(e.target.value);
+                }}
+              />
+            </div>
+
+            <Button
+              onClick={fetchPrescribersOnName}
+              variant="outlined"
+              style={{ height: "55px", position: "absolute", right: 150 }}
+            >
+              Go
+            </Button>
           </div>
+
           <Grid item xs={12}>
             <Card>
               <DataGrid
