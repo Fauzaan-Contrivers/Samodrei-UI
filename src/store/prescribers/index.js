@@ -45,7 +45,7 @@ export const fetchPrescribersforPhoneLogs = createAsyncThunk(
 export const fetchAllTelePrescribers = createAsyncThunk(
   "tele-prescribers/fetch-tele-prescribers",
   async (params) => {
-        const { page_num, page_size, NamePrescriber, First_Name } = params;
+        const { page_num, page_size, Search } = params;
 
         // 
     // let response = await apiCall(
@@ -61,7 +61,7 @@ export const fetchAllTelePrescribers = createAsyncThunk(
       // result: response.data.prescribers,
       // totalRecords: response.data.count,
     // };
-    if (Last_Name || First_Name) {
+    if (Search) {
       console.log("HERE IN LAST NAME");
       let response = await apiCall(
         "POST",
@@ -69,8 +69,7 @@ export const fetchAllTelePrescribers = createAsyncThunk(
         {
           page_num,
           limit: page_size,
-          Last_Name,
-          First_Name,
+          Search,
         }
       );
 

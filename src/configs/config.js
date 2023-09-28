@@ -1,5 +1,5 @@
-export const BASE_URL = "https://backend.samodrei.com/";
-// export const BASE_URL = "http://localhost:5001/";
+// export const BASE_URL = "https://backend.samodrei.com/";
+export const BASE_URL = "http://localhost:5001/";
 export const API_KEY = "dd5-4salkdufhlaisfd-akjhiud4-d0c228b05cb4";
 // export const SECRET_KEY = "$2a$10$Ttrp07KGL6.FLvbVO1p1J.";
 export const ringCentralConfig = {
