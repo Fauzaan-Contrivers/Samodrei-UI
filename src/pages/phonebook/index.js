@@ -41,6 +41,7 @@ const PhoneBook = () => {
   const [platform, setPlatform] = useState(null);
   const [limitExceeds, setLimitExceeds] = useState(false);
   const [filterPage, setFilterPage] = useState("");
+  const [namePrescriber, setNamePrescriber] = useState("");
   const ability = useContext(AbilityContext);
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
@@ -60,7 +61,7 @@ const PhoneBook = () => {
     () => fetchPrescribersOnUpdate(),
     [store.prescribers.filter.page, store.prescribers.filter.pageSize]
   );
-  useEffect(() => fetchPrescribersOnUpdatePageNumber(), [pageNumber]);
+  useEffect(() => fetchPrescribersOnName(), [pageNumber, namePrescriber]);
   useEffect(() => setupRingCentralScript(), []);
   useEffect(() => initializeSocket(), []);
   useEffect(() => configureSocketEvents(socket), [socket]);
@@ -101,6 +102,55 @@ const PhoneBook = () => {
     fetchPrescribersDataWithDebounce();
     return fetchPrescribersDataWithDebounce.cancel;
   };
+
+    const fetchPrescribersOnName = () => {
+      setIsLoading(true);
+      // console.log("page numbr", pageNumber);
+      const fetchPrescribersDataWithDebounce = debounce(() => {
+      //   dispatch(
+      //     fetchPrescribersforPhoneLogs({
+      //       Name: prescriberName,
+      //       page_num: pageNumber + 1,
+      //       page_size: store.prescribers.filter.pageSize,
+      //     })
+      //   ).then(() => {
+      //     setPageNumber(store.prescribers.filter.page);
+      //     setIsLoading(false);
+      //   });
+      if (namePrescriber) {
+        console.log("HERE IN DISPATCH")
+        const [First_Name, Last_Name] = namePrescriber.split(" ");
+      
+        dispatch(
+          fetchPrescribersforPhoneLogs({
+            page_num: pageNumber + 1,
+            page_size: store.prescribers.filter.pageSize,
+            Last_Name: Last_Name,
+            First_Name: First_Name,
+          })
+        ).then(() => {
+          setPageNumber(store.prescribers.filter.page);
+          setIsLoading(false);
+        });
+      } else {
+        // If no name is provided, exclude Last_Name from the action
+        dispatch(
+          fetchPrescribersforPhoneLogs({
+            page_num: pageNumber + 1,
+            page_size: store.prescribers.filter.pageSize,
+          })
+        ).then(() => {
+          setPageNumber(store.prescribers.filter.page);
+          setIsLoading(false);
+        });
+      }
+
+      }, 2000);
+
+      fetchPrescribersDataWithDebounce();
+      return fetchPrescribersDataWithDebounce.cancel;
+    };
+
 
   const fetchPrescribersOnUpdate = () => {
     setIsLoading(true);
@@ -320,10 +370,14 @@ const PhoneBook = () => {
     }
   };
 
+  console.log('name ', namePrescriber);
+
   return (
     <div>
       {ability?.can("read", "acl-page") ? (
         <>
+        <div style={{display:"flex"}}>
+
           <div style={{ marginBottom: "10px", width: "200px" }}>
             <TextField
               id="outlined-basic"
@@ -338,6 +392,18 @@ const PhoneBook = () => {
               <Typography color="error">Page limit exceeds</Typography>
             )}
           </div>
+                    <div style={{ marginBottom: "10px", width: "200px", marginLeft: "10px" }}>
+            <TextField
+              id="outlined-basic"
+              label="Search by Name"
+              variant="outlined"
+              onChange={(e) => {
+                 setNamePrescriber(e.target.value);
+              }}
+            />
+          </div>
+        </div>
+    
           <Grid item xs={12}>
             <Card>
               <DataGrid

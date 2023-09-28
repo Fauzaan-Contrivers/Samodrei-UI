@@ -25,7 +25,7 @@ export const fetchPrescribersData = createAsyncThunk(
 export const fetchPrescribersforPhoneLogs = createAsyncThunk(
   "tele-prescribers/fetch_prescribers_for_Logs",
   async (params) => {
-    // console.log("CALLED", params);
+    console.log("CALLED", params);
     let response = await apiCall(
       "POST",
       "tele-prescribers/fetch_prescribers_for_Logs",
@@ -45,19 +45,55 @@ export const fetchPrescribersforPhoneLogs = createAsyncThunk(
 export const fetchAllTelePrescribers = createAsyncThunk(
   "tele-prescribers/fetch-tele-prescribers",
   async (params) => {
-    let response = await apiCall(
-      "POST",
-      "tele-prescribers/fetch-tele-prescribers",
-      {
-        ...params,
-        page_num: params.page_num,
-        limit: params.page_size,
-      }
-    );
-    return {
-      result: response.data.prescribers,
-      totalRecords: response.data.count,
-    };
+        const { page_num, page_size, NamePrescriber, First_Name } = params;
+
+        // 
+    // let response = await apiCall(
+      // "POST",
+      // "tele-prescribers/fetch-tele-prescribers",
+      // {
+        // ...params,
+        // page_num: params.page_num,
+        // limit: params.page_size,
+      // }
+    // );
+    // return {
+      // result: response.data.prescribers,
+      // totalRecords: response.data.count,
+    // };
+    if (Last_Name || First_Name) {
+      console.log("HERE IN LAST NAME");
+      let response = await apiCall(
+        "POST",
+        "tele-prescribers/fetch-tele-prescribers",
+        {
+          page_num,
+          limit: page_size,
+          Last_Name,
+          First_Name,
+        }
+      );
+
+      return {
+        result: response.data.prescribers,
+        totalRecords: response.data.count,
+      };
+    } else {
+      let response = await apiCall(
+        "POST",
+        "tele-prescribers/fetch-tele-prescribers",
+        {
+          page_num,
+          limit: page_size,
+        }
+      );
+
+      return {
+        result: response.data.prescribers,
+        totalRecords: response.data.count,
+      };
+    }
+  
   }
 );
 
