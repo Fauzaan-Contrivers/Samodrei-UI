@@ -24,7 +24,7 @@ const InvoicePreview = ({ id }) => {
   const [addPaymentOpen, setAddPaymentOpen] = useState(false)
   const [sendInvoiceOpen, setSendInvoiceOpen] = useState(false)
   useEffect(() => {
-    console.log("here with id", id)
+    // console.log("here with id", id)
     axios
       .get('/apps/invoice/single-invoice', { params: { id } })
       .then(res => {

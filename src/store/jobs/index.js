@@ -22,7 +22,7 @@ export const fetchJobsData = createAsyncThunk(
         lunch_meeting: params.lunch_meeting,
         radius: params.radius,
       });
-      console.log(response.data);
+      // console.log(response.data);
       return {
         totalRecords: response.data.result.records.count,
         result: response.data.result.records.jobs,

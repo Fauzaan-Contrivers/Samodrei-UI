@@ -249,13 +249,21 @@ const CallLogs = () => {
 
 
   const callLogsListViewColumns = [
+
     {
       minWidth: 80,
       field: "call_logs_Id",
       headerName: "Id",
-      renderCell: ({ row }) => (
-        <Typography variant="caption">{row?.Id}</Typography>
-      ),
+      renderCell: ({ row }) => {
+
+        const meetingDate = moment(row.MeetingDate);
+        const isTodayMeeting = meetingDate.isSame(moment(), "day"); 
+
+       const textCellStyle = isTodayMeeting ? { color: "red" } : {};
+       return(
+         <Typography variant="caption" style={textCellStyle}>{row?.Id}</Typography>
+         )
+      },
     },
     {
       flex: 0.5,
@@ -263,11 +271,15 @@ const CallLogs = () => {
       minWidth: 250,
       headerName: "Tele-Prescriber",
       renderCell: ({ row }) => {
+                const meetingDate = moment(row.MeetingDate);
+                const isTodayMeeting = meetingDate.isSame(moment(), "day");
+
+                const textCellStyle = isTodayMeeting ? { color: "red" } : {};
         return (
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Tooltip title={`${row.Phone}`}>
               <Box sx={{ display: "flex", flexDirection: "column" }}>
-                <Typography>{`${row.First_Name} ${row.Last_Name}`}</Typography>
+                <Typography style={textCellStyle}>{`${row.First_Name} ${row.Last_Name}`}</Typography>
               </Box>
             </Tooltip>
           </Box>
@@ -280,11 +292,15 @@ const CallLogs = () => {
       minWidth: 250,
       headerName: "Phone",
       renderCell: ({ row }) => {
+                const meetingDate = moment(row.MeetingDate);
+                const isTodayMeeting = meetingDate.isSame(moment(), "day");
+
+                const textCellStyle = isTodayMeeting ? { color: "red" } : {};
         return (
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Tooltip title={`${row.Phone}`}>
               <Box sx={{ display: "flex", flexDirection: "column" }}>
-                <Typography>{`${row.Phone}`}</Typography>
+                <Typography style={textCellStyle}>{`${row.Phone}`}</Typography>
               </Box>
             </Tooltip>
           </Box>
@@ -297,11 +313,15 @@ const CallLogs = () => {
       minWidth: 180,
       headerName: "NPI",
       renderCell: ({ row }) => {
+      const meetingDate = moment(row.MeetingDate);
+      const isTodayMeeting = meetingDate.isSame(moment(), "day");
+
+      const textCellStyle = isTodayMeeting ? { color: "red" } : {};
         return (
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Tooltip title={`${row.NPI}`}>
               <Box sx={{ display: "flex", flexDirection: "column" }}>
-                <Typography>{`${row.NPI}`}</Typography>
+                <Typography style={textCellStyle}>{`${row.NPI}`}</Typography>
               </Box>
             </Tooltip>
           </Box>
@@ -313,13 +333,26 @@ const CallLogs = () => {
       minWidth: 190,
       field: "Meeting Date",
       headerName: "Meeting Date",
-      renderCell: ({ row }) => (
-        <Typography variant="body2">
-          {row?.MeetingDate
-            ? moment(row.MeetingDate).local().format("YYYY-MM-DD HH:mm:ss")
-            : " "}
-        </Typography>
-      ),
+      renderCell: ({ row }) => {
+        const meetingDate = moment(row.MeetingDate);
+        const isTodayMeeting = meetingDate.isSame(moment(), "day"); 
+
+       const textCellStyle = isTodayMeeting ? { color: "red" } : {};
+        return (
+          <div >
+            <Typography variant="body2" style={textCellStyle}>
+              {meetingDate.local().format("YYYY-MM-DD HH:mm:ss")}
+            </Typography>
+          </div>
+        );
+      },
+      // (
+      //   <Typography variant="body2">
+      //     {row?.MeetingDate
+      //       ? moment(row.MeetingDate).local().format("YYYY-MM-DD HH:mm:ss")
+      //       : " "}
+      //   </Typography>
+      // ),
     },
     {
       flex: 0.1,

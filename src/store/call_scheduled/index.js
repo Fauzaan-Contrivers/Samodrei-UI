@@ -17,7 +17,7 @@ export const fetchCallLogsMeetingDate = createAsyncThunk(
         page_num: params.page_num,
       }
     );
-    console.log("response in store ", response.data.result.totalRecords);
+    // console.log("response in store ", response.data.result.totalRecords);
     return {
       result: response.data.result.records,
       totalRecords: response.data.result.totalRecords,
