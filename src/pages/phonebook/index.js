@@ -42,6 +42,7 @@ const PhoneBook = () => {
   const [platform, setPlatform] = useState(null);
   const [limitExceeds, setLimitExceeds] = useState(false);
   const [filterPage, setFilterPage] = useState("");
+  const [newPageNumber, setNewPageNumber]= useState("")
   const [namePrescriber, setNamePrescriber] = useState("");
   const ability = useContext(AbilityContext);
   const dispatch = useDispatch();
@@ -133,6 +134,25 @@ const PhoneBook = () => {
       }
 
       }, 2000);
+   const totalRecords =
+     store.prescribers.totalRecords / store.prescribers.filter.pageSize;
+
+     if(totalRecords){
+       if (newPageNumber <= totalRecords) {
+         setPageNumber(newPageNumber);
+         setLimitExceeds(false);
+         dispatch(
+           onPrescriberFilterChangeHandler({
+             filter: "page",
+             value: newPageNumber,
+            })
+     );
+    } else {
+        setLimitExceeds(true);
+      
+      // console.log("The page number exceeds the limit.");
+    }
+   }
 
       fetchPrescribersDataWithDebounce();
       return fetchPrescribersDataWithDebounce.cancel;
@@ -198,6 +218,7 @@ const PhoneBook = () => {
 
   const updatePrescriberCallStatus = async (prescriberId, flag) => {
     try {
+    
       const response = await fetch(
         `${BASE_URL}tele-prescribers/update_tele_prescriber_call_status`,
         {
@@ -218,10 +239,34 @@ const PhoneBook = () => {
   };
 
   const onActionClick = async (prescriberId) => {
+    console.log('prescriber id',prescriberId);
     const updateStatus = await updatePrescriberCallStatus(prescriberId, true);
     if (updateStatus) {
       socket.emit("disable_prescriber", prescriberId);
     }
+
+    try {
+      const response = await fetch(
+        `${BASE_URL}tele-prescribers/update_tele_prescriber_call_date`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ prescriberId, date: new Date() }),
+        }
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("API response:", result);
+      } else {
+        console.error("API request failed:", response.statusText);
+      }
+    } catch (error) {
+      console.error("API request error:", error);
+    }
+
   };
   const isActionDisabled = (prescriberId) =>
     store.prescribers.disabledPrescribers[prescriberId];
@@ -334,29 +379,6 @@ const PhoneBook = () => {
     );
   };
 
-  const pageNumberChangeHandler = (newPageNumber) => {
-          
-    const totalRecords =
-      store.prescribers.totalRecords / store.prescribers.filter.pageSize;
-    
-
-    if (newPageNumber <= totalRecords) {
-      console.log("HERE");
-      setPageNumber(newPageNumber);
-      setLimitExceeds(false);
-      dispatch(
-        onPrescriberFilterChangeHandler({
-          filter: "page",
-          value: newPageNumber,
-        })
-      );
-    } else {
-            setLimitExceeds(true);
-
-      // console.log("The page number exceeds the limit.");
-    }
-  };
-
 
   return (
     <div>
@@ -369,8 +391,10 @@ const PhoneBook = () => {
                 label="Go to page number"
                 variant="outlined"
                 onChange={(e) => {
-                  const newPageNumbr = e.target.value;
-                  pageNumberChangeHandler(newPageNumbr);
+                     const input = e.target.value;
+                     if (/^[0-9\b]+$/.test(input)) {
+                       setNewPageNumber(input);
+                     }
                 }}
               />
               {limitExceeds && (
@@ -397,7 +421,7 @@ const PhoneBook = () => {
             <Button
               onClick={fetchPrescribersOnName}
               variant="outlined"
-              style={{ height: "55px", position: "absolute", right: 150 }}
+              style={{ height: "55px", position: "absolute", right: 25 }}
             >
               Go
             </Button>

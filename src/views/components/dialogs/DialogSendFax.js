@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import Dialog from "@mui/material/Dialog";
-import { BASE_URL } from "src/configs/config";
+import { BASE_URL, FAX_URL } from "src/configs/config";
 import Grid from "@mui/material/Grid";
 import DialogActions from "@mui/material/DialogActions";
 import { Button, Typography } from "@mui/material";
@@ -25,7 +25,7 @@ const DialogSendFax = ({ open, handleClose, FaxNumber, platform }) => {
 
   useEffect(() => {
     // fetch("http://localhost:3000/files/fax.jpg")
-    fetch("https://dashboard.samodrei.com/files/faxImage.jpg")
+    fetch(`${FAX_URL}files/faxImage.jpg`)
       .then((response) => response.blob())
       .then((blob) => {
         setBlob(blob);

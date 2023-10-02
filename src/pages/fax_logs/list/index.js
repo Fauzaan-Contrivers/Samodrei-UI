@@ -19,7 +19,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Delete from "mdi-material-ui/Delete";
 import IconButton from "@mui/material/IconButton";
 import axios from "axios";
-import { BASE_URL } from "src/configs/config";
+import { BASE_URL, FAX_URL } from "src/configs/config";
 import toast from "react-hot-toast";
 var FormData = require("form-data");
 
@@ -131,7 +131,7 @@ const FaxLogs = () => {
 
   useEffect(() => {
     // fetch("http://localhost:3000/files/fax.jpg")
-    fetch("https://dashboard.samodrei.com/files/faxImage.jpg")
+    fetch(`${FAX_URL}files/faxImage.jpg`)
       .then((response) => response.blob())
       .then((blob) => {
         setBlob(blob);
