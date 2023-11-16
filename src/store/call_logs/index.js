@@ -21,6 +21,7 @@ export const fetchCallLogsData = createAsyncThunk(
       // lunch_meeting: params.lunch_meeting,
       // radius: params.radius,
     });
+    console.log(response)
     return {
       result: response.data.result.data,
       totalRecords: response.data.result.count,

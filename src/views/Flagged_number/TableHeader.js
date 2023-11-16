@@ -1,11 +1,13 @@
 // ** Next Import
 import Link from "next/link";
 import { forwardRef, Fragment, useState } from "react";
+import { BASE_URL } from "src/configs/config";
 
 // ** Third Party Imports
 import DatePicker from "react-datepicker";
 import format from "date-fns/format";
 import moment from "moment";
+import axios from 'axios'
 
 // ** MUI Imports
 import Box from "@mui/material/Box";
@@ -144,7 +146,38 @@ const TableHeader = (props) => {
     handleClickOpen();
   };
 
-  const downloadCSV = (start, end) => {
+  const downloadCSV =async (start, end) => {
+    if(props.callLogs){
+     const result=await axios
+     .post(`${BASE_URL}call-logs/fetch-call-logs`, {
+      
+     })
+     let jobsData=result?.data?.result?.data
+     let csv =
+      "Id, Tele-Prescriber, Tele-Marketer, Call Receiver, Feedback Submitted Date, Call Disposition, Call Time, Comment\n";
+
+      jobsData.forEach(function (row) {
+        csv += `${row.Id},`;
+        csv += `${row.First_Name} ${row.Last_Name},`;
+        csv += `${row.name},`;
+        csv += `${row.CallReceiverName},`;
+        csv += `${row.LoggedDate},`;
+        csv += `${row.CallDisposition},`;
+        csv += `${row.CallTime},`;
+        csv += `${row.CallFeedback},`;
+  
+        csv += "\n";
+      });
+  
+      var hiddenElement = document.createElement("a");
+      hiddenElement.href = "data:text/csv;charset=utf-8," + encodeURI(csv);
+      hiddenElement.target = "_blank";
+  
+      //provide the name for the CSV file to be downloaded
+      hiddenElement.download = "Call Logs Data.csv";
+      hiddenElement.click();
+    }
+    else{
     let jobsData = props.dataCSV;
     // console.log("jobs data", jobsData);
     // if (start) {
@@ -204,6 +237,7 @@ const TableHeader = (props) => {
     //provide the name for the CSV file to be downloaded
     hiddenElement.download = "Lunch Data.csv";
     hiddenElement.click();
+  }
   };
 
   const [open, setOpen] = useState(false);
