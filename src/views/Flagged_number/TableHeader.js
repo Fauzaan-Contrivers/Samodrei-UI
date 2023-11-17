@@ -150,13 +150,18 @@ const TableHeader = (props) => {
     if(props.callLogs){
      const result=await axios
      .post(`${BASE_URL}call-logs/fetch-call-logs`, {
-      
+      tele_marketer: store.call_logs.filter.teleMarketerValue,
+      start_date: store.call_logs.filter.startDateRange,
+      end_date: store.call_logs.filter.endDateRange ,
+      call_disposition: store.call_logs.filter.disposition.join(","),
+      receiver_position: store.call_logs.filter.receiverPosition.join(",")
      })
      let jobsData=result?.data?.result?.data
      let csv =
-      "Id, Tele-Prescriber, Tele-Marketer, Call Receiver, Feedback Submitted Date, Call Disposition, Call Time, Comment\n";
+      "Id, NPI,  Tele-Prescriber, Tele-Marketer, Call Receiver, Feedback Submitted Date, Call Disposition, Call Time, Comment\n";
       jobsData.forEach(function (row) {
           csv += `${encodeURIComponent(row.Id)},`;
+          csv += `${encodeURIComponent(row.NPI)},`;
           csv += `"${encodeURIComponent(row.First_Name)} ${encodeURIComponent(row.Last_Name)}",`;
           csv += `"${encodeURIComponent(row.name)}",`;
           csv += `"${encodeURIComponent(row.CallReceiverName)}",`;
