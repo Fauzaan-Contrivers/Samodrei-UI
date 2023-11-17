@@ -155,22 +155,21 @@ const TableHeader = (props) => {
      let jobsData=result?.data?.result?.data
      let csv =
       "Id, Tele-Prescriber, Tele-Marketer, Call Receiver, Feedback Submitted Date, Call Disposition, Call Time, Comment\n";
-
       jobsData.forEach(function (row) {
-        csv += `${row.Id},`;
-        csv += `${row.First_Name} ${row.Last_Name},`;
-        csv += `${row.name},`;
-        csv += `${row.CallReceiverName},`;
-        csv += `${row.LoggedDate},`;
-        csv += `${row.CallDisposition},`;
-        csv += `${row.CallTime},`;
-        csv += `${row.CallFeedback},`;
-  
-        csv += "\n";
+          csv += `${encodeURIComponent(row.Id)},`;
+          csv += `"${encodeURIComponent(row.First_Name)} ${encodeURIComponent(row.Last_Name)}",`;
+          csv += `"${encodeURIComponent(row.name)}",`;
+          csv += `"${encodeURIComponent(row.CallReceiverName)}",`;
+          csv += `"${encodeURIComponent(row.LoggedDate)}",`;
+          csv += `"${encodeURIComponent(row.CallDisposition)}",`;
+          csv += `"${encodeURIComponent(row.CallTime)}",`;
+          csv += `"${encodeURIComponent(row.CallFeedback)}"`;
+        
+          csv += "\n";
+        
       });
-  
       var hiddenElement = document.createElement("a");
-      hiddenElement.href = "data:text/csv;charset=utf-8," + encodeURI(csv);
+      hiddenElement.href = "data:text/csv;charset=utf-8," + csv;
       hiddenElement.target = "_blank";
   
       //provide the name for the CSV file to be downloaded
