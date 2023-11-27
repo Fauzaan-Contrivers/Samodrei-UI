@@ -158,9 +158,8 @@ const TableHeader = (props) => {
      })
      let jobsData=result?.data?.result?.data
      let csv =
-      "Id, NPI,  Tele-Prescriber, Tele-Marketer, Call Receiver, Feedback Submitted Date, Call Disposition, Call Time, Comment\n";
+      "NPI,  Tele-Prescriber, Tele-Marketer, Call Receiver, Feedback Submitted Date, Call Disposition, Call Time, Comment\n";
       jobsData.forEach(function (row) {
-          csv += `${encodeURIComponent(row.Id)},`;
           csv += `${encodeURIComponent(row.NPI)},`;
           csv += `"${encodeURIComponent(row.First_Name)} ${encodeURIComponent(row.Last_Name)}",`;
           csv += `"${encodeURIComponent(row.name)}",`;
