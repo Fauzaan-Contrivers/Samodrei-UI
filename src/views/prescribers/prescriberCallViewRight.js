@@ -189,8 +189,16 @@ const PrescriberCallViewRight = ({ prescriber }) => {
             router.replace("/phonebook");
           }
         }
+        else{
+          toast.error("Something went wrong, please try again!", {
+            duration: 2000,
+          });
+        }
       } catch (error) {
         console.log("CHECK", error);
+        toast.error("Something went wrong, please try again!", {
+          duration: 2000,
+        });
       }
     } else {
       onCloseClickHandler();
@@ -414,7 +422,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
               variant="contained"
               onClick={() => onSubmitFeedbackHandler()}
               sx={{ backgroundColor: "green" }}
-              disabled={elapsedTime == 0 ? true : false}
+              // disabled={elapsedTime == 0 ? true : false}
             >
               Submit
             </Button>
