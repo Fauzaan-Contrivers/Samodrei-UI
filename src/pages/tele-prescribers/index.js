@@ -4,7 +4,17 @@ import { useState, useEffect, useContext } from "react";
 import { AbilityContext } from "src/layouts/components/acl/Can";
 
 // ** Store & Actions Imports
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
 import { useDispatch, useSelector } from "react-redux";
+import CardContent from '@mui/material/CardContent'
+import FormControl from '@mui/material/FormControl'
+import toast from "react-hot-toast";
+
 import {
   addDisabledPrescriber,
   fetchAllTelePrescribers,
@@ -29,12 +39,17 @@ import Link from "next/link";
 import { onCallLogFilterChangeHandler } from "src/store/call_logs";
 
 const TelePrescriber = () => {
+  const [namePrescriber, setNamePrescriber] = useState("");
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(20);
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [dialogFields, setDialogFields] = useState([]);
-
+  const [searchName, setSearchName] = useState("")
+  const [update, setUpdate]=useState({
+    phoneNumber:null,
+    prescriberId:null
+  })
   const ability = useContext(AbilityContext);
 
   // ** Hooks
@@ -46,6 +61,23 @@ const TelePrescriber = () => {
   const userData = JSON?.parse(
     window.localStorage.getItem(authConfig.userData)
   );
+
+  const fetchLatest=()=>{
+    const fetchPrescribersDataWithDebounce2 = debounce(() => {
+      dispatch(
+        fetchAllTelePrescribers({
+          page_num: page + 1,
+          page_size: pageSize,
+        })
+      ).then(() => {
+        setIsLoading(false);
+      });
+    }, 1000);
+
+    fetchPrescribersDataWithDebounce2();
+
+    return fetchPrescribersDataWithDebounce2.cancel;
+  }
 
   useEffect(() => {
     if (!open) {
@@ -142,6 +174,34 @@ const TelePrescriber = () => {
     return store.prescribers.disabledPrescribers[prescriberId];
   };
 
+  const updatePhoneNumber=async (e)=>{
+    e.preventDefault()
+    try {
+      const response = await fetch(
+        `${BASE_URL}tele-prescribers/update-tele-prescriber-number`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            prescriberId: update.prescriberId,
+            phoneNumber: update.phoneNumber,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.status == 200) {
+        toast.success(data.message);
+        setOpen(false)
+        fetchLatest()
+      }
+    } catch (error) {
+      toast.error("Something went wrong, try again!")
+      console.log("CHECK", error);
+    }
+  }
+
   const defaultColumns = [
     {
       field: "Id",
@@ -195,6 +255,31 @@ const TelePrescriber = () => {
         </Typography>
       ),
     },
+    {
+      flex: 0.1,
+      minWidth: 100,
+      field: "Action",
+      headerName: "Action",
+      renderCell: ({ row }) => (
+        <Grid container alignItems="center">
+            <IconButton
+              size="small"
+              component="a"
+              sx={{ textDecoration: "none", cursor: "pointer" }}
+             onClick={() => {
+              setUpdate({...update, phoneNumber:row?.Phone, prescriberId: row?.Id})
+              setOpen(true)
+             }}
+              
+            >
+              <EyeOutline
+                fontSize="small"
+               
+              />
+            </IconButton>
+        </Grid>
+      ),
+    },
     // {
     //   flex: 0.1,
     //   minWidth: 50,
@@ -234,10 +319,87 @@ const TelePrescriber = () => {
     setOpen(false);
   };
 
+  const fetchPrescribersOnName=()=>{
+    dispatch(
+      fetchAllTelePrescribers({
+        page_num: page + 1,
+        page_size: pageSize,
+        Search: searchName
+      })
+    ).then(() => {
+      setIsLoading(false);
+    });
+  }
+
   return (
+    <>
+        <Dialog
+        open={open}
+        disableEscapeKeyDown
+        aria-labelledby='alert-dialog-title'
+        aria-describedby='alert-dialog-description'
+        onClose={(event, reason) => {
+          if (reason !== 'backdropClick') {
+          //  handleClose()
+          }
+        }}
+      >
+        <form onSubmit={updatePhoneNumber}>
+        <DialogTitle id='alert-dialog-title'>{'Update Phone Number'}</DialogTitle>
+        <DialogContent>
+          <CardContent>
+            <Grid container>
+              <Grid item xs={12}>
+                <Grid container >
+                <FormControl sx={{ width:400, mb:6}}>
+              <TextField  required type='number' onChange={(e)=>setUpdate({...update, phoneNumber:e.target.value})} value={update?.phoneNumber}  id="standard-basic" name="phoneNumber" label="Phone Number" placeholder='Enter phone number' variant="standard" />
+            </FormControl>
+        </Grid>
+        </Grid>
+        </Grid>
+        </CardContent>
+        </DialogContent>
+
+        <DialogActions className='dialog-actions-dense'>
+          <Button onClick={()=>setOpen(false)}>Close</Button>
+          <Button type="submit" variant='contained'>{'Update'}</Button>
+
+        </DialogActions>
+        </form>
+
+        </Dialog>
+
+
     <div>
       {ability?.can("read", "acl-page") ? (
         <>
+         <div style={{ display: "flex" }}>
+            <div
+              style={{
+                marginBottom: "10px",
+                width: "200px",
+                marginLeft: "10px",
+              }}
+            >
+              <TextField
+                id="outlined-basic"
+                label="Search by Name"
+                variant="outlined"
+                value={searchName}
+                onChange={(e) => {
+                  setSearchName(e.target.value);
+                }}
+              />
+            </div>
+
+            <Button
+              onClick={fetchPrescribersOnName}
+              variant="outlined"
+              style={{ height: "55px", position: "absolute", right: 150 }}
+            >
+              Go
+            </Button>
+          </div>
           <Grid item xs={12}>
             <Card>
               <DataGrid
@@ -265,6 +427,7 @@ const TelePrescriber = () => {
         </>
       ) : null}
     </div>
+    </>
   );
 };
 
