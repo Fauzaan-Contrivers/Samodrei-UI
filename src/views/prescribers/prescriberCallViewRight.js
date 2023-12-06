@@ -39,6 +39,7 @@ const Tab = styled(MuiTab)(({ theme }) => ({
 }));
 
 const PrescriberCallViewRight = ({ prescriber }) => {
+  const [isSubmitDone, setIsSubmitDone]= useState(false)
   const [feedbackText, setFeedbackText] = useState("");
   const [phoneNumberFeedbackArray, setPhoneNumberFeedbackArray] = useState([]);
   const [receiverName, setReceiverName] = useState("");
@@ -153,6 +154,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
 
   const onSubmitFeedbackHandler = async () => {
     if (isCalled) {
+      setIsSubmitDone(true)
       try {
         const response = await fetch(
           `${BASE_URL}tele-prescribers/add_call_logs`,
@@ -422,7 +424,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
               variant="contained"
               onClick={() => onSubmitFeedbackHandler()}
               sx={{ backgroundColor: "green" }}
-             disabled={elapsedTime == 0 ? true : false}
+              disabled={(isSubmitDone || elapsedTime == 0) ? true : false}
             >
               Submit
             </Button>
