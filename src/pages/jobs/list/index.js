@@ -517,7 +517,9 @@ const InvoiceList = () => {
       renderCell: ({ row }) => (
         <Typography
           variant="body2"
-          style={{ color: row.selected_far_doctor ? "red" : "green" }}
+          // style={{ color: row.selected_far_doctor ? "red" : "green" }}
+          style={{ color: row?.Distance_To_Doctor>0.5 ? "red" : "green" }}
+
         >
           {row?.Distance_To_Doctor === null
             ? " "
