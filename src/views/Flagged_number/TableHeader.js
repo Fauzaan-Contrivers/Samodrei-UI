@@ -148,11 +148,19 @@ const TableHeader = (props) => {
 
   const downloadCSV =async (start, end) => {
     if(props.callLogs){
+      console.log(store.call_logs.filter.endDateRange)
+      console.log(store.call_logs.filter.startDateRange)
+      
+    const startDate = moment(store.call_logs.filter.startDateRange, "YYYY-MM-DD");
+    const formattedStartDate = startDate.format("YYYY-MM-DD");
+
+    const endDate = moment(store.call_logs.filter.endDateRange, "YYYY-MM-DD");
+    const formattedEndStartDate = endDate.format("YYYY-MM-DD");
      const result=await axios
      .post(`${BASE_URL}call-logs/fetch-call-logs`, {
       tele_marketer: store.call_logs.filter.teleMarketerValue,
-      start_date: store.call_logs.filter.startDateRange,
-      end_date: store.call_logs.filter.endDateRange ,
+      start_date: formattedStartDate,
+      end_date: formattedEndStartDate ,
       call_disposition: store.call_logs.filter.disposition.join(","),
       receiver_position: store.call_logs.filter.receiverPosition.join(",")
      })
