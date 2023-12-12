@@ -253,6 +253,14 @@ const PhoneBook = () => {
         ),
       },
       {
+        field: "DispenseStatus",
+        minWidth: 210,
+        headerName: "Dispense Status",
+        renderCell: ({ row }) => (
+          <Typography variant="body2">{`${row?.DispenseStatus}`}</Typography>
+        ),
+      },
+      {
         field: "Phone",
         minWidth: 210,
         headerName: "Phone",
