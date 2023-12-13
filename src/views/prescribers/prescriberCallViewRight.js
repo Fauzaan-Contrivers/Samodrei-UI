@@ -27,7 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateDisabledPrescriber } from "src/store/prescribers";
 import DialogSetMeeting from "../components/dialogs/DialogSetMeeting";
 import DialogFlagNumber from "../components/dialogs/DialogFlagNumber";
-
+import moment from "moment";
 // ** Styled Tab component
 const Tab = styled(MuiTab)(({ theme }) => ({
   minHeight: 48,
@@ -424,7 +424,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
               variant="contained"
               onClick={() => onSubmitFeedbackHandler()}
               sx={{ backgroundColor: "green" }}
-              //disabled={(isSubmitDone || elapsedTime == 0) ? true : false}
+              disabled={(isSubmitDone || elapsedTime == 0) ? true : false}
             >
               Submit
             </Button>
@@ -465,6 +465,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
           commentData &&
           commentData?.message.map((data) => (
             <Grid paddingLeft="10px" border="1px solid gray">
+              <p><b>{moment(data.LoggedDate).local().format("YYYY-MM-DD HH:mm:ss")}</b></p>
               <p>{data.CallFeedback}</p>
             </Grid>
           ))}
