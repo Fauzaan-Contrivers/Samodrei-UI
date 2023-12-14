@@ -153,7 +153,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   };
 
   const onSubmitFeedbackHandler = async () => {
-    if (!isCalled) {
+    if (isCalled) {
       setIsSubmitDone(true)
       try {
         const response = await fetch(
@@ -461,7 +461,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
              <h6>{phoneNumber}</h6> 
            </Grid>
          ))}*/}
-        {meetingDate &&
+        {
           commentData &&
           commentData?.message.map((data) => (
             <Grid paddingLeft="10px" border="1px solid gray">

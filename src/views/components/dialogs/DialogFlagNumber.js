@@ -53,7 +53,14 @@ const DialogFlagNumber = ({
         });
         router.replace("/phonebook");
       }
+      else{
+        toast.success("Something went wrong try again.", {
+          duration: 2000,
+        });      }
     } catch (error) {
+      toast.success("Something went wrong try again.", {
+        duration: 2000,
+      });
       console.log("CHECK", error);
     }
   };
