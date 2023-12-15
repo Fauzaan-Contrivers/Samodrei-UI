@@ -435,7 +435,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
             <Button
               variant="contained"
               onClick={() => setOpenFlagDialog(true)}
-            //  disabled={elapsedTime == 0 ? true : false}
+             disabled={elapsedTime == 0 ? true : false}
             >
               Flag Number
             </Button>
