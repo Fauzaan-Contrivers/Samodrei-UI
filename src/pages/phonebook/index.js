@@ -65,7 +65,9 @@ const PhoneBook = () => {
   useEffect(() => fetchPrescribersOnName(), [pageNumber]);
   useEffect(() => setupRingCentralScript(), []);
   useEffect(() => initializeSocket(), []);
-  useEffect(() => configureSocketEvents(socket), [socket]);
+  useEffect(() => {
+    fetchPrescribersOnUpdate()
+  configureSocketEvents(socket)}, [socket]);
   useEffect(() => {
     var rcsdk = new RC({
       server: RC_SERVER_URL,
