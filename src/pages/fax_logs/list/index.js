@@ -131,7 +131,7 @@ const FaxLogs = () => {
 
   useEffect(() => {
     // fetch("http://localhost:3000/files/fax.jpg")
-    fetch("https://dashboard.samodrei.com/files/faxImage.jpg")
+    fetch("https://dashboard.samodrei.com/files/latestFaxDocument.jpg")
       .then((response) => response.blob())
       .then((blob) => {
         setBlob(blob);
