@@ -166,13 +166,14 @@ const TableHeader = (props) => {
      })
      let jobsData=result?.data?.result?.data
      let csv =
-     "NPI,Tele-Prescriber,Tele-Marketer,Call Receiver,Feedback Submitted Date,Call Disposition,Call Time,Comment\n";
-   
+     "NPI,Tele-Prescriber,Tele-Marketer,Call Receiver, Receiver Position, Feedback Submitted Date,Call Disposition,Call Time,Comment\n";
+   console.log(result)
    jobsData.forEach(function (row) {
      csv += `${row.NPI},`;
      csv += `"${row.First_Name} ${row.Last_Name}",`;
      csv += `"${row.name}",`;
      csv += `"${row.CallReceiverName}",`;
+     csv += `"${row.CallReceiverPosition}",`;
      csv += `"${row.LoggedDate}",`;
      csv += `"${row.CallDisposition}",`;
      csv += `"${(row.CallTime/60).toFixed(2)}",`;
