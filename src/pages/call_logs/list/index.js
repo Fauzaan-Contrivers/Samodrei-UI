@@ -20,6 +20,7 @@ import IconButton from "@mui/material/IconButton";
 import axios from "axios";
 import { BASE_URL } from "src/configs/config";
 import toast from "react-hot-toast";
+import TableHeader from "src/views/Flagged_number/TableHeader";
 
 // ** Third Party Imports
 import format from "date-fns/format";
@@ -457,7 +458,7 @@ const CallLogs = () => {
       </Grid>
       <Grid item xs={12}>
         <Card>
-          {/* <TableHeader onClick={() => handleClickDownloadDataCSV()} /> */}
+           <TableHeader callLogs={true} dataCSV={store.call_logs.callLogData} onClick={() => handleClickDownloadDataCSV()} /> 
           <DataGrid
             autoHeight
             pagination

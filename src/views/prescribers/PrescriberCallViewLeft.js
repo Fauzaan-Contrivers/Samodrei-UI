@@ -234,6 +234,18 @@ const PrescriberCallViewLeft = ({ data }) => {
                     </Typography>
                     <Typography variant="body2">{data?.Decile}</Typography>
                   </Box>
+                  <Box sx={{ display: "flex", marginBottom: 2.7 }}>
+                    <Typography
+                      sx={{
+                        marginRight: 2,
+                        fontWeight: 500,
+                        fontSize: "0.875rem",
+                      }}
+                    >
+                      Dispense Status:
+                    </Typography>
+                    <Typography variant="body2">{data?.DispenseStatus}</Typography>
+                  </Box>
                   <Box sx={{ display: "flex" }}>
                     <Typography
                       sx={{

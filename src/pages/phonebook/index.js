@@ -65,7 +65,9 @@ const PhoneBook = () => {
   useEffect(() => fetchPrescribersOnName(), [pageNumber]);
   useEffect(() => setupRingCentralScript(), []);
   useEffect(() => initializeSocket(), []);
-  useEffect(() => configureSocketEvents(socket), [socket]);
+  useEffect(() => {
+    fetchPrescribersOnUpdate()
+  configureSocketEvents(socket)}, [socket]);
   useEffect(() => {
     var rcsdk = new RC({
       server: RC_SERVER_URL,
@@ -250,6 +252,14 @@ const PhoneBook = () => {
         headerName: "Name",
         renderCell: ({ row }) => (
           <Typography variant="body2">{`${row?.First_Name} ${row?.Last_Name}`}</Typography>
+        ),
+      },
+      {
+        field: "DispenseStatus",
+        minWidth: 210,
+        headerName: "Dispense Status",
+        renderCell: ({ row }) => (
+          <Typography variant="body2">{`${row?.DispenseStatus}`}</Typography>
         ),
       },
       {

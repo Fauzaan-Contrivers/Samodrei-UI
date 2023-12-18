@@ -1,11 +1,13 @@
 // ** Next Import
 import Link from "next/link";
 import { forwardRef, Fragment, useState } from "react";
+import { BASE_URL } from "src/configs/config";
 
 // ** Third Party Imports
 import DatePicker from "react-datepicker";
 import format from "date-fns/format";
 import moment from "moment";
+import axios from 'axios'
 
 // ** MUI Imports
 import Box from "@mui/material/Box";
@@ -144,7 +146,53 @@ const TableHeader = (props) => {
     handleClickOpen();
   };
 
-  const downloadCSV = (start, end) => {
+  const downloadCSV =async (start, end) => {
+    if(props.callLogs){
+      console.log(store.call_logs.filter.endDateRange)
+      console.log(store.call_logs.filter.startDateRange)
+      
+    const startDate = moment(store.call_logs.filter.startDateRange, "YYYY-MM-DD");
+    const formattedStartDate = startDate.format("YYYY-MM-DD");
+
+    const endDate = moment(store.call_logs.filter.endDateRange, "YYYY-MM-DD");
+    const formattedEndStartDate = endDate.format("YYYY-MM-DD");
+     const result=await axios
+     .post(`${BASE_URL}call-logs/fetch-call-logs`, {
+      tele_marketer: store.call_logs.filter.teleMarketerValue,
+      start_date: formattedStartDate,
+      end_date: formattedEndStartDate ,
+      call_disposition: store.call_logs.filter.disposition.join(","),
+      receiver_position: store.call_logs.filter.receiverPosition.join(",")
+     })
+     let jobsData=result?.data?.result?.data
+     let csv =
+     "NPI,Tele-Prescriber,Tele-Marketer,Call Receiver, Receiver Position, Feedback Submitted Date,Call Disposition,Call Time,Comment\n";
+   console.log(result)
+   jobsData.forEach(function (row) {
+     csv += `${row.NPI},`;
+     csv += `"${row.First_Name} ${row.Last_Name}",`;
+     csv += `"${row.name}",`;
+     csv += `"${row.CallReceiverName}",`;
+     csv += `"${row.CallReceiverPosition}",`;
+     csv += `"${row.LoggedDate}",`;
+     csv += `"${row.CallDisposition}",`;
+     csv += `"${(row.CallTime/60).toFixed(2)}",`;
+     csv += `"${row.CallFeedback}"`; // Replace spaces with %20
+   
+     csv += "\n";
+   });
+   
+   // Create a Blob object to store the CSV data
+   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+   
+   // Create a link element and trigger a download
+   const link = document.createElement("a");
+   link.href = window.URL.createObjectURL(blob);
+   link.download = "Call_Logs.csv";
+   link.click();
+   
+       }
+    else{
     let jobsData = props.dataCSV;
     // console.log("jobs data", jobsData);
     // if (start) {
@@ -204,6 +252,7 @@ const TableHeader = (props) => {
     //provide the name for the CSV file to be downloaded
     hiddenElement.download = "Lunch Data.csv";
     hiddenElement.click();
+  }
   };
 
   const [open, setOpen] = useState(false);

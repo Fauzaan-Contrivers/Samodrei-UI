@@ -27,7 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateDisabledPrescriber } from "src/store/prescribers";
 import DialogSetMeeting from "../components/dialogs/DialogSetMeeting";
 import DialogFlagNumber from "../components/dialogs/DialogFlagNumber";
-
+import moment from "moment";
 // ** Styled Tab component
 const Tab = styled(MuiTab)(({ theme }) => ({
   minHeight: 48,
@@ -39,6 +39,7 @@ const Tab = styled(MuiTab)(({ theme }) => ({
 }));
 
 const PrescriberCallViewRight = ({ prescriber }) => {
+  const [isSubmitDone, setIsSubmitDone]= useState(false)
   const [feedbackText, setFeedbackText] = useState("");
   const [phoneNumberFeedbackArray, setPhoneNumberFeedbackArray] = useState([]);
   const [receiverName, setReceiverName] = useState("");
@@ -153,6 +154,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
 
   const onSubmitFeedbackHandler = async () => {
     if (isCalled) {
+      setIsSubmitDone(true)
       try {
         const response = await fetch(
           `${BASE_URL}tele-prescribers/add_call_logs`,
@@ -189,8 +191,16 @@ const PrescriberCallViewRight = ({ prescriber }) => {
             router.replace("/phonebook");
           }
         }
+        else{
+          toast.error("Something went wrong, please try again!", {
+            duration: 2000,
+          });
+        }
       } catch (error) {
         console.log("CHECK", error);
+        toast.error("Something went wrong, please try again!", {
+          duration: 2000,
+        });
       }
     } else {
       onCloseClickHandler();
@@ -414,7 +424,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
               variant="contained"
               onClick={() => onSubmitFeedbackHandler()}
               sx={{ backgroundColor: "green" }}
-              disabled={elapsedTime == 0 ? true : false}
+              disabled={(isSubmitDone || elapsedTime == 0) ? true : false}
             >
               Submit
             </Button>
@@ -425,7 +435,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
             <Button
               variant="contained"
               onClick={() => setOpenFlagDialog(true)}
-              disabled={elapsedTime == 0 ? true : false}
+             disabled={elapsedTime == 0 ? true : false}
             >
               Flag Number
             </Button>
@@ -451,10 +461,11 @@ const PrescriberCallViewRight = ({ prescriber }) => {
              <h6>{phoneNumber}</h6> 
            </Grid>
          ))}*/}
-        {meetingDate &&
+        {
           commentData &&
           commentData?.message.map((data) => (
             <Grid paddingLeft="10px" border="1px solid gray">
+              <p><b>{moment(data.LoggedDate).local().format("YYYY-MM-DD HH:mm:ss")}</b></p>
               <p>{data.CallFeedback}</p>
             </Grid>
           ))}
