@@ -235,7 +235,7 @@ const PhoneBook = () => {
         minWidth: 210,
         headerName: "Id",
         renderCell: ({ row }) => (
-          <Typography variant="body2">{`${row?.Id}`}</Typography>
+          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.Id}`}</Typography>
         ),
       },
       {
@@ -243,7 +243,7 @@ const PhoneBook = () => {
         minWidth: 210,
         headerName: "NPI",
         renderCell: ({ row }) => (
-          <Typography variant="body2">{`${row?.NPI}`}</Typography>
+          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.NPI}`}</Typography>
         ),
       },
       {
@@ -251,7 +251,7 @@ const PhoneBook = () => {
         minWidth: 210,
         headerName: "Name",
         renderCell: ({ row }) => (
-          <Typography variant="body2">{`${row?.First_Name} ${row?.Last_Name}`}</Typography>
+          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.First_Name} ${row?.Last_Name}`}</Typography>
         ),
       },
       {
@@ -259,7 +259,7 @@ const PhoneBook = () => {
         minWidth: 210,
         headerName: "Dispense Status",
         renderCell: ({ row }) => (
-          <Typography variant="body2">{`${row?.DispenseStatus}`}</Typography>
+          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.DispenseStatus}`}</Typography>
         ),
       },
       {
@@ -267,7 +267,7 @@ const PhoneBook = () => {
         minWidth: 210,
         headerName: "Phone",
         renderCell: ({ row }) => (
-          <Typography variant="body2">{`${row?.Phone}`}</Typography>
+          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.Phone}`}</Typography>
         ),
       },
       {
@@ -275,7 +275,7 @@ const PhoneBook = () => {
         minWidth: 120,
         headerName: "FAX",
         renderCell: ({ row }) => (
-          <Typography variant="body2">{`${row?.Fax}`}</Typography>
+          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.Fax}`}</Typography>
         ),
       },
       {
@@ -283,7 +283,7 @@ const PhoneBook = () => {
         minWidth: 210,
         headerName: "Meeting Date",
         renderCell: ({ row }) => (
-          <Typography variant="body2">
+          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">
             {row?.MeetingDate
               ? moment(row.MeetingDate).local().format("YYYY-MM-DD HH:mm:ss")
               : ""}
