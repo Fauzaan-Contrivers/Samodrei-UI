@@ -48,7 +48,8 @@ const TelePrescriber = () => {
   const [searchName, setSearchName] = useState("")
   const [update, setUpdate]=useState({
     phoneNumber:null,
-    prescriberId:null
+    prescriberId:null,
+    speciality: null
   })
   const ability = useContext(AbilityContext);
 
@@ -187,6 +188,7 @@ const TelePrescriber = () => {
           body: JSON.stringify({
             prescriberId: update.prescriberId,
             phoneNumber: update.phoneNumber,
+            speciality: update.speciality
           }),
         }
       );
@@ -267,7 +269,7 @@ const TelePrescriber = () => {
               component="a"
               sx={{ textDecoration: "none", cursor: "pointer" }}
              onClick={() => {
-              setUpdate({...update, phoneNumber:row?.Phone, prescriberId: row?.Id})
+              setUpdate({...update, phoneNumber:row?.Phone, prescriberId: row?.Id, speciality: row?.Specialty})
               setOpen(true)
              }}
               
@@ -345,7 +347,7 @@ const TelePrescriber = () => {
         }}
       >
         <form onSubmit={updatePhoneNumber}>
-        <DialogTitle id='alert-dialog-title'>{'Update Phone Number'}</DialogTitle>
+        <DialogTitle id='alert-dialog-title'>{'Update Data'}</DialogTitle>
         <DialogContent>
           <CardContent>
             <Grid container>
@@ -353,6 +355,9 @@ const TelePrescriber = () => {
                 <Grid container >
                 <FormControl sx={{ width:400, mb:6}}>
               <TextField  required type='number' onChange={(e)=>setUpdate({...update, phoneNumber:e.target.value})} value={update?.phoneNumber}  id="standard-basic" name="phoneNumber" label="Phone Number" placeholder='Enter phone number' variant="standard" />
+            </FormControl>
+            <FormControl sx={{ width:400, mb:6}}>
+              <TextField  required type='text' onChange={(e)=>setUpdate({...update, speciality:e.target.value})} value={update?.speciality}  id="standard-basic" name="speciality" label="Speciality" placeholder='Enter speciality' variant="standard" />
             </FormControl>
         </Grid>
         </Grid>

@@ -461,14 +461,20 @@ const PrescriberCallViewRight = ({ prescriber }) => {
              <h6>{phoneNumber}</h6> 
            </Grid>
          ))}*/}
-        {
-          commentData &&
-          commentData?.message.map((data) => (
-            <Grid paddingLeft="10px" border="1px solid gray">
-              <p><b>{moment(data.LoggedDate).local().format("YYYY-MM-DD HH:mm:ss")}</b></p>
-              <p>{data.CallFeedback}</p>
-            </Grid>
-          ))}
+       {
+  commentData &&
+  commentData?.message.map((data) =>
+    data.CallFeedback.length > 0 && (
+      <Grid key={data.id} paddingLeft="10px" border="1px solid gray">
+        <p>
+          <b>{moment(data.LoggedDate).local().format("YYYY-MM-DD HH:mm:ss")}</b>
+        </p>
+        <p>{data.CallFeedback}</p>
+      </Grid>
+    )
+  )
+}
+
       </Grid>
     </>
   );
