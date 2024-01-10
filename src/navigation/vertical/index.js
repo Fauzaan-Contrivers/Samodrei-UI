@@ -17,7 +17,7 @@ const Navigation = () => {
       title: "Call Logs",
     },
     {
-      path: "/tele-prescribers",
+      path: "/phonebook",
       action: "read",
       icon: ShieldOutline,
       title: "Tele-Prescribers",
