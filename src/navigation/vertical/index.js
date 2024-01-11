@@ -30,7 +30,7 @@ const Navigation = () => {
     },
   ];
 
-  const navigation = [
+  let navigation = [
     {
       path: "/dashboard",
       action: "read",
@@ -117,6 +117,7 @@ const Navigation = () => {
   ];
 
   if (userData?.roleId === 4) {
+    navigation=[]
     navigation.push(
       {
         path: "/phonebook",
