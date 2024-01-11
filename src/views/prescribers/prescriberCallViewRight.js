@@ -464,7 +464,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
        {
   commentData &&
   commentData?.message.map((data) =>
-    data.CallFeedback.length > 0 && (
+    data?.CallFeedback?.length > 0 && (
       <Grid key={data.id} paddingLeft="10px" border="1px solid gray">
         <p>
           <b>{moment(data.LoggedDate).local().format("YYYY-MM-DD HH:mm:ss")}</b>
