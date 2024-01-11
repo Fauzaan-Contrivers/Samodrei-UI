@@ -126,13 +126,7 @@ const Navigation = () => {
         icon: ShieldOutline,
         title: "Tele-Prescribers",
       },
-      {
-        path: "/phonebook/preview/:id",
-        action: "read",
-        subject: "acl-page",
-        icon: ShieldOutline,
-        title: "Tele-Prescribers",
-      },
+      
       {
         path: "/fax_logs/list",
         action: "read",
