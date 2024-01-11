@@ -10,6 +10,13 @@ import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
 import Phone from "mdi-material-ui/Phone";
 import FaxIcon from "mdi-material-ui/Fax";
+import { ringCentralConfig } from "src/configs/config";
+import { useRouter } from "next/router";
+import { updateDisabledPrescriber } from "src/store/prescribers";
+import io from "socket.io-client";
+import { BASE_URL } from "src/configs/config";
+
+import { onCallLogFilterChangeHandler } from "src/store/call_logs";
 
 // ** Custom Components
 import CustomChip from "src/@core/components/mui/chip";
@@ -18,15 +25,19 @@ import CustomAvatar from "src/@core/components/mui/avatar";
 // ** Utils Import
 import { getInitials } from "src/@core/utils/get-initials";
 import DialogSendFax from "../components/dialogs/DialogSendFax";
-import { ringCentralConfig } from "src/configs/config";
 const RC = require("@ringcentral/sdk").SDK;
 import { onFaxLogFilterChangeHandler } from "src/store/fax_logs";
 import { useDispatch, useSelector } from "react-redux";
 
 const PrescriberCallViewLeft = ({ data }) => {
   const [open, setOpen] = useState(false);
-  const { platform } = useSelector((state) => state.fax_logs.filter);
+  const store = useSelector((state) => state);
 
+  const { socket } = store.call_logs.filter;
+
+ // const [platform, setPlatform] = useState(null);
+  const { platform  } = useSelector((state) => state.fax_logs.filter);
+ 
   // const [platform, setPlatform] = useState(null);
   // console.log("platform ledt", platform);
   const dispatch = useDispatch();
@@ -37,9 +48,37 @@ const PrescriberCallViewLeft = ({ data }) => {
   // const { RC_SERVER_URL, RC_CLIENT_ID, RC_CLIENT_SECRET, RC_JWT } =
   //   ringCentralConfig;
 
+  const initializeSocket = () => {
+    const newSocket = io.connect(BASE_URL, { transports: ["websocket"] });
+    dispatch(updateDisabledPrescriber(data.Id));
+    newSocket.emit("enable_prescriber", data.Id);
+        window.history.back();
+    dispatch(
+      onCallLogFilterChangeHandler({
+        filter: "socket",
+        value: newSocket,
+      })
+    );
+  };
+
   const handleClose = () => {
     setOpen(false);
   };
+
+  useEffect(() => {
+    if(typeof RCAdapter == 'undefined'){
+      if(!socket){
+        initializeSocket()
+      }
+      else{
+      // router.replace('/phonebook')
+      dispatch(updateDisabledPrescriber(data.Id));
+      socket.emit("enable_prescriber", data.Id);
+          window.history.back();
+      }
+    }
+  }, []);
+
 
   // useEffect(() => {
   //   var rcsdk = new RC({
@@ -61,16 +100,16 @@ const PrescriberCallViewLeft = ({ data }) => {
   // }, []);
 
   useEffect(() => {
-    RCAdapter.setClosed(false);
-    RCAdapter.setMinimized(true);
+    if (typeof RCAdapter !== 'undefined')RCAdapter.setClosed(false);
+    if (typeof RCAdapter !== 'undefined')RCAdapter.setMinimized(true);
 
     return () => {
-      RCAdapter.setClosed(true);
+      if (typeof RCAdapter !== 'undefined') RCAdapter.setClosed(true);
     };
   }, []);
 
   const makeCall = (phoneNumber) => {
-    RCAdapter.setMinimized(false);
+    if (typeof RCAdapter !== 'undefined')RCAdapter.setMinimized(false);
     document
       .querySelector("#rc-widget-adapter-frame")
       .contentWindow.postMessage(
