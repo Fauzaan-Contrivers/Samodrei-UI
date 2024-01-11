@@ -19,6 +19,7 @@ const Navigation = () => {
     {
       path: "/phonebook",
       action: "read",
+      subject: "acl-page",
       icon: ShieldOutline,
       title: "Tele-Prescribers",
     },
