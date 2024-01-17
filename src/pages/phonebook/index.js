@@ -43,6 +43,7 @@ const PhoneBook = () => {
   const [limitExceeds, setLimitExceeds] = useState(false);
   const [filterPage, setFilterPage] = useState("");
   const [namePrescriber, setNamePrescriber] = useState("");
+  const [searchPhoneNumber, setSearchPhoneNumber]= useState("")
   const ability = useContext(AbilityContext);
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
@@ -109,8 +110,7 @@ const PhoneBook = () => {
     const fetchPrescribersOnName = () => {
       setIsLoading(true);
       const fetchPrescribersDataWithDebounce = debounce(() => {
-    
-      if (namePrescriber) {
+      if (namePrescriber.length>0) {
       
         dispatch(
           fetchPrescribersforPhoneLogs({
@@ -122,7 +122,20 @@ const PhoneBook = () => {
           setPageNumber(store.prescribers.filter.page);
           setIsLoading(false);
         });
-      } else {
+      } else if(searchPhoneNumber.length>0){
+        dispatch(
+          fetchPrescribersforPhoneLogs({
+            page_num: pageNumber + 1,
+            page_size: store.prescribers.filter.pageSize,
+            phoneNumber: searchPhoneNumber
+          })
+        ).then(() => {
+          setPageNumber(store.prescribers.filter.page);
+          setIsLoading(false);
+        });
+      }
+      
+      else {
         dispatch(
           fetchPrescribersforPhoneLogs({
             page_num: pageNumber + 1,
@@ -400,6 +413,22 @@ const PhoneBook = () => {
                 variant="outlined"
                 onChange={(e) => {
                   setNamePrescriber(e.target.value);
+                }}
+              />
+            </div>
+            <div
+              style={{
+                marginBottom: "10px",
+                width: "200px",
+                marginLeft: "10px",
+              }}
+            >
+              <TextField
+                id="outlined-basic"
+                label="Search by Phone Number"
+                variant="outlined"
+                onChange={(e) => {
+                  setSearchPhoneNumber(e.target.value);
                 }}
               />
             </div>
