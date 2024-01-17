@@ -52,6 +52,7 @@ export const callLogsSlice = createSlice({
       startDateRange: "",
       endDateRange: "",
       dates: [],
+      phoneNumber:""
     },
   },
   reducers: {

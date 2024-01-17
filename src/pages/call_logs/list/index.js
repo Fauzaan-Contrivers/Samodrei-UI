@@ -106,6 +106,7 @@ const CallLogs = () => {
         end_date: isNaN(Date.parse(endDate)) ? "" : endDate,
         call_disposition: store.call_logs.filter.disposition.join(","),
         receiver_position: store.call_logs.filter.receiverPosition.join(","),
+        phoneNumber: store.call_logs.filter.phoneNumber
       })
     ).then(() => {
       setIsLoading(false);
@@ -115,7 +116,7 @@ const CallLogs = () => {
   const handleTeleMarkterValue = (e) => {
     dispatch(
       onCallLogFilterChangeHandler({
-        filter: "teleMarketerValue",
+        filter: e.target.name,
         value: e.target.value,
       })
     );
@@ -341,17 +342,29 @@ const CallLogs = () => {
           <CardHeader title="Filters" />
           <CardContent>
             <Grid container spacing={6}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={4}>
                 <FormControl fullWidth>
                   <TextField
                     id="outlined-basic"
                     label="Tele-Marketer"
+                    name="teleMarketerValue"
                     onChange={handleTeleMarkterValue}
                     value={store.call_logs.filter.teleMarketerValue}
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={4}>
+                <FormControl fullWidth>
+                  <TextField
+                    id="outlined-basic"
+                    label="Phone Number"
+                    name="phoneNumber"
+                    onChange={handleTeleMarkterValue}
+                    value={store.call_logs.filter.phoneNumber}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={4}>
                 <DatePickerWrapper>
                   <DatePicker
                     isClearable
