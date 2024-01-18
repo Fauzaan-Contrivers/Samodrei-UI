@@ -23,10 +23,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} <<EOF
             cd /home/bitnami/Samodrei-UI
             git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Fauzaan-Contrivers/Samodrei-UI.git
-            git config pull.rebase true 
-            git checkout .
-            git checkout main
-            git checkout .
             git pull origin main
             npm install --legacy-peer-deps
             npm run build  
