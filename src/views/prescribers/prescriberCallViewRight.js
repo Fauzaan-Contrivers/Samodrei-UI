@@ -461,7 +461,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
         {/*<Grid marginLeft="10px" item key={index}>
              <h6>{phoneNumber}</h6> 
            </Grid>
-         ))}*/}
+         ))}*/} 
        {
   commentData &&
   commentData?.message.map((data) =>
