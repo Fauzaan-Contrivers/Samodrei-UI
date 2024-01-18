@@ -188,8 +188,8 @@ const PrescriberCallViewRight = ({ prescriber }) => {
             toast.success(data.message, {
               duration: 2000,
             });
-            window.history.back();
-            //router.replace("/phonebook");
+          //  window.history.back();
+            router.replace("/phonebook");
           }
         }
         else{
@@ -213,8 +213,8 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     if (isUpdated) {
       dispatch(updateDisabledPrescriber(prescriber.Id));
       socket.emit("enable_prescriber", prescriber.Id);
-          window.history.back();
-      // router.replace("/phonebook");
+        //  window.history.back();
+       router.replace("/phonebook");
     }
   };
 
