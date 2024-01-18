@@ -153,7 +153,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   };
 
   const onSubmitFeedbackHandler = async () => {
-    if (!isCalled) {
+    if (isCalled) {
       setIsSubmitDone(true)
       try {
         const response = await fetch(
