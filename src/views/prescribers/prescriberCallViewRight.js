@@ -153,7 +153,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   };
 
   const onSubmitFeedbackHandler = async () => {
-    if (!isCalled) {
+    if (isCalled) {
       setIsSubmitDone(true)
       try {
         const response = await fetch(
@@ -425,7 +425,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
               variant="contained"
               onClick={() => onSubmitFeedbackHandler()}
               sx={{ backgroundColor: "green" }}
-          //    disabled={(isSubmitDone || elapsedTime == 0) ? true : false}
+              disabled={(isSubmitDone || elapsedTime == 0) ? true : false}
             >
               Submit
             </Button>
@@ -436,7 +436,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
             <Button
               variant="contained"
               onClick={() => setOpenFlagDialog(true)}
-             // disabled={elapsedTime == 0 ? true : false}
+              disabled={elapsedTime == 0 ? true : false}
             >
               Flag Number
             </Button>
