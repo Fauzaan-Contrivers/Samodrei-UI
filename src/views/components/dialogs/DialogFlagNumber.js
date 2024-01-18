@@ -51,7 +51,8 @@ const DialogFlagNumber = ({
         toast.success(data.message, {
           duration: 2000,
         });
-        router.replace("/phonebook");
+        window.history.back();
+       // router.replace("/phonebook");
       }
       else{
         toast.success("Something went wrong try again.", {
