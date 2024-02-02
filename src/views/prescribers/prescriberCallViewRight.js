@@ -473,7 +473,6 @@ const PrescriberCallViewRight = ({ prescriber }) => {
           <b>{moment(data.call_logs_LoggedDate).local().format("YYYY-MM-DD HH:mm:ss")}</b>
         </p>
         </div>
-        <p style={{marginTop:'0px'}}><b>Call Disposition: </b>{data?.call_logs_CallDisposition}</p>
         <p><b>Comment: </b>{data?.call_logs_CallFeedback?.length > 0 ? data.call_logs_CallFeedback: "N/A"}</p>
       </Grid>
     )
