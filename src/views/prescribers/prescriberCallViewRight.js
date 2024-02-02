@@ -465,12 +465,16 @@ const PrescriberCallViewRight = ({ prescriber }) => {
        {
   commentData &&
   commentData?.message.map((data) =>
-    data?.CallFeedback?.length > 0 && (
-      <Grid key={data.id} paddingLeft="10px" border="1px solid gray">
+     (
+      <Grid key={data.call_logs_Id} paddingLeft="10px" border="1px solid gray">
+        <div style={{display:"flex", justifyContent:"space-around"}}>
+        <p><b>{data.teleMarketer_name !=null ? (data.teleMarketer_name):"N/A"} (Telemarketer)</b></p>
         <p>
-          <b>{moment(data.LoggedDate).local().format("YYYY-MM-DD HH:mm:ss")}</b>
+          <b>{moment(data.call_logs_LoggedDate).local().format("YYYY-MM-DD HH:mm:ss")}</b>
         </p>
-        <p>{data.CallFeedback}</p>
+        </div>
+        <p style={{marginTop:'0px'}}><b>Call Disposition: </b>{data?.call_logs_CallDisposition}</p>
+        <p><b>Comment: </b>{data?.call_logs_CallFeedback?.length > 0 ? data.call_logs_CallFeedback: "N/A"}</p>
       </Grid>
     )
   )
