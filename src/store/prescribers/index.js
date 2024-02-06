@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 import { apiCall } from "src/configs/utils";
+import authConfig from "src/configs/auth";
 
 // ** Fetch prescribers
 export const fetchPrescribersData = createAsyncThunk(
@@ -25,6 +26,7 @@ export const fetchPrescribersData = createAsyncThunk(
 export const fetchPrescribersforPhoneLogs = createAsyncThunk(
   "tele-prescribers/fetch_prescribers_for_Logs",
   async (params) => {
+    const userData = JSON?.parse(window.localStorage.getItem(authConfig.userData));
     console.log("CALLED", params);
     let response = await apiCall(
       "POST",
@@ -33,6 +35,7 @@ export const fetchPrescribersforPhoneLogs = createAsyncThunk(
         ...params,
         page_num: params.page_num,
         limit: params.page_size,
+        userId: userData?.id
       }
     );
     return {
