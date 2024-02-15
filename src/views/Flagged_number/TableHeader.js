@@ -148,14 +148,11 @@ const TableHeader = (props) => {
 
   const downloadCSV =async (start, end) => {
     if(props.callLogs){
-      console.log(store.call_logs.filter.endDateRange)
-      console.log(store.call_logs.filter.startDateRange)
-      
-    const startDate = moment(store.call_logs.filter.startDateRange, "YYYY-MM-DD");
-    const formattedStartDate = startDate.format("YYYY-MM-DD");
+    const startDate = store.call_logs.filter.startDateRange?moment(store.call_logs.filter.startDateRange, "YYYY-MM-DD"):false;
+    const formattedStartDate = startDate ? startDate.format("YYYY-MM-DD"): false;
 
-    const endDate = moment(store.call_logs.filter.endDateRange, "YYYY-MM-DD");
-    const formattedEndStartDate = endDate.format("YYYY-MM-DD");
+    const endDate =store.call_logs.filter.endDateRange ? moment(store.call_logs.filter.endDateRange, "YYYY-MM-DD"): false;
+    const formattedEndStartDate = endDate? endDate.format("YYYY-MM-DD"): false;
      const result=await axios
      .post(`${BASE_URL}call-logs/fetch-call-logs`, {
       tele_marketer: store.call_logs.filter.teleMarketerValue,
@@ -166,11 +163,12 @@ const TableHeader = (props) => {
      })
      let jobsData=result?.data?.result?.data
      let csv =
-     "NPI,Tele-Prescriber,Tele-Marketer,Call Receiver, Receiver Position, Feedback Submitted Date,Call Disposition,Call Time,Comment\n";
+     "NPI,Tele-Prescriber,Phone, Tele-Marketer,Call Receiver, Receiver Position, Feedback Submitted Date,Call Disposition,Call Time,Comment\n";
    console.log(result)
    jobsData.forEach(function (row) {
      csv += `${row.NPI},`;
      csv += `"${row.First_Name} ${row.Last_Name}",`;
+     csv +=`"${row.Phone}",`;
      csv += `"${row.name}",`;
      csv += `"${row.CallReceiverName}",`;
      csv += `"${row.CallReceiverPosition}",`;
