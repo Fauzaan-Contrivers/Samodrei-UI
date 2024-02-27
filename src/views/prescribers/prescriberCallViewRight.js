@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // ** MUI Imports
 
@@ -28,6 +28,10 @@ import { updateDisabledPrescriber } from "src/store/prescribers";
 import DialogSetMeeting from "../components/dialogs/DialogSetMeeting";
 import DialogFlagNumber from "../components/dialogs/DialogFlagNumber";
 import moment from "moment";
+import { ringCentralConfig } from "src/configs/config";
+
+const RC = require("@ringcentral/sdk").SDK;
+
 // ** Styled Tab component
 const Tab = styled(MuiTab)(({ theme }) => ({
   minHeight: 48,
@@ -51,7 +55,15 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   const [open, setOpen] = useState(false);
   const [openFlagDialog, setOpenFlagDialog] = useState(false);
   const [commentData, setCommentData] = useState(false);
+  const [platform, setPlatform] =useState(null)
+  const [callDetails, setCallDetails]= useState({
+    telephonySessionId:'', partyId:'', telephonyStatus:''
+  })
   // ** Hooks
+  const isCallTransferred = useRef(false);
+
+  const { RC_SERVER_URL, RC_CLIENT_ID, RC_CLIENT_SECRET, RC_JWT } =
+  ringCentralConfig;
   const dispatch = useDispatch();
   const router = useRouter();
   const store = useSelector((state) => state);
@@ -87,6 +99,26 @@ const PrescriberCallViewRight = ({ prescriber }) => {
       router.beforePopState(() => true);
     };
   }, [router, socket]);
+
+  useEffect(() => {
+    var rcsdk = new RC({
+      server: RC_SERVER_URL,
+      clientId: RC_CLIENT_ID,
+      clientSecret: RC_CLIENT_SECRET,
+    });
+
+    var p = rcsdk.platform();
+
+    p.login({
+      jwt: RC_JWT,
+    });
+
+    p.on(p.events.loginSuccess, function (e) {
+      console.log("User logged in successfully");
+      setPlatform(p);
+    });
+  }, []);
+
 
   useEffect(() => {
     if (
@@ -245,7 +277,38 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     }
   };
 
-  const startTimer = () => {
+  const transferCall = async () => {
+    const {
+        telephonySessionId,
+        partyId,
+        telephonyStatus
+    } = callDetails;
+
+    try {
+        if (platform && telephonySessionId && partyId && !isCallTransferred.current && telephonyStatus == "CallConnected") {
+            await platform.post(`/restapi/v1.0/account/~/telephony/sessions/${telephonySessionId}/parties/${partyId}/transfer`, {
+                 'phoneNumber':"+18506050636",
+                //'phoneNumber': "+12674227238",
+            })
+            isCallTransferred.current = true;
+            toast.success("Call transferred successfully.", {
+                duration: 2000,
+            });
+
+        }
+    } catch (e) {
+        console.log(e)
+    }
+
+}
+  const currentCallDetails=async(data)=>{
+    const {call} =data;
+    if(call){
+    const {telephonySessionId, partyId, telephonyStatus} =call;
+    setCallDetails({telephonySessionId, partyId, telephonyStatus})
+    }
+  }
+  const startTimer = (callDetails) => {
     setStartTime(Date.now());
   };
 
@@ -259,12 +322,17 @@ const PrescriberCallViewRight = ({ prescriber }) => {
 
   window.addEventListener("message", (e) => {
     const data = e.data;
-    if (data) {
+    if (data && !isCallTransferred.current) {
       switch (data.type) {
         case "rc-call-init-notify":
+
           // get call when user creates a call from dial
-          startTimer();
+          startTimer(data);
           setIsCalled(true);
+          break;
+
+        case "rc-active-call-notify":
+          currentCallDetails(data)
           break;
         case "rc-call-end-notify":
           // get call on call end event
@@ -317,6 +385,8 @@ const PrescriberCallViewRight = ({ prescriber }) => {
       >
         <div>
           <Typography variant="h6">Feedback Form</Typography>
+
+          <Button disabled={isCallTransferred.current} onClick={transferCall}>Transfer Call</Button>
         </div>
         <div>
           <Typography>Call Time: {formatElapsedTime(elapsedTime)}</Typography>

@@ -248,7 +248,7 @@ const TableHeader = (props) => {
     hiddenElement.target = "_blank";
 
     //provide the name for the CSV file to be downloaded
-    hiddenElement.download = "Lunch Data.csv";
+    hiddenElement.download = "Flagged Numbers.csv";
     hiddenElement.click();
   }
   };
