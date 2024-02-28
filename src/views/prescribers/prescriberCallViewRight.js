@@ -332,6 +332,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
           break;
 
         case "rc-active-call-notify":
+          if(callDetails.telephonySessionId && callDetails.telephonySessionId.length==0)
           currentCallDetails(data)
           break;
         case "rc-call-end-notify":
