@@ -55,9 +55,8 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   const [open, setOpen] = useState(false);
   const [openFlagDialog, setOpenFlagDialog] = useState(false);
   const [commentData, setCommentData] = useState(false);
-  const [platform, setPlatform] =useState(null)
   const [callDetails, setCallDetails]= useState({
-    telephonySessionId:'', partyId:'', telephonyStatus:''
+    telephonySessionId:null, partyId:'', telephonyStatus:''
   })
   // ** Hooks
   const isCallTransferred = useRef(false);
@@ -67,6 +66,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const store = useSelector((state) => state);
+  const platform= store.fax_logs.filter.platform;
   const meetingDate = useSelector(
     (state) => state.prescribers.TelePrescriberData.result[0].MeetingDate
   );
@@ -100,24 +100,24 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     };
   }, [router, socket]);
 
-  useEffect(() => {
-    var rcsdk = new RC({
-      server: RC_SERVER_URL,
-      clientId: RC_CLIENT_ID,
-      clientSecret: RC_CLIENT_SECRET,
-    });
+  // useEffect(() => {
+  //   var rcsdk = new RC({
+  //     server: RC_SERVER_URL,
+  //     clientId: RC_CLIENT_ID,
+  //     clientSecret: RC_CLIENT_SECRET,
+  //   });
 
-    var p = rcsdk.platform();
+  //   var p = rcsdk.platform();
 
-    p.login({
-      jwt: RC_JWT,
-    });
+  //   p.login({
+  //     jwt: RC_JWT,
+  //   });
 
-    p.on(p.events.loginSuccess, function (e) {
-      console.log("User logged in successfully");
-      setPlatform(p);
-    });
-  }, []);
+  //   p.on(p.events.loginSuccess, function (e) {
+  //     console.log("User logged in successfully");
+  //    // setPlatform(p);
+  //   });
+  // }, []);
 
 
   useEffect(() => {
@@ -285,6 +285,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     } = callDetails;
 
     try {
+      
         if (platform && telephonySessionId && partyId && !isCallTransferred.current && telephonyStatus == "CallConnected") {
             await platform.post(`/restapi/v1.0/account/~/telephony/sessions/${telephonySessionId}/parties/${partyId}/transfer`, {
                  'phoneNumber':"+18506050636",
@@ -332,7 +333,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
           break;
 
         case "rc-active-call-notify":
-          if(callDetails.telephonySessionId && callDetails.telephonySessionId.length==0)
+         if(!callDetails.telephonySessionId)
           currentCallDetails(data)
           break;
         case "rc-call-end-notify":
