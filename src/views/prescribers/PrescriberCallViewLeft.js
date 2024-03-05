@@ -234,6 +234,20 @@ const PrescriberCallViewLeft = ({ data }) => {
                 <Typography variant="h6">Details</Typography>
                 <Divider />
                 <Box sx={{ paddingTop: 2, paddingBottom: 2 }}>
+                <Box sx={{ display: "flex", marginBottom: 2.7 }}>
+                    <Typography
+                      sx={{
+                        marginRight: 2,
+                        fontWeight: 500,
+                        fontSize: "0.875rem",
+                      }}
+                    >
+                      NPI:
+                    </Typography>
+                    <Typography variant="body2">
+                      {data?.NPI }
+                    </Typography>
+                  </Box>
                   <Box sx={{ display: "flex", marginBottom: 2.7 }}>
                     <Typography
                       sx={{
