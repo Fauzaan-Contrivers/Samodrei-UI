@@ -288,7 +288,9 @@ const PrescriberCallViewRight = ({ prescriber }) => {
       
         if (platform && telephonySessionId && partyId && !isCallTransferred.current && telephonyStatus == "CallConnected") {
             await platform.post(`/restapi/v1.0/account/~/telephony/sessions/${telephonySessionId}/parties/${partyId}/transfer`, {
-                 'phoneNumber':"+18506050636",
+                 'phoneNumber':"+17039917182",
+                 
+
                 //'phoneNumber': "+12674227238",
             })
             isCallTransferred.current = true;
