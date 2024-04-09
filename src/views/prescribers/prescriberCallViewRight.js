@@ -294,6 +294,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
                 //'phoneNumber': "+12674227238",
             })
             isCallTransferred.current = true;
+            setElapsedTime(1)
             toast.success("Call transferred successfully.", {
                 duration: 2000,
             });
