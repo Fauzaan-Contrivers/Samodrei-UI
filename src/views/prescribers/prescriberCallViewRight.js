@@ -299,25 +299,19 @@ const PrescriberCallViewRight = ({ prescriber }) => {
                 duration: 2000,
             });
 
-            setCallDetails({
-              telephonySessionId:null, partyId:'', telephonyStatus:''
-            })
+            
 
         }
 
         else{
-          setCallDetails({
-            telephonySessionId:null, partyId:'', telephonyStatus:''
-          })
+          
           toast.error("Call Status is not connected.", {
             duration: 2000,
         });
         }
         
     } catch (e) {
-      setCallDetails({
-        telephonySessionId:null, partyId:'', telephonyStatus:''
-      })
+      
       toast.error("Error during transfer call action.", {
         duration: 2000,
     });
@@ -361,9 +355,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
           break;
         case "rc-call-end-notify":
           // get call on call end event
-          setCallDetails({
-            telephonySessionId:null, partyId:'', telephonyStatus:''
-          })
+          
           endTimer();
           break;
         default:
