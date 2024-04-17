@@ -29,7 +29,7 @@ import DialogSetMeeting from "../components/dialogs/DialogSetMeeting";
 import DialogFlagNumber from "../components/dialogs/DialogFlagNumber";
 import moment from "moment";
 import { ringCentralConfig } from "src/configs/config";
-
+import axios from "axios";
 const RC = require("@ringcentral/sdk").SDK;
 
 // ** Styled Tab component
@@ -285,14 +285,56 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     } = callDetails;
 
     try {
+
+      var tokens = await platform.auth().data()
+
+     //refresh token
+     const url = 'https://platform.ringcentral.com/restapi/oauth/token';
+     const headers = {
+       'Content-Type': 'application/x-www-form-urlencoded',
+       "Authorization": "BasicWm8wWlFNUlVTUDhhZVVTa1l6T3I4ZzpWdkoxR1g2U3NxQmVEZ1JROWJIVlZ3YnRrVmJncWdKZXhiYmE2VDJsaVRQaQ=="
+     };
+     
+     const data = {
+       refresh_token: tokens.refresh_token,
+       grant_type: 'refresh_token',
+       client_id: 'Zo0ZQMRUSP8aeUSkYzOr8g',
+       token: tokens.access_token
+     };
+     
+     const params = new URLSearchParams();
+     for (const key in data) {
+       params.append(key, data[key]);
+     }
+     
+     const tokenRes = await axios.post(url, params, { headers });
+     
+     if(!tokenRes?.data?.access_token){
+      toast.error("Unable to refresh access token.", {
+        duration: 2000,
+    });
+       return
+     }
       
         if (platform && telephonySessionId && partyId && !isCallTransferred.current && telephonyStatus == "CallConnected") {
-            await platform.post(`/restapi/v1.0/account/~/telephony/sessions/${telephonySessionId}/parties/${partyId}/transfer`, {
-                 'phoneNumber':"+17039917182",
+          const url = `https://platform.ringcentral.com/restapi/v1.0/account/63285756004/telephony/sessions/${telephonySessionId}/parties/${partyId}/transfer`;
+          const headers = {
+            'accept': 'application/json',
+            'content-type': 'application/json',
+            'Authorization': `Bearer ${tokenRes?.data?.access_token}` 
+          };
+          const data = {
+            phoneNumber: "+17039917182"
+          };
+          await axios.post(url, data, {
+            headers: headers
+          })
+            // await platform.post(`/restapi/v1.0/account/~/telephony/sessions/${telephonySessionId}/parties/${partyId}/transfer`, {
+            //      'phoneNumber':"+17039917182",
                  
 
-                //'phoneNumber': "+12674227238",
-            })
+            //     //'phoneNumber': "+12674227238",
+            // })
             isCallTransferred.current = true;
             setElapsedTime(1)
             toast.success("Call transferred successfully.", {
