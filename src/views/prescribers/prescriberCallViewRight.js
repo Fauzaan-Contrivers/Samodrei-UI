@@ -392,7 +392,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
           break;
 
         case "rc-active-call-notify":
-         if(!callDetails.telephonySessionId)
+         if((!callDetails.telephonySessionId || (data?.call?.telephonySessionId!=callDetails.telephonySessionId && data?.call?.partyId!=callDetails.partyId)) && data?.call?.telephonyStatus=="CallConnected")
           currentCallDetails(data)
           break;
         case "rc-call-end-notify":
