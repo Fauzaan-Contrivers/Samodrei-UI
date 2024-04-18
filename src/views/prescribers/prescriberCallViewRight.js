@@ -287,7 +287,12 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     try {
 
       var tokens = await platform.auth().data()
-
+      if(!tokens.access_token){
+        toast.error("You are not loggedIn with ringcentral.", {
+          duration: 2000,
+       });
+         return
+      }
      //refresh token
      const url = 'https://platform.ringcentral.com/restapi/oauth/token';
      const headers = {
