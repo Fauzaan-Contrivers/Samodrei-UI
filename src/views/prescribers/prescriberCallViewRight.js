@@ -410,7 +410,9 @@ const PrescriberCallViewRight = ({ prescriber }) => {
           break;
         case "rc-call-end-notify":
           // get call on call end event
-          
+          setCallDetails({
+            telephonySessionId:null, partyId:'', telephonyStatus:''
+          })
           endTimer();
           break;
         default:
