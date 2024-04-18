@@ -334,6 +334,10 @@ const PrescriberCallViewRight = ({ prescriber }) => {
           await axios.post(url, data, {
             headers: headers
           })
+
+          setCallDetails({
+            telephonySessionId:null, partyId:'', telephonyStatus:''
+          })
             // await platform.post(`/restapi/v1.0/account/~/telephony/sessions/${telephonySessionId}/parties/${partyId}/transfer`, {
             //      'phoneNumber':"+17039917182",
                  
@@ -351,14 +355,18 @@ const PrescriberCallViewRight = ({ prescriber }) => {
         }
 
         else{
-          
+          setCallDetails({
+            telephonySessionId:null, partyId:'', telephonyStatus:''
+          })
           toast.error("Call Status is not connected.", {
             duration: 2000,
         });
         }
         
     } catch (e) {
-      
+      setCallDetails({
+        telephonySessionId:null, partyId:'', telephonyStatus:''
+      })
       toast.error("Error during transfer call action.", {
         duration: 2000,
     });
