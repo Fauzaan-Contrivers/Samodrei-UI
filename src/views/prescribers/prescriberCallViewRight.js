@@ -285,7 +285,12 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     } = callDetails;
 
     try {
-        var tokens = await platform.auth().data()
+        let tokens = await platform.auth().data()
+        if(!tokens?.access_token){
+          toast.error("You are not logged in with ringcentral.", {
+            duration: 2000,
+        });
+        }
         if (platform && telephonySessionId && partyId && !isCallTransferred.current && telephonyStatus == "CallConnected") {
           const url = `https://platform.ringcentral.com/restapi/v1.0/account/63285756004/telephony/sessions/${telephonySessionId}/parties/${partyId}/transfer`;
           const headers = {
