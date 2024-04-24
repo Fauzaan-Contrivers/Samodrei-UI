@@ -60,6 +60,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   })
   // ** Hooks
   const isCallTransferred = useRef(false);
+  const isCallDetailsAdded= useRef(false)
 
   const { RC_SERVER_URL, RC_CLIENT_ID, RC_CLIENT_SECRET, RC_JWT } =
   ringCentralConfig;
@@ -266,7 +267,6 @@ const PrescriberCallViewRight = ({ prescriber }) => {
         }
       );
       const data = await response.json();
-      console.log("DATA", data);
       if (data.status == 200) {
         return true;
       } else {
@@ -285,91 +285,59 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     } = callDetails;
 
     try {
-
-      var tokens = await platform.auth().data()
-      if(!tokens.access_token){
-        toast.error("You are not loggedIn with ringcentral.", {
-          duration: 2000,
-       });
-         return
-      }
-     //refresh token
-     const url = 'https://platform.ringcentral.com/restapi/oauth/token';
-     const headers = {
-       'Content-Type': 'application/x-www-form-urlencoded',
-       "Authorization": "BasicWm8wWlFNUlVTUDhhZVVTa1l6T3I4ZzpWdkoxR1g2U3NxQmVEZ1JROWJIVlZ3YnRrVmJncWdKZXhiYmE2VDJsaVRQaQ=="
-     };
-     
-     const data = {
-       refresh_token: tokens.refresh_token,
-       grant_type: 'refresh_token',
-       client_id: 'Zo0ZQMRUSP8aeUSkYzOr8g',
-       token: tokens.access_token
-     };
-     
-     const params = new URLSearchParams();
-     for (const key in data) {
-       params.append(key, data[key]);
-     }
-     
-     const tokenRes = await axios.post(url, params, { headers });
-     
-     if(!tokenRes?.data?.access_token){
-      toast.error("Unable to refresh access token.", {
-        duration: 2000,
-    });
-       return
-     }
-      
+        var tokens = await platform.auth().data()
         if (platform && telephonySessionId && partyId && !isCallTransferred.current && telephonyStatus == "CallConnected") {
           const url = `https://platform.ringcentral.com/restapi/v1.0/account/63285756004/telephony/sessions/${telephonySessionId}/parties/${partyId}/transfer`;
           const headers = {
             'accept': 'application/json',
             'content-type': 'application/json',
-            'Authorization': `Bearer ${tokenRes?.data?.access_token}` 
+            'Authorization': `Bearer ${tokens.access_token}` 
           };
           const data = {
             phoneNumber: "+17039917182"
           };
-          await axios.post(url, data, {
+          const response=await axios.post(url, data, {
             headers: headers
           })
 
-         
-            // await platform.post(`/restapi/v1.0/account/~/telephony/sessions/${telephonySessionId}/parties/${partyId}/transfer`, {
-            //      'phoneNumber':"+17039917182",
-                 
-
-            //     //'phoneNumber': "+12674227238",
-            // })
             isCallTransferred.current = true;
             setElapsedTime(1)
             toast.success("Call transferred successfully.", {
                 duration: 2000,
             });
-
-            
-
         }
 
         else{
-      
           toast.error("Call Status is not connected.", {
             duration: 2000,
         });
         }
         
     } catch (e) {
-      
+      if (e.response.status === 409) {
+        toast.error("We cannot transfer call at this state.", {
+          duration: 2000,
+      });
+       }
+       else if (e.response.status === 404) {
+        toast.error("We cannot transfer call at this state.", {
+          duration: 2000,
+      });
+       }
+      else
       toast.error("Error during transfer call action.", {
         duration: 2000,
     });
-        console.log(e)
+        
     }
 
 }
   const currentCallDetails=async(data)=>{
+
+    isCallDetailsAdded.current=true;
+
     const {call} =data;
+  //  console.log(call)
     if(call){
     const {telephonySessionId, partyId, telephonyStatus} =call;
     setCallDetails({telephonySessionId, partyId, telephonyStatus})
@@ -393,22 +361,37 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     if (data && !isCallTransferred.current) {
       switch (data.type) {
         case "rc-call-init-notify":
-
+          if(isCallDetailsAdded.current){
+            setCallDetails({
+              telephonySessionId:null, partyId:'', telephonyStatus:''
+            })
+            isCallDetailsAdded.current=false;
+          }
           // get call when user creates a call from dial
           startTimer(data);
           setIsCalled(true);
           break;
 
         case "rc-active-call-notify":
-      
-
-         if((!callDetails.telephonySessionId || (data?.call?.telephonySessionId!=callDetails.telephonySessionId && data?.call?.partyId!=callDetails.partyId)) && data?.call?.telephonyStatus=="CallConnected")
-          currentCallDetails(data)
+          if(!isCallDetailsAdded.current && data?.call?.telephonyStatus=="CallConnected" ){
+            currentCallDetails(data)
+            break;
+          }
+//       console.log(data)
+// console.log(callDetails)
+//          if(callDetails.telephonySessionId==null|| (data?.call?.telephonySessionId!=callDetails.telephonySessionId && data?.call?.partyId!=callDetails.partyId) &&  data?.call?.telephonyStatus=="CallConnected")
+//           currentCallDetails(data)
           break;
         case "rc-call-end-notify":
           // get call on call end event
           
           endTimer();
+          if(isCallDetailsAdded.current){
+          setCallDetails({
+            telephonySessionId:null, partyId:'', telephonyStatus:''
+          })
+          isCallDetailsAdded.current=false;
+        }
           break;
         default:
           break;

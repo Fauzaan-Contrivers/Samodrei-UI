@@ -4,7 +4,7 @@ import { BASE_URL, API_KEY } from './config'
 
 export async function apiCall(type = 'GET', appendUrl, data = {}) {
   let URL = BASE_URL + appendUrl
-  console.log('apiCall', URL)
+  //console.log('apiCall', URL)
   let reqHeaders = {}
   reqHeaders['API-KEY'] = API_KEY
   if (type === 'POST' || type === 'PUT') {

@@ -98,7 +98,7 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   const loadInitials = () => {
-    console.log("Initial point if I am logged in!");
+    //console.log("Initial point if I am logged in!");
     dispatch(setPrescribersLoadingTrue());
     dispatch(setProductAdvocatesLoadingTrue());
     dispatch(setJobsLoadingTrue());
