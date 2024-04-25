@@ -84,6 +84,9 @@ const PhoneBook = () => {
 
     p.on(p.events.loginSuccess, function (e) {
       console.log("User logged in successfully");
+      dispatch(
+        onFaxLogFilterChangeHandler({ filter: "platform", value: platform })
+      )
       setPlatform(p);
     });
   }, []);
