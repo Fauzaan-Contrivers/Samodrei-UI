@@ -292,7 +292,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
         // });
         // }
         if ( telephonySessionId && partyId && !isCallTransferred.current && telephonyStatus == "CallConnected") {
-          const response = await axios.post(`${BASE_URL}/ringcentral/transfer-call`, {
+          const response = await axios.post(`${BASE_URL}ringcentral/transfer-call`, {
             
             });
 
