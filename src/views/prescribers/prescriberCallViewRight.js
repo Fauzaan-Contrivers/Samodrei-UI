@@ -285,31 +285,44 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     } = callDetails;
 
     try {
-        let tokens = await platform.auth().data()
-        if(!tokens?.access_token){
-          toast.error("You are not logged in with ringcentral.", {
-            duration: 2000,
-        });
-        }
-        if (platform && telephonySessionId && partyId && !isCallTransferred.current && telephonyStatus == "CallConnected") {
-          const url = `https://platform.ringcentral.com/restapi/v1.0/account/63285756004/telephony/sessions/${telephonySessionId}/parties/${partyId}/transfer`;
+        // let tokens = await platform.auth().data()
+        // if(!tokens?.access_token){
+        //   toast.error("You are not logged in with ringcentral.", {
+        //     duration: 2000,
+        // });
+        // }
+        if ( telephonySessionId && partyId && !isCallTransferred.current && telephonyStatus == "CallConnected") {
+          const response = await axios.post(`${BASE_URL}/ringcentral/transfer-call`, {
+            
+            });
+
+            if(!response.data.error){
+
+            console.log(response)
+          const url = `https://platform.ringcentral.com/restapi/v1.0/account/~/telephony/sessions/${telephonySessionId}/parties/${partyId}/transfer`;
           const headers = {
             'accept': 'application/json',
             'content-type': 'application/json',
-            'Authorization': `Bearer ${tokens.access_token}` 
+            'Authorization': `Bearer ${response?.data?.access_token}` 
           };
           const data = {
             phoneNumber: "+17039917182"
           };
-          const response=await axios.post(url, data, {
+          await axios.post(url, data, {
             headers: headers
           })
-
-            isCallTransferred.current = true;
+         
+            //isCallTransferred.current = true;
             setElapsedTime(1)
             toast.success("Call transferred successfully.", {
                 duration: 2000,
             });
+          }
+          else{
+            toast.error("Cannot transfer call at this moment.", {
+              duration: 2000,
+          });
+          }
         }
 
         else{
@@ -324,7 +337,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
           duration: 2000,
       });
        }
-       else if (e.response.status === 404) {
+       else if (e.response.status === 400) {
         toast.error("We cannot transfer call at this state.", {
           duration: 2000,
       });

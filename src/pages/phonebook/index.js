@@ -70,25 +70,25 @@ const PhoneBook = () => {
     fetchPrescribersOnUpdate()
   configureSocketEvents(socket)}, [socket]);
   useEffect(() => {
-    var rcsdk = new RC({
-      server: RC_SERVER_URL,
-      clientId: RC_CLIENT_ID,
-      clientSecret: RC_CLIENT_SECRET,
-    });
+    // var rcsdk = new RC({
+    //   server: RC_SERVER_URL,
+    //   clientId: RC_CLIENT_ID,
+    //   clientSecret: RC_CLIENT_SECRET,
+    // });
 
-    var p = rcsdk.platform();
+    // var p = rcsdk.platform();
 
-    p.login({
-      jwt: RC_JWT,
-    });
+    // p.login({
+    //   jwt: RC_JWT,
+    // });
 
-    p.on(p.events.loginSuccess, function (e) {
-      console.log("User logged in successfully");
-      dispatch(
-        onFaxLogFilterChangeHandler({ filter: "platform", value: platform })
-      )
-      setPlatform(p);
-    });
+    // p.on(p.events.loginSuccess, function (e) {
+    //   console.log("User logged in successfully");
+    //   dispatch(
+    //     onFaxLogFilterChangeHandler({ filter: "platform", value: platform })
+    //   )
+    //   setPlatform(p);
+    // });
   }, []);
 
   const fetchPrescribersOnUpdatePageNumber = () => {

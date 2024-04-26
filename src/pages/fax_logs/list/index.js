@@ -165,23 +165,41 @@ const FaxLogs = () => {
       const file = new File([imgBlob], "fax.jpg", { type: "image/jpeg" });
 
       formData.append("attachment", file);
+
+      const response = await axios.post(`${BASE_URL}ringcentral/transfer-call`, {
+            
+            });
+
+            if(!response.data.error){
       // POST /restapi/v1.0/account/11112222/extension/22223333/fax HTTP/1.1
-      const endpoint = `/restapi/v1.0/account/~/extension/~/fax`;
+      const endpoint = `https://platform.ringcentral.com/restapi/v1.0/account/~/extension/~/fax`;
 
-      var resp = await platform
-        .post(endpoint, formData)
-        .then(async function (resp) {
-          var jsonObj = await resp.json();
-          // console.log("DATA: ", jsonObj);
-          // console.log("FAX sent. Message id: " + jsonObj.id);
+      const config = {
+        headers: {
+            'Authorization': `Bearer ${response?.data?.accessToken}`,
+            'Content-Type': 'multipart/form-data'
+        }
+    };
 
-          update_fax_number_data(originalFaxId, jsonObj.messageStatus);
+    const response = await axios.post(endpoint, formData, config);
 
-          toast.success("Success", {
-            duration: 5000,
-          });
-          check_fax_message_status(jsonObj.id);
+    const jsonObj = response.data;
+    console.log("DATA: ", jsonObj);
+    console.log("FAX sent. Message id: " + jsonObj.id);
+
+    update_fax_number_data(originalFaxId, jsonObj.messageStatus);
+
+    toast.success("Success", {
+        duration: 5000,
+    });
+
+    check_fax_message_status(jsonObj.id);
+      }
+      else{
+        toast.error("Error sending fax", {
+          duration: 5000,
         });
+      }
     } catch (e) {
       toast.error("Error sending fax", {
         duration: 5000,
