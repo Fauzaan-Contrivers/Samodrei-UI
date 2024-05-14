@@ -73,12 +73,12 @@ const Navigation = () => {
       icon: ShieldOutline,
       title: "Flagged Addresses",
     },
-    {
-      path: "/users",
-      action: "read",
-      icon: ShieldOutline,
-      title: "Dashboard Users",
-    },
+    // {
+    //   path: "/users",
+    //   action: "read",
+    //   icon: ShieldOutline,
+    //   title: "Dashboard Users",
+    // },
     {
       path: "/prescribers-list",
       action: "read",

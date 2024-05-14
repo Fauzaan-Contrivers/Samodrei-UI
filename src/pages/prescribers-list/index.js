@@ -126,6 +126,7 @@ const PrescribersList = () => {
 
   const fetchTableData = useCallback(
     async (sort, column, userData) => {
+      console.log(userData.companyId)
       setIsLoading(true);
       await axios
         .get(`${BASE_URL}prescriber/get_prescribers_list_name`, {
@@ -133,6 +134,7 @@ const PrescribersList = () => {
             sort,
             column,
             clientId: userData?.clientId,
+            companyId: userData?.companyId
           },
         })
         .then((res) => {

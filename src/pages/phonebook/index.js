@@ -259,7 +259,7 @@ const PhoneBook = () => {
         minWidth: 210,
         headerName: "NPI",
         renderCell: ({ row }) => (
-          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.NPI}`}</Typography>
+          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.npi}`}</Typography>
         ),
       },
       {
@@ -267,23 +267,23 @@ const PhoneBook = () => {
         minWidth: 210,
         headerName: "Name",
         renderCell: ({ row }) => (
-          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.First_Name} ${row?.Last_Name}`}</Typography>
+          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.first_name} ${row?.last_name}`}</Typography>
         ),
       },
-      {
-        field: "DispenseStatus",
-        minWidth: 210,
-        headerName: "Dispense Status",
-        renderCell: ({ row }) => (
-          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.DispenseStatus}`}</Typography>
-        ),
-      },
+      // {
+      //   field: "DispenseStatus",
+      //   minWidth: 210,
+      //   headerName: "Dispense Status",
+      //   renderCell: ({ row }) => (
+      //     <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.DispenseStatus}`}</Typography>
+      //   ),
+      // },
       {
         field: "Phone",
         minWidth: 210,
         headerName: "Phone",
         renderCell: ({ row }) => (
-          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.Phone}`}</Typography>
+          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.phone_office}`}</Typography>
         ),
       },
       {
@@ -291,7 +291,7 @@ const PhoneBook = () => {
         minWidth: 120,
         headerName: "FAX",
         renderCell: ({ row }) => (
-          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.Fax}`}</Typography>
+          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.fax_phone}`}</Typography>
         ),
       },
       {
@@ -455,7 +455,7 @@ const PhoneBook = () => {
                 }
                 columns={columns}
                 loading={isLoading}
-                getRowId={(row) => row?.Id}
+                getRowId={(row) => row?.npi}
                 rowCount={store.prescribers.totalRecords}
                 disableSelectionOnClick
                 page={page}

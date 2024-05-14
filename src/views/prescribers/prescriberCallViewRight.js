@@ -68,9 +68,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   const router = useRouter();
   const store = useSelector((state) => state);
   const platform= store.fax_logs.filter.platform;
-  const meetingDate = useSelector(
-    (state) => state.prescribers.TelePrescriberData.result[0].MeetingDate
-  );
+  
   // console.log("meeting date", meetingDate)
   const { socket } = store.call_logs.filter;
 
@@ -186,7 +184,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   };
 
   const onSubmitFeedbackHandler = async () => {
-    if (isCalled) {
+    if (1) {
       setIsSubmitDone(true)
       try {
         const response = await fetch(
@@ -198,6 +196,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
             },
             body: JSON.stringify({
               telemarketerId: userData.id,
+              company_id: userData.companyId,
               prescriberId: prescriber.Id,
               feedback: feedbackText,
               call_time: elapsedTime,
@@ -567,7 +566,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
               variant="contained"
               onClick={() => onSubmitFeedbackHandler()}
               sx={{ backgroundColor: "green" }}
-              disabled={(isSubmitDone || elapsedTime == 0) ? true : false}
+             // disabled={(isSubmitDone || elapsedTime == 0) ? true : false}
             >
               Submit
             </Button>
@@ -578,7 +577,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
             <Button
               variant="contained"
               onClick={() => setOpenFlagDialog(true)}
-              disabled={elapsedTime == 0 ? true : false}
+           //   disabled={elapsedTime == 0 ? true : false}
             >
               Flag Number
             </Button>

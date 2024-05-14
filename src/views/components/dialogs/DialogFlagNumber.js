@@ -16,13 +16,14 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
-
+import authConfig from "src/configs/auth";
 const DialogFlagNumber = ({
   open,
   handleClose,
   prescriberId,
   teleMarketerId,
 }) => {
+  const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
   const [disposition, setDisposition] = useState("");
   const [feedbackText, setFeedbackText] = useState("");
 
@@ -43,6 +44,7 @@ const DialogFlagNumber = ({
             disposition: disposition,
             feedbackText: feedbackText,
             flagged: true,
+            companyId: userData.companyId
           }),
         }
       );

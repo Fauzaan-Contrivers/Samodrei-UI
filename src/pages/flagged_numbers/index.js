@@ -106,7 +106,7 @@ const FlaggedNumbers = () => {
       field: "NPI",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.NPI}
+          {params.row.npi}
         </Typography>
       ),
     },
@@ -117,7 +117,7 @@ const FlaggedNumbers = () => {
       field: "Name",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {`${params.row.First_Name} ${params.row.Last_Name}`}
+          {`${params.row.first_name} ${params.row.last_name}`}
         </Typography>
       ),
     },
@@ -128,7 +128,7 @@ const FlaggedNumbers = () => {
       field: "Phone",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.Phone}
+          {params.row.phone_office}
         </Typography>
       ),
     },
@@ -137,7 +137,7 @@ const FlaggedNumbers = () => {
       field: "TeleMarketer",
       headerName: "Tele-Markter",
       renderCell: ({ row }) => (
-        <Typography variant="caption">{row?.name}</Typography>
+        <Typography variant="caption">{row?.telemarketer}</Typography>
       ),
     },
     {
@@ -183,7 +183,7 @@ const FlaggedNumbers = () => {
       renderCell: ({ row }) => (
         <EditIcon
           onClick={() => {
-            setPrescriberId(row.Id), setOpen(true);
+            setPrescriberId(row.requestId), setOpen(true);
           }}
         />
       ),
@@ -287,6 +287,7 @@ const FlaggedNumbers = () => {
             end_date: isNaN(Date.parse(endDate)) ? "" : endDate,
             call_disposition: store.prescribers.filter.disposition.join(","),
             clientId,
+            companyId: userData.companyId
           })
           .then((res) => {
             // console.log('res.data.prescribers.length', res.data.prescribers.length);

@@ -28,7 +28,7 @@ const DialogUpdateFlagNumber = ({ open, handleClose, prescriberId }) => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              prescriberId: prescriberId,
+              requestId: prescriberId,
               IsDeleted: isChecked,
             }),
           }

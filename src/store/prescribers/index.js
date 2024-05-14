@@ -38,6 +38,7 @@ export const fetchPrescribersforPhoneLogs = createAsyncThunk(
         userId: userData?.id
       }
     );
+    console.log(response)
     return {
       result: response.data.result.records.prescribers,
       totalRecords: response.data.result.records.count,

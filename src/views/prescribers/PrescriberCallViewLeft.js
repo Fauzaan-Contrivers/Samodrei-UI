@@ -146,7 +146,7 @@ const PrescriberCallViewLeft = ({ data }) => {
               fontSize: "2rem",
             }}
           >
-            {getInitials(`${data.First_Name} ${data.Last_Name}`)}
+            {getInitials(`${data.first_name} ${data.last_name}`)}
           </CustomAvatar>
         );
       }
@@ -160,7 +160,7 @@ const PrescriberCallViewLeft = ({ data }) => {
         <DialogSendFax
           open={open}
           handleClose={handleClose}
-          FaxNumber={data.Fax}
+          FaxNumber={data.fax_phone}
           platform={platform}
         />
         <Grid container spacing={6}>
@@ -176,12 +176,12 @@ const PrescriberCallViewLeft = ({ data }) => {
               >
                 {renderUserAvatar()}
                 <Typography variant="h6" sx={{ marginBottom: 2 }}>
-                  {`${data?.First_Name} ${data?.Last_Name}`}
+                  {`${data?.first_name} ${data?.last_name}`}
                 </Typography>
                 <CustomChip
                   skin="light"
                   size="small"
-                  label={data?.Specialty}
+                  label={data?.specialty}
                   color={"success"}
                   sx={{
                     height: 20,
@@ -204,11 +204,11 @@ const PrescriberCallViewLeft = ({ data }) => {
                   }}
                 >
                   <Typography variant="h6" sx={{ marginRight: 2 }}>
-                    {data.Phone}
+                    {data.phone_office}
                   </Typography>
                   <Phone
                     sx={{ cursor: "pointer", color: "green", fontSize: "2rem" }}
-                    onClick={() => makeCall(data.Phone)}
+                    onClick={() => makeCall(data.phone_office)}
                   />
                 </Box>
                 <Divider />
@@ -221,7 +221,7 @@ const PrescriberCallViewLeft = ({ data }) => {
                   }}
                 >
                   <Typography variant="h6" sx={{ marginRight: 2 }}>
-                    {data.Fax}
+                    {data.fax_phone}
                   </Typography>
                   <FaxIcon
                     sx={{ cursor: "pointer", color: "green", fontSize: "2rem" }}
@@ -245,7 +245,7 @@ const PrescriberCallViewLeft = ({ data }) => {
                       NPI:
                     </Typography>
                     <Typography variant="body2">
-                      {data?.NPI }
+                      {data?.npi }
                     </Typography>
                   </Box>
                   <Box sx={{ display: "flex", marginBottom: 2.7 }}>
@@ -310,10 +310,10 @@ const PrescriberCallViewLeft = ({ data }) => {
                       Address:
                     </Typography>
                     <Typography variant="body2">
-                      {`${data?.Street_Address},
-                      ${data?.City},
-                      ${data?.State},
-                      ${data?.Zip}`}
+                      {`${data?.address1},
+                      ${data?.city},
+                      ${data?.state},
+                      ${data?.zip5}`}
                     </Typography>
                   </Box>
                 </Box>

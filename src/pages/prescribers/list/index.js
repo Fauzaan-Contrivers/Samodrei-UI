@@ -189,7 +189,7 @@ const InvoiceList = () => {
       headerName: "Name",
       renderCell: ({ row }) => (
         <Link href={`/prescribers/preview/${row.Id}`} passHref>
-          <StyledLink>{`${row?.Name}`}</StyledLink>
+          <StyledLink>{`${row?.first_name} ${row?.last_name}`}</StyledLink>
         </Link>
       ),
     },
@@ -200,10 +200,10 @@ const InvoiceList = () => {
       headerName: "Address",
       renderCell: ({ row }) => (
         <Tooltip
-          title={`${row.Street_Address}, ${row.City}, ${row.State}, ${row.Zip}`}
+          title={`${row.address1}, ${row.city}, ${row.state}, ${row.zip5}`}
         >
           <Typography variant="body2">
-            {`${row.Street_Address}, ${row.City}, ${row.State}, ${row.Zip}`}
+            {`${row.address1}, ${row.city}, ${row.state}, ${row.zip5}`}
           </Typography>
         </Tooltip>
       ),
@@ -214,7 +214,7 @@ const InvoiceList = () => {
       field: "Speciality",
       headerName: "Speciality",
       renderCell: ({ row }) => (
-        <Typography variant="body2">{row?.Speciality || ""}</Typography>
+        <Typography variant="body2">{row.speciality}</Typography>
       ),
     },
     {

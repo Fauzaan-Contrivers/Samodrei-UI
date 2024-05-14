@@ -124,6 +124,7 @@ const CreateListDialog = ({ open, handleClose, fields }) => {
             city: selectedCity.toString(),
             state: selectedState.toString(),
             speciality: selectedSpecialty.toString(),
+            companyId: userData.companyId
           }),
         }
       );

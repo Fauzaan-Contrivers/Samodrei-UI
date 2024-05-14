@@ -52,20 +52,28 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const initAuth = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token");
       setIsInitialized(true);
       const storedToken = window.localStorage.getItem(
         authConfig.storageTokenKeyName
       );
-      if (storedToken) {
+      if(token){
+        window.localStorage.setItem(
+          authConfig.storageTokenKeyName, token
+        );
+      }
+      if (storedToken || token) {
         setLoading(true);
         await axios
           .get(`${BASE_URL}auth/me`, {
             headers: {
-              Authorization: storedToken,
+              Authorization: token ? token : storedToken,
             },
           })
           .then(async (response) => {
             setLoading(false);
+            console.log("me called")
             const { userData } = response?.data;
 
             const role = "";
@@ -86,10 +94,31 @@ const AuthProvider = ({ children }) => {
               fullName: userData?.name || "",
               email: userData?.email,
               roleId: userData?.roleId,
+              companyId: userData?.companyId
             };
             setUser({ ...data });
+
+            await window.localStorage.setItem(
+              "userData",
+              JSON.stringify(data)
+            );
+            loadInitials();  
+
+            if(userData?.roleId==1){
+              router.push("/dashboard")
+            }
+            else if (userData?.roleId==4){
+              router.push("/phonebook")
+            }
+            else if(userData?.roleId==5){
+              router.push("/call_logs/list")
+            }
+            else{
+              router.push("/")
+            }
+          
+            console.log("user data set")
           });
-        loadInitials();
       } else {
         setLoading(false);
       }
@@ -106,6 +135,7 @@ const AuthProvider = ({ children }) => {
     dispatch(fetchProductAdvocatesData());
     dispatch(fetchJobsData());
     dispatch(fetchSamplesData());
+    // router.push("/")
   };
 
   const authUser = () => {
@@ -139,6 +169,7 @@ const AuthProvider = ({ children }) => {
           fullName: userData?.name || "",
           email: userData?.email,
           roleId: userData?.roleId,
+          companyId: userData?.companyId
         };
         setUser({ ...data });
         await window.localStorage.setItem(
@@ -178,7 +209,7 @@ const AuthProvider = ({ children }) => {
     setIsInitialized(false);
     window.localStorage.removeItem("userData");
     window.localStorage.removeItem(authConfig.storageTokenKeyName);
-    router.push("/login");
+    router.replace(authConfig.authUrl);
   };
 
   const handleRegister = (params, errorCallback) => {

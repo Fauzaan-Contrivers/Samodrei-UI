@@ -51,7 +51,7 @@ const TeleMarketers = () => {
             params: {
               sort,
               column,
-              clientId: userData?.clientId,
+              clientId: userData?.companyId,
             },
           })
           .then((res) => {
@@ -132,7 +132,7 @@ const TeleMarketers = () => {
       field: "name",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.name}
+          {params.row.userName}
         </Typography>
       ),
     },
@@ -147,32 +147,7 @@ const TeleMarketers = () => {
         </Typography>
       ),
     },
-    {
-      flex: 0.2,
-      minWidth: 180,
-      headerName: "Role",
-      field: "roleId",
-      renderCell: (params) => (
-        <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.roleId === 1
-            ? "Super Admin"
-            : params.row.roleId === 4
-            ? "Tele-Marketer"
-            : "Admin"}
-        </Typography>
-      ),
-    },
-    {
-      flex: 0.2,
-      minWidth: 180,
-      headerName: "Company Name",
-      field: "company_name",
-      renderCell: (params) => (
-        <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.company_name}
-        </Typography>
-      ),
-    },
+   
     {
       flex: 0.2,
       minWidth: 140,

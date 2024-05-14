@@ -184,13 +184,13 @@ const CallLogs = () => {
       renderCell: ({ row }) => {
         return (
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Tooltip title={`${row.Phone}`}>
+            <Tooltip title={`${row.phone_office}`}>
               <Box sx={{ display: "flex", flexDirection: "column" }}>
                 <Typography
                   sx={{ color: "red" }}
-                >{`${row.First_Name} ${row.Last_Name}`}</Typography>
+                >{`${row.first_name} ${row.last_name}`}</Typography>
                 <Typography noWrap variant="caption">
-                  {`${row.Phone}`}
+                  {`${row.phone_office}`}
                 </Typography>
               </Box>
             </Tooltip>
@@ -208,7 +208,7 @@ const CallLogs = () => {
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Tooltip title={`${row.email}`}>
               <Box sx={{ display: "flex", flexDirection: "column" }}>
-                <Typography sx={{ color: "red" }}>{`${row.name}`}</Typography>
+                <Typography sx={{ color: "red" }}>{`${row.userName}`}</Typography>
                 <Typography noWrap variant="caption">
                   {row.email}
                 </Typography>
