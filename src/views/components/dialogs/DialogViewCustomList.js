@@ -77,7 +77,7 @@ const DialogViewCustomList = ({ open, handleClose, listId }) => {
       field: "Name",
       renderCell: (params) => (
         <Link href={`/prescribers/preview/${params.row.Id}`} passHref>
-          <StyledLink>{`${params.row.Name}`}</StyledLink>
+          <StyledLink>{`${params.row.first_name}`}</StyledLink>
         </Link>
       ),
     },

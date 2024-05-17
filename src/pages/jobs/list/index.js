@@ -202,7 +202,8 @@ const InvoiceList = () => {
       if (data.length == 10) {
         break;
       } else {
-        const name = prescriber.name ?? prescriber.Name;
+        console.log(prescriber)
+        const name = prescriber.first_name ? prescriber.first_name : prescriber.prscrbr_first_name;
         if (name.toLowerCase().includes(prescriberText.toLowerCase())) {
           data.push({
             label: name,
@@ -454,14 +455,14 @@ const InvoiceList = () => {
         return (
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Tooltip
-              title={`${prescriber.Street_Address}, ${prescriber.City}, ${prescriber.State}, ${prescriber.Zip}`}
+              title={`${prescriber.address1}, ${prescriber.city}, ${prescriber.state}, ${prescriber.zip5}`}
             >
               <Box sx={{ display: "flex", flexDirection: "column" }}>
                 <Link href={`/prescribers/preview/${prescriber.Id}`} passHref>
                   <StyledLink>{prescriber.Name}</StyledLink>
                 </Link>
                 <Typography noWrap variant="caption">
-                  {`${prescriber.Street_Address}, ${prescriber.City}, ${prescriber.State}, ${prescriber.Zip}`}
+                  {`${prescriber.address1}, ${prescriber.city}, ${prescriber.state}, ${prescriber.zip5}`}
                 </Typography>
               </Box>
             </Tooltip>
@@ -503,8 +504,8 @@ const InvoiceList = () => {
         <Typography variant="body2">
           {row?.feedback_submitted_at
             ? moment(row.feedback_submitted_at)
-                .local()
-                .format("YYYY-MM-DD HH:mm:ss")
+              .local()
+              .format("YYYY-MM-DD HH:mm:ss")
             : " "}
         </Typography>
       ),
@@ -518,7 +519,7 @@ const InvoiceList = () => {
         <Typography
           variant="body2"
           // style={{ color: row.selected_far_doctor ? "red" : "green" }}
-          style={{ color: row?.Distance_To_Doctor>0.5 ? "red" : "green" }}
+          style={{ color: row?.Distance_To_Doctor > 0.5 ? "red" : "green" }}
 
         >
           {row?.Distance_To_Doctor === null
@@ -552,13 +553,13 @@ const InvoiceList = () => {
             onClick={() => {
               window.open(
                 "https://www.google.com/maps?saddr=" +
-                  row.Location__Latitude +
-                  "," +
-                  row.Location__Longitude +
-                  "&daddr=" +
-                  row.prescriber.Location__Latitude +
-                  "," +
-                  row.prescriber.Location__Longitude
+                row.Location__Latitude +
+                "," +
+                row.Location__Longitude +
+                "&daddr=" +
+                row.prescriber.Location__Latitude +
+                "," +
+                row.prescriber.Location__Longitude
               );
             }}
           >

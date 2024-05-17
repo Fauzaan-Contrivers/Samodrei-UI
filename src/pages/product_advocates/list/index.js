@@ -146,6 +146,7 @@ const InvoiceList = () => {
             active_status: store.product_advocates.filter.Active,
             name_email: store.product_advocates.filter.ProductAdvocateValue,
             clientId: userData.clientId,
+            companyId: userData.companyId
           })
         ).then(() => setIsLoading(false));
       }

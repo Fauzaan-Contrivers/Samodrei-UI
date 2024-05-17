@@ -57,6 +57,7 @@ const Preview = ({ id, invoiceData }) => {
   }, [store.jobs.jobData]);
 
   if (data) {
+    console.log(data)
     return (
       <Card>
         <CardHeader
@@ -112,7 +113,7 @@ const Preview = ({ id, invoiceData }) => {
                             href={`/prescribers/preview/${data.p_Id}`}
                             passHref
                           >
-                            <StyledLink>{data.p_Name}</StyledLink>
+                            <StyledLink>{data.first_name}</StyledLink>
                           </Link>
                         </Typography>
                       </MUITableCell>
@@ -489,7 +490,7 @@ const Preview = ({ id, invoiceData }) => {
                               variant="body2"
                               sx={{ fontWeight: 600 }}
                             >
-                              {data?.prescriber.name}
+                              {data?.first_name}
                             </Typography>
                           </MUITableCell>
                         </TableRow>
@@ -502,7 +503,7 @@ const Preview = ({ id, invoiceData }) => {
                               variant="body2"
                               sx={{ fontWeight: 600 }}
                             >
-                              {data?.prescriber.speciality}
+                              {data?.specialty}
                             </Typography>
                           </MUITableCell>
                         </TableRow>
@@ -515,7 +516,7 @@ const Preview = ({ id, invoiceData }) => {
                               variant="body2"
                               sx={{ fontWeight: 600 }}
                             >
-                              {data?.prescriber.address}
+                              {data?.address1}
                             </Typography>
                           </MUITableCell>
                         </TableRow>
@@ -582,7 +583,7 @@ const Preview = ({ id, invoiceData }) => {
                               variant="body2"
                               sx={{ fontWeight: 600 }}
                             >
-                              {data?.prescriber.npi}
+                              {data?.npi}
                             </Typography>
                           </MUITableCell>
                         </TableRow>
@@ -611,7 +612,7 @@ const Preview = ({ id, invoiceData }) => {
                               variant="body2"
                               sx={{ fontWeight: 600 }}
                             >
-                              {data?.prescriber.prescriber_phone_number}
+                              {data?.phone_office}
                             </Typography>
                           </MUITableCell>
                         </TableRow>

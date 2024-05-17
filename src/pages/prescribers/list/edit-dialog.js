@@ -116,6 +116,7 @@ const PrescriberEditDialog = ({
       const result = await geocodeByAddress(value);
       let d = await getLocationData(result[0]);
       d["prescriber_id"] = prescriber.Id;
+
       dispatch(updatePrescriberAddress(d));
     }
     onPrescriberUpdate();
@@ -156,7 +157,7 @@ const PrescriberEditDialog = ({
               setValue(e);
             }}
             onSelect={handleSelect}
-            // searchOptions={{types: ["street_address"]}}
+          // searchOptions={{types: ["street_address"]}}
           >
             {({
               getInputProps,

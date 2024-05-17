@@ -64,7 +64,7 @@ const FlaggedAddresses = () => {
       field: "Name",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.Name}
+          {params?.row?.first_name} {params?.row?.last_name}
         </Typography>
       ),
     },
@@ -75,7 +75,7 @@ const FlaggedAddresses = () => {
       field: "Street_Address",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {`${params.row.Street_Address}, ${params.row.City}, ${params.row.State}, ${params.row.Zip}`}
+          {`${params.row?.address1}, ${params.row.city}, ${params.row.state}, ${params.row.zip5}`}
         </Typography>
       ),
     },
@@ -88,8 +88,8 @@ const FlaggedAddresses = () => {
         <Typography variant="body2" sx={{ color: "text.primary" }}>
           {params.row.FlaggedDate
             ? moment(params.row.FlaggedDate)
-                .local()
-                .format("YYYY-MM-DD HH:mm:ss")
+              .local()
+              .format("YYYY-MM-DD HH:mm:ss")
             : " "}
         </Typography>
       ),
@@ -130,6 +130,7 @@ const FlaggedAddresses = () => {
           sort,
           column,
           clientId,
+          companyId: userData?.companyId
         })
         .then((res) => {
           // console.log(res.data.prescribers);
