@@ -1,7 +1,10 @@
 // ** React Imports
 import { useState, useEffect, forwardRef } from "react";
+import { debounce } from "lodash";
 
 // ** MUI Imports
+import Button from "@mui/material/Button";
+
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -88,10 +91,15 @@ const CallLogs = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [namePrescriber, setNamePrescriber] = useState("");
+  const [searchPhoneNumber, setSearchPhoneNumber]= useState("")
   const [callScheduledData, setCallScheduledData] = useState([]);
+  const [limitExceeds, setLimitExceeds] = useState(false);
+  const store = useSelector((state) => state);
+
+  useEffect(() => fetchPrescribersOnName(), [page]);
   // ** Hooks
   const dispatch = useDispatch();
-  const store = useSelector((state) => state);
   const { socket } = store.call_logs.filter;
 
   const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
@@ -142,6 +150,29 @@ const CallLogs = () => {
     });
   };
 
+  const pageNumberChangeHandler = (newPageNumber) => {
+          
+    const totalRecords =
+      store.call_scheduled.totalRecords / store.call_scheduled.filter.page_size;
+    
+
+    if (newPageNumber <= totalRecords) {
+      
+      setPage(newPageNumber);
+      dispatch(
+        onCallLogFilterChangeHandler({
+          filter: "page",
+          value: newPageNumber,
+        })
+      );
+      setLimitExceeds(false);
+      
+    } else {
+            setLimitExceeds(true);
+
+      // console.log("The page number exceeds the limit.");
+    }
+  };
   const handleTeleMarkterValue = (e) => {
     dispatch(
       onCallLogFilterChangeHandler({
@@ -367,7 +398,128 @@ const CallLogs = () => {
       });
   };
 
+  const fetchPrescribersOnName = () => {
+    setIsLoading(true);
+    const fetchPrescribersDataWithDebounce = debounce(() => {
+    if (namePrescriber.length>0) {
+    
+      dispatch(
+        fetchCallLogsMeetingDate({
+          page_num: parseInt(page) + 1,
+          page_size: store.call_scheduled.filter.page_size,
+          Search: namePrescriber
+        })
+      ).then(() => {
+        setPage(store.call_scheduled.filter.page);
+        setIsLoading(false);
+      });
+    } else if(searchPhoneNumber.length>0){
+      dispatch(
+        fetchCallLogsMeetingDate({
+          page_num: parseInt(page) + 1,
+          page_size: store.call_scheduled.filter.page_size,
+          phoneNumber: searchPhoneNumber
+        })
+      ).then(() => {
+        setPage(2);
+        setIsLoading(false);
+      });
+    }
+    
+    else {
+      dispatch(
+        fetchPrescribersforPhoneLogs({
+         page_num: parseInt(page) + 1,
+          page_size: store.call_scheduled.filter.page_size,
+        })
+      ).then(() => {
+       setPage(store.call_scheduled.filter.page);
+        setIsLoading(false);
+      });
+    }
+
+    }, 2000);
+
+    fetchPrescribersDataWithDebounce();
+    return fetchPrescribersDataWithDebounce.cancel;
+  };
+
+  const pageSizeChangeHandler = (newPageSize) => {
+
+    dispatch(
+      onCallLogFilterChangeHandler({
+        filter: "page_size",
+        value: newPageSize,
+      })
+    );
+  };
+
+  const pageChangeHandler = (newPage) => {
+    dispatch(
+      onCallLogFilterChangeHandler({
+        filter: "page",
+        value: newPage,
+      })
+    );
+  };
   return (
+    <>
+      <div style={{ display: "flex" }}>
+      <div style={{ marginBottom: "10px", width: "200px" }}>
+              <TextField
+                id="outlined-basic"
+                label="Go to page number"
+                variant="outlined"
+                onChange={(e) => {
+                  const newPageNumbr = e.target.value;
+                  pageNumberChangeHandler(newPageNumbr);
+                }}
+              />
+              {limitExceeds && (
+                <Typography color="error">Page limit exceeds</Typography>
+              )}
+            </div>
+            <div
+              style={{
+                marginBottom: "10px",
+                width: "200px",
+                marginLeft: "10px",
+              }}
+            >
+              <TextField
+                id="outlined-basic"
+                label="Search by Name"
+                variant="outlined"
+                onChange={(e) => {
+                  setNamePrescriber(e.target.value);
+                }}
+              />
+            </div>
+            <div
+              style={{
+                marginBottom: "10px",
+                width: "200px",
+                marginLeft: "10px",
+              }}
+            >
+              <TextField
+                id="outlined-basic"
+                label="Search by Phone Number"
+                variant="outlined"
+                onChange={(e) => {
+                  setSearchPhoneNumber(e.target.value);
+                }}
+              />
+            </div>
+
+            <Button
+              onClick={fetchPrescribersOnName}
+              variant="outlined"
+              style={{ height: "55px", position: "absolute", right: 150 }}
+            >
+              Go
+            </Button>
+          </div>
     <Grid container spacing={6}>
       <Grid item xs={12}>
         <Card>
@@ -381,18 +533,20 @@ const CallLogs = () => {
             rowCount={store.call_scheduled.totalRecords}
             getRowId={(row) => row?.Id}
             disableSelectionOnClick
-            pageSize={Number(pageSize)}
+            pageSize={store.call_scheduled.filter.page_size}
             rowsPerPageOptions={[10, 25, 50]}
-            onPageChange={(newPage) => {
-              setPage(newPage);
-            }}
+            onPageChange={(newPage) => pageChangeHandler(newPage)}
+            page={page}
             onSelectionModelChange={(rows) => setSelectedRow(rows)}
-            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+            onPageSizeChange={(newPageSize) =>
+              pageSizeChangeHandler(newPageSize)
+            }
             paginationMode="server"
           />
         </Card>
       </Grid>
     </Grid>
+    </>
   );
 };
 

@@ -15,8 +15,11 @@ export const fetchCallLogsMeetingDate = createAsyncThunk(
         ...params,
         limit: params.page_size,
         page_num: params.page_num,
+        Search: params.Search,
+        phoneNumber: params.phoneNumber
       }
     );
+    
     console.log("response in store ", response.data.result.totalRecords);
     return {
       result: response.data.result.records,
@@ -48,6 +51,8 @@ export const callLogsMeetingSlice = createSlice({
       startDateRange: "",
       endDateRange: "",
       dates: [],
+      page: 0,
+      page_size: 10
     },
   },
   reducers: {
