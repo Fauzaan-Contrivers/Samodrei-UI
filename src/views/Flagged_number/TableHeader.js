@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { forwardRef, Fragment, useState } from "react";
 import { BASE_URL } from "src/configs/config";
-
+import authConfig from "src/configs/auth";
 // ** Third Party Imports
 import DatePicker from "react-datepicker";
 import format from "date-fns/format";
@@ -28,6 +28,7 @@ import {
   convertTimeZoneToReadableTime,
 } from "src/configs/utils";
 import DatePickerWrapper from "src/@core/styles/libs/react-datepicker";
+import { componentFactoryName } from "prettier";
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -138,6 +139,8 @@ const DialogBox = ({
 };
 
 const TableHeader = (props) => {
+  const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
+
   // console.log("props in flagged number", props.dataCSV);
   const store = useSelector((state) => state);
 
@@ -146,111 +149,111 @@ const TableHeader = (props) => {
     handleClickOpen();
   };
 
-  const downloadCSV =async (start, end) => {
-    if(props.callLogs){
-    const startDate = store.call_logs.filter.startDateRange?moment(store.call_logs.filter.startDateRange, "YYYY-MM-DD"):false;
-    const formattedStartDate = startDate ? startDate.format("YYYY-MM-DD"): false;
+  const downloadCSV = async (start, end) => {
+    if (props.callLogs) {
+      const startDate = store.call_logs.filter.startDateRange ? moment(store.call_logs.filter.startDateRange, "YYYY-MM-DD") : false;
+      const formattedStartDate = startDate ? startDate.format("YYYY-MM-DD") : false;
 
-    const endDate =store.call_logs.filter.endDateRange ? moment(store.call_logs.filter.endDateRange, "YYYY-MM-DD"): false;
-    const formattedEndStartDate = endDate? endDate.format("YYYY-MM-DD"): false;
-     const result=await axios
-     .post(`${BASE_URL}call-logs/fetch-call-logs`, {
-      tele_marketer: store.call_logs.filter.teleMarketerValue,
-      start_date: formattedStartDate,
-      end_date: formattedEndStartDate ,
-      call_disposition: store.call_logs.filter.disposition.join(","),
-      receiver_position: store.call_logs.filter.receiverPosition.join(",")
-     })
-     let jobsData=result?.data?.result?.data
-     let csv =
-     "NPI,Tele-Prescriber,Phone, Tele-Marketer,Call Receiver, Receiver Position, Feedback Submitted Date,Call Disposition,Call Time,Comment\n";
-   console.log(result)
-   jobsData.forEach(function (row) {
-     csv += `${row.NPI},`;
-     csv += `"${row.First_Name} ${row.Last_Name}",`;
-     csv +=`"${row.Phone}",`;
-     csv += `"${row.name}",`;
-     csv += `"${row.CallReceiverName}",`;
-     csv += `"${row.CallReceiverPosition}",`;
-     csv += `"${row.LoggedDate}",`;
-     csv += `"${row.CallDisposition}",`;
-     csv += `"${(row.CallTime/60).toFixed(2)}",`;
-     csv += `"${row.CallFeedback}"`; // Replace spaces with %20
-   
-     csv += "\n";
-   });
-   
-   // Create a Blob object to store the CSV data
-   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-   
-   // Create a link element and trigger a download
-   const link = document.createElement("a");
-   link.href = window.URL.createObjectURL(blob);
-   link.download = "Call_Logs.csv";
-   link.click();
-   
-       }
-    else{
-    let jobsData = props.dataCSV;
-    // console.log("jobs data", jobsData);
-    // if (start) {
-    //   jobsData = jobsData.filter((val) =>
-    //     moment(val.question_l_0).isSameOrAfter(moment(start), "D")
-    //   );
-    // }
-    // if (end) {
-    //   jobsData = jobsData.filter((val) =>
-    //     moment(val.question_l_0).isSameOrBefore(moment(end), "D")
-    //   );
-    // }
-    // let lunchData = jobsData.filter((val) => val.question_1);
-    let csv =
-      "NPI,Name,Flagged Number, Tele-Marketer,Disposition,Address,,,,Flagged Date\n";
-    // csv +=
-    //   'NPI,Name,Flagged Number,Tele-Marketer,Disposition,Flagged date\n';
+      const endDate = store.call_logs.filter.endDateRange ? moment(store.call_logs.filter.endDateRange, "YYYY-MM-DD") : false;
+      const formattedEndStartDate = endDate ? endDate.format("YYYY-MM-DD") : false;
+      const result = await axios
+        .post(`${BASE_URL}call-logs/fetch-call-logs`, {
+          tele_marketer: store.call_logs.filter.teleMarketerValue,
+          start_date: formattedStartDate,
+          end_date: formattedEndStartDate,
+          call_disposition: store.call_logs.filter.disposition.join(","),
+          receiver_position: store.call_logs.filter.receiverPosition.join(","),
+          company_id: userData.companyId
+        })
+      let jobsData = result?.data?.result?.data
+      let csv =
+        "NPI,Tele-Prescriber,Phone, Tele-Marketer,Call Receiver, Receiver Position, Feedback Submitted Date,Call Disposition,Call Time,Comment\n";
+      console.log(result)
+      jobsData.forEach(function (row) {
+        csv += `${row.NPI},`;
+        csv += `"${row.First_Name} ${row.Last_Name}",`;
+        csv += `"${row.Phone}",`;
+        csv += `"${row.name}",`;
+        csv += `"${row.CallReceiverName}",`;
+        csv += `"${row.CallReceiverPosition}",`;
+        csv += `"${row.LoggedDate}",`;
+        csv += `"${row.CallDisposition}",`;
+        csv += `"${(row.CallTime / 60).toFixed(2)}",`;
+        csv += `"${row.CallFeedback}"`; // Replace spaces with %20
 
-    jobsData.forEach(function (row) {
-      csv += `${row.NPI},`;
-      csv += `${row.First_Name} ${row.Last_Name},`;
-      csv += `${row.Phone},`;
-      csv += `${row.name},`;
-      csv += `${row.FlagDisposition},`;
-            csv += `"${row.Street_Address?.replace(/#/g, "")} ${row.City} ${
-              row.State
-            }",`;
+        csv += "\n";
+      });
 
-      // csv += ` ${row.Street_Address} ${row.City} ${row.State}`;
+      // Create a Blob object to store the CSV data
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
 
-      csv += `${row.FlaggedPhoneNumberDate}`;
-      //   csv += ","; // unit
-      //   csv += `"${row.prescriber.Street_Address?.replace(/#/g, "")}",`;
-      //   csv += `${row.prescriber.City},`;
-      //   csv += `${row.prescriber.State},`;
-      //   csv += `${row.prescriber.Zip},`;
-      //   csv += `${row.prescriber.Phone},`;
-      //   csv += `"${row.question_l_1A}",`;
-      //   csv += `"${row.question_l_1B}",`;
-      //   csv += `"${row.question_l_1C}",`;
-      //   csv += `"${row.question_l_1D}",`;
-      //   csv += ","; //Empty Column
-      //   csv += `"${row.question_l_2}",`;
-      //   csv += parseFloat(row.question_l_2 / row.question_l_1A).toFixed(2) + ",";
-      //   csv += `${row.question_l_4},`;
-      //   csv += convertTimeZoneToReadableDate(row.question_l_0) + ","; // date
-      //   csv += convertTimeZoneToReadableTime(row.question_l_0) + ","; // time
-      //   csv += `${row.product_advocate.Name},`;
+      // Create a link element and trigger a download
+      const link = document.createElement("a");
+      link.href = window.URL.createObjectURL(blob);
+      link.download = "Call_Logs.csv";
+      link.click();
 
-      csv += "\n";
-    });
+    }
+    else {
+      let jobsData = props.dataCSV;
+      // console.log("jobs data", jobsData);
+      // if (start) {
+      //   jobsData = jobsData.filter((val) =>
+      //     moment(val.question_l_0).isSameOrAfter(moment(start), "D")
+      //   );
+      // }
+      // if (end) {
+      //   jobsData = jobsData.filter((val) =>
+      //     moment(val.question_l_0).isSameOrBefore(moment(end), "D")
+      //   );
+      // }
+      // let lunchData = jobsData.filter((val) => val.question_1);
+      let csv =
+        "NPI,Name,Flagged Number, Tele-Marketer,Disposition,Address,,,,Flagged Date\n";
+      // csv +=
+      //   'NPI,Name,Flagged Number,Tele-Marketer,Disposition,Flagged date\n';
 
-    var hiddenElement = document.createElement("a");
-    hiddenElement.href = "data:text/csv;charset=utf-8," + encodeURI(csv);
-    hiddenElement.target = "_blank";
+      jobsData.forEach(function (row) {
+        csv += `${row.NPI},`;
+        csv += `${row.First_Name} ${row.Last_Name},`;
+        csv += `${row.Phone},`;
+        csv += `${row.name},`;
+        csv += `${row.FlagDisposition},`;
+        csv += `"${row.Street_Address?.replace(/#/g, "")} ${row.City} ${row.State
+          }",`;
 
-    //provide the name for the CSV file to be downloaded
-    hiddenElement.download = "Flagged Numbers.csv";
-    hiddenElement.click();
-  }
+        // csv += ` ${row.Street_Address} ${row.City} ${row.State}`;
+
+        csv += `${row.FlaggedPhoneNumberDate}`;
+        //   csv += ","; // unit
+        //   csv += `"${row.prescriber.Street_Address?.replace(/#/g, "")}",`;
+        //   csv += `${row.prescriber.City},`;
+        //   csv += `${row.prescriber.State},`;
+        //   csv += `${row.prescriber.Zip},`;
+        //   csv += `${row.prescriber.Phone},`;
+        //   csv += `"${row.question_l_1A}",`;
+        //   csv += `"${row.question_l_1B}",`;
+        //   csv += `"${row.question_l_1C}",`;
+        //   csv += `"${row.question_l_1D}",`;
+        //   csv += ","; //Empty Column
+        //   csv += `"${row.question_l_2}",`;
+        //   csv += parseFloat(row.question_l_2 / row.question_l_1A).toFixed(2) + ",";
+        //   csv += `${row.question_l_4},`;
+        //   csv += convertTimeZoneToReadableDate(row.question_l_0) + ","; // date
+        //   csv += convertTimeZoneToReadableTime(row.question_l_0) + ","; // time
+        //   csv += `${row.product_advocate.Name},`;
+
+        csv += "\n";
+      });
+
+      var hiddenElement = document.createElement("a");
+      hiddenElement.href = "data:text/csv;charset=utf-8," + encodeURI(csv);
+      hiddenElement.target = "_blank";
+
+      //provide the name for the CSV file to be downloaded
+      hiddenElement.download = "Flagged Numbers.csv";
+      hiddenElement.click();
+    }
   };
 
   const [open, setOpen] = useState(false);

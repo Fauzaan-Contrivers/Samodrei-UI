@@ -43,7 +43,7 @@ const PhoneBook = () => {
   const [limitExceeds, setLimitExceeds] = useState(false);
   const [filterPage, setFilterPage] = useState("");
   const [namePrescriber, setNamePrescriber] = useState("");
-  const [searchPhoneNumber, setSearchPhoneNumber]= useState("")
+  const [searchPhoneNumber, setSearchPhoneNumber] = useState("")
   const ability = useContext(AbilityContext);
   const dispatch = useDispatch();
   const store = useSelector((state) => state);
@@ -68,7 +68,8 @@ const PhoneBook = () => {
   useEffect(() => initializeSocket(), []);
   useEffect(() => {
     fetchPrescribersOnUpdate()
-  configureSocketEvents(socket)}, [socket]);
+    configureSocketEvents(socket)
+  }, [socket]);
   useEffect(() => {
     // var rcsdk = new RC({
     //   server: RC_SERVER_URL,
@@ -110,11 +111,11 @@ const PhoneBook = () => {
     return fetchPrescribersDataWithDebounce.cancel;
   };
 
-    const fetchPrescribersOnName = () => {
-      setIsLoading(true);
-      const fetchPrescribersDataWithDebounce = debounce(() => {
-      if (namePrescriber.length>0) {
-      
+  const fetchPrescribersOnName = () => {
+    setIsLoading(true);
+    const fetchPrescribersDataWithDebounce = debounce(() => {
+      if (namePrescriber.length > 0) {
+
         dispatch(
           fetchPrescribersforPhoneLogs({
             page_num: pageNumber + 1,
@@ -125,7 +126,7 @@ const PhoneBook = () => {
           setPageNumber(store.prescribers.filter.page);
           setIsLoading(false);
         });
-      } else if(searchPhoneNumber.length>0){
+      } else if (searchPhoneNumber.length > 0) {
         dispatch(
           fetchPrescribersforPhoneLogs({
             page_num: pageNumber + 1,
@@ -137,7 +138,7 @@ const PhoneBook = () => {
           setIsLoading(false);
         });
       }
-      
+
       else {
         dispatch(
           fetchPrescribersforPhoneLogs({
@@ -150,11 +151,11 @@ const PhoneBook = () => {
         });
       }
 
-      }, 2000);
+    }, 2000);
 
-      fetchPrescribersDataWithDebounce();
-      return fetchPrescribersDataWithDebounce.cancel;
-    };
+    fetchPrescribersDataWithDebounce();
+    return fetchPrescribersDataWithDebounce.cancel;
+  };
 
 
   const fetchPrescribersOnUpdate = () => {
@@ -221,7 +222,7 @@ const PhoneBook = () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prescriberId, flagged: flag }),
+          body: JSON.stringify({ prescriberId, flagged: flag, companyId: userData.companyId }),
         }
       );
       console.log("DATA", await response.json());
@@ -251,7 +252,7 @@ const PhoneBook = () => {
         minWidth: 210,
         headerName: "Id",
         renderCell: ({ row }) => (
-          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.Id}`}</Typography>
+          <Typography color={row.FlaggedPhoneNumber == 1 ? "red" : ""} style={{ textDecoration: row.FlaggedPhoneNumber == 1 ? "line-through" : "" }} variant="body2">{`${row?.Id}`}</Typography>
         ),
       },
       {
@@ -259,7 +260,7 @@ const PhoneBook = () => {
         minWidth: 210,
         headerName: "NPI",
         renderCell: ({ row }) => (
-          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.npi}`}</Typography>
+          <Typography color={row.FlaggedPhoneNumber == 1 ? "red" : ""} style={{ textDecoration: row.FlaggedPhoneNumber == 1 ? "line-through" : "" }} variant="body2">{`${row?.npi}`}</Typography>
         ),
       },
       {
@@ -267,7 +268,7 @@ const PhoneBook = () => {
         minWidth: 210,
         headerName: "Name",
         renderCell: ({ row }) => (
-          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.first_name} ${row?.last_name}`}</Typography>
+          <Typography color={row.FlaggedPhoneNumber == 1 ? "red" : ""} style={{ textDecoration: row.FlaggedPhoneNumber == 1 ? "line-through" : "" }} variant="body2">{`${row?.first_name} ${row?.last_name}`}</Typography>
         ),
       },
       // {
@@ -283,7 +284,7 @@ const PhoneBook = () => {
         minWidth: 210,
         headerName: "Phone",
         renderCell: ({ row }) => (
-          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.phone_office}`}</Typography>
+          <Typography color={row.FlaggedPhoneNumber == 1 ? "red" : ""} style={{ textDecoration: row.FlaggedPhoneNumber == 1 ? "line-through" : "" }} variant="body2">{`${row?.phone_office}`}</Typography>
         ),
       },
       {
@@ -291,7 +292,7 @@ const PhoneBook = () => {
         minWidth: 120,
         headerName: "FAX",
         renderCell: ({ row }) => (
-          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">{`${row?.fax_phone}`}</Typography>
+          <Typography color={row.FlaggedPhoneNumber == 1 ? "red" : ""} style={{ textDecoration: row.FlaggedPhoneNumber == 1 ? "line-through" : "" }} variant="body2">{`${row?.fax_phone}`}</Typography>
         ),
       },
       {
@@ -299,7 +300,7 @@ const PhoneBook = () => {
         minWidth: 210,
         headerName: "Meeting Date",
         renderCell: ({ row }) => (
-          <Typography color={row.FlaggedPhoneNumber==1?"red":""} style={{textDecoration:row.FlaggedPhoneNumber==1?"line-through":""}} variant="body2">
+          <Typography color={row.FlaggedPhoneNumber == 1 ? "red" : ""} style={{ textDecoration: row.FlaggedPhoneNumber == 1 ? "line-through" : "" }} variant="body2">
             {row?.MeetingDate
               ? moment(row.MeetingDate).local().format("YYYY-MM-DD HH:mm:ss")
               : ""}
@@ -361,10 +362,10 @@ const PhoneBook = () => {
   };
 
   const pageNumberChangeHandler = (newPageNumber) => {
-          
+
     const totalRecords =
       store.prescribers.totalRecords / store.prescribers.filter.pageSize;
-    
+
 
     if (newPageNumber <= totalRecords) {
       console.log("HERE");
@@ -377,7 +378,7 @@ const PhoneBook = () => {
         })
       );
     } else {
-            setLimitExceeds(true);
+      setLimitExceeds(true);
 
       // console.log("The page number exceeds the limit.");
     }

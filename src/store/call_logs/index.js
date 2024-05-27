@@ -3,15 +3,19 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 // ** Axios Imports
 import axios from "axios";
 import { apiCall } from "src/configs/utils";
+import authConfig from "src/configs/auth";
 
 // ** Fetch Jobs
 export const fetchCallLogsData = createAsyncThunk(
   "call-logs/fetch-call-logs",
   async (params) => {
+    const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
+
     let response = await apiCall("POST", "call-logs/fetch-call-logs", {
       ...params,
       limit: params.page_size,
       page_num: params.page_num,
+      company_id: userData.companyId
       // status: params.status,
       // product_advocate: params.product_advocate,
       // start_date: params.start_date,
@@ -52,7 +56,7 @@ export const callLogsSlice = createSlice({
       startDateRange: "",
       endDateRange: "",
       dates: [],
-      phoneNumber:""
+      phoneNumber: ""
     },
   },
   reducers: {

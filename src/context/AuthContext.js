@@ -50,6 +50,12 @@ const AuthProvider = ({ children }) => {
   const router = useRouter();
   const store = useSelector((state) => state);
 
+  const redirectToLogin = () => {
+    window.localStorage.removeItem('userData')
+    window.localStorage.removeItem(authConfig.storageTokenKeyName)
+
+    router.replace(authConfig.authUrl)
+  }
   useEffect(() => {
     const initAuth = async () => {
       const params = new URLSearchParams(window.location.search);
@@ -58,7 +64,7 @@ const AuthProvider = ({ children }) => {
       const storedToken = window.localStorage.getItem(
         authConfig.storageTokenKeyName
       );
-      if(token){
+      if (token) {
         window.localStorage.setItem(
           authConfig.storageTokenKeyName, token
         );
@@ -102,25 +108,26 @@ const AuthProvider = ({ children }) => {
               "userData",
               JSON.stringify(data)
             );
-            loadInitials();  
+            loadInitials();
 
-            if(userData?.roleId==1){
+            if (userData?.roleId == 1) {
               router.push("/dashboard")
             }
-            else if (userData?.roleId==4){
+            else if (userData?.roleId == 4) {
               router.push("/phonebook")
             }
-            else if(userData?.roleId==5){
+            else if (userData?.roleId == 5) {
               router.push("/call_logs/list")
             }
-            else{
+            else {
               router.push("/")
             }
-          
+
             console.log("user data set")
           });
       } else {
         setLoading(false);
+        redirectToLogin()
       }
     };
     initAuth();

@@ -46,9 +46,9 @@ const TelePrescriber = () => {
   const [open, setOpen] = useState(false);
   const [dialogFields, setDialogFields] = useState([]);
   const [searchName, setSearchName] = useState("")
-  const [update, setUpdate]=useState({
-    phoneNumber:null,
-    prescriberId:null,
+  const [update, setUpdate] = useState({
+    phoneNumber: null,
+    prescriberId: null,
     speciality: null
   })
   const ability = useContext(AbilityContext);
@@ -63,7 +63,7 @@ const TelePrescriber = () => {
     window.localStorage.getItem(authConfig.userData)
   );
 
-  const fetchLatest=()=>{
+  const fetchLatest = () => {
     const fetchPrescribersDataWithDebounce2 = debounce(() => {
       dispatch(
         fetchAllTelePrescribers({
@@ -157,6 +157,7 @@ const TelePrescriber = () => {
           body: JSON.stringify({
             prescriberId: prescriberId,
             flagged: flag,
+            companyId: userData.companyId
           }),
         }
       );
@@ -175,7 +176,7 @@ const TelePrescriber = () => {
     return store.prescribers.disabledPrescribers[prescriberId];
   };
 
-  const updatePhoneNumber=async (e)=>{
+  const updatePhoneNumber = async (e) => {
     e.preventDefault()
     try {
       const response = await fetch(
@@ -264,21 +265,21 @@ const TelePrescriber = () => {
       headerName: "Action",
       renderCell: ({ row }) => (
         <Grid container alignItems="center">
-            <IconButton
-              size="small"
-              component="a"
-              sx={{ textDecoration: "none", cursor: "pointer" }}
-             onClick={() => {
-              setUpdate({...update, phoneNumber:row?.Phone, prescriberId: row?.Id, speciality: row?.Specialty})
+          <IconButton
+            size="small"
+            component="a"
+            sx={{ textDecoration: "none", cursor: "pointer" }}
+            onClick={() => {
+              setUpdate({ ...update, phoneNumber: row?.Phone, prescriberId: row?.Id, speciality: row?.Specialty })
               setOpen(true)
-             }}
-              
-            >
-              <EyeOutline
-                fontSize="small"
-               
-              />
-            </IconButton>
+            }}
+
+          >
+            <EyeOutline
+              fontSize="small"
+
+            />
+          </IconButton>
         </Grid>
       ),
     },
@@ -321,7 +322,7 @@ const TelePrescriber = () => {
     setOpen(false);
   };
 
-  const fetchPrescribersOnName=()=>{
+  const fetchPrescribersOnName = () => {
     dispatch(
       fetchAllTelePrescribers({
         page_num: page + 1,
@@ -335,103 +336,103 @@ const TelePrescriber = () => {
 
   return (
     <>
-        <Dialog
+      <Dialog
         open={open}
         disableEscapeKeyDown
         aria-labelledby='alert-dialog-title'
         aria-describedby='alert-dialog-description'
         onClose={(event, reason) => {
           if (reason !== 'backdropClick') {
-          //  handleClose()
+            //  handleClose()
           }
         }}
       >
         <form onSubmit={updatePhoneNumber}>
-        <DialogTitle id='alert-dialog-title'>{'Update Data'}</DialogTitle>
-        <DialogContent>
-          <CardContent>
-            <Grid container>
-              <Grid item xs={12}>
-                <Grid container >
-                <FormControl sx={{ width:400, mb:6}}>
-              <TextField  required type='number' onChange={(e)=>setUpdate({...update, phoneNumber:e.target.value})} value={update?.phoneNumber}  id="standard-basic" name="phoneNumber" label="Phone Number" placeholder='Enter phone number' variant="standard" />
-            </FormControl>
-            <FormControl sx={{ width:400, mb:6}}>
-              <TextField  required type='text' onChange={(e)=>setUpdate({...update, speciality:e.target.value})} value={update?.speciality}  id="standard-basic" name="speciality" label="Speciality" placeholder='Enter speciality' variant="standard" />
-            </FormControl>
-        </Grid>
-        </Grid>
-        </Grid>
-        </CardContent>
-        </DialogContent>
+          <DialogTitle id='alert-dialog-title'>{'Update Data'}</DialogTitle>
+          <DialogContent>
+            <CardContent>
+              <Grid container>
+                <Grid item xs={12}>
+                  <Grid container >
+                    <FormControl sx={{ width: 400, mb: 6 }}>
+                      <TextField required type='number' onChange={(e) => setUpdate({ ...update, phoneNumber: e.target.value })} value={update?.phoneNumber} id="standard-basic" name="phoneNumber" label="Phone Number" placeholder='Enter phone number' variant="standard" />
+                    </FormControl>
+                    <FormControl sx={{ width: 400, mb: 6 }}>
+                      <TextField required type='text' onChange={(e) => setUpdate({ ...update, speciality: e.target.value })} value={update?.speciality} id="standard-basic" name="speciality" label="Speciality" placeholder='Enter speciality' variant="standard" />
+                    </FormControl>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </DialogContent>
 
-        <DialogActions className='dialog-actions-dense'>
-          <Button onClick={()=>setOpen(false)}>Close</Button>
-          <Button type="submit" variant='contained'>{'Update'}</Button>
+          <DialogActions className='dialog-actions-dense'>
+            <Button onClick={() => setOpen(false)}>Close</Button>
+            <Button type="submit" variant='contained'>{'Update'}</Button>
 
-        </DialogActions>
+          </DialogActions>
         </form>
 
-        </Dialog>
+      </Dialog>
 
 
-    <div>
-      {ability?.can("read", "acl-page") ? (
-        <>
-         <div style={{ display: "flex" }}>
-            <div
-              style={{
-                marginBottom: "10px",
-                width: "200px",
-                marginLeft: "10px",
-              }}
-            >
-              <TextField
-                id="outlined-basic"
-                label="Search by Name"
+      <div>
+        {ability?.can("read", "acl-page") ? (
+          <>
+            <div style={{ display: "flex" }}>
+              <div
+                style={{
+                  marginBottom: "10px",
+                  width: "200px",
+                  marginLeft: "10px",
+                }}
+              >
+                <TextField
+                  id="outlined-basic"
+                  label="Search by Name"
+                  variant="outlined"
+                  value={searchName}
+                  onChange={(e) => {
+                    setSearchName(e.target.value);
+                  }}
+                />
+              </div>
+
+              <Button
+                onClick={fetchPrescribersOnName}
                 variant="outlined"
-                value={searchName}
-                onChange={(e) => {
-                  setSearchName(e.target.value);
-                }}
-              />
+                style={{ height: "55px", position: "absolute", right: 150 }}
+              >
+                Go
+              </Button>
             </div>
-
-            <Button
-              onClick={fetchPrescribersOnName}
-              variant="outlined"
-              style={{ height: "55px", position: "absolute", right: 150 }}
-            >
-              Go
-            </Button>
-          </div>
-          <Grid item xs={12}>
-            <Card>
-              <DataGrid
-                autoHeight
-                pagination
-                rows={
-                  isLoading ? [] : store.prescribers.PhonebookPrescribersData
-                }
-                columns={columns}
-                loading={isLoading}
-                getRowId={(row) => row?.Id}
-                rowCount={store.prescribers.totalRecords}
-                disableSelectionOnClick
-                pageSize={Number(pageSize)}
-                rowsPerPageOptions={[20, 30, 50]}
-                onPageChange={(newPage) => {
-                  setPage(newPage);
-                }}
-                onSelectionModelChange={(rows) => setSelectedRow(rows)}
-                onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-                paginationMode="server"
-              />
-            </Card>
-          </Grid>
-        </>
-      ) : null}
-    </div>
+            <Grid item xs={12}>
+              <Card>
+                <DataGrid
+                  autoHeight
+                  pagination
+                  rows={
+                    isLoading ? [] : store.prescribers.PhonebookPrescribersData
+                  }
+                  columns={columns}
+                  loading={isLoading}
+                  getRowId={(row) => row?.Id}
+                  rowCount={store.prescribers.totalRecords}
+                  disableSelectionOnClick
+                  pageSize={Number(pageSize)}
+                  rowsPerPageOptions={[20, 30, 50]}
+                  onPageChange={(newPage) => {
+                    setPage(newPage);
+                  }}
+                  onSelectionModelChange={(rows) => setSelectedRow(rows)}
+                  onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+                  paginationMode="server"
+                />
+              </Card>
+            </Grid>
+          </>
+        ) : null}
+      </div>
     </>
   );
 };

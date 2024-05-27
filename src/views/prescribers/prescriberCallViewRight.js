@@ -43,7 +43,7 @@ const Tab = styled(MuiTab)(({ theme }) => ({
 }));
 
 const PrescriberCallViewRight = ({ prescriber }) => {
-  const [isSubmitDone, setIsSubmitDone]= useState(false)
+  const [isSubmitDone, setIsSubmitDone] = useState(false)
   const [feedbackText, setFeedbackText] = useState("");
   const [phoneNumberFeedbackArray, setPhoneNumberFeedbackArray] = useState([]);
   const [receiverName, setReceiverName] = useState("");
@@ -55,27 +55,27 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   const [open, setOpen] = useState(false);
   const [openFlagDialog, setOpenFlagDialog] = useState(false);
   const [commentData, setCommentData] = useState(false);
-  const [callDetails, setCallDetails]= useState({
-    telephonySessionId:null, partyId:'', telephonyStatus:''
+  const [callDetails, setCallDetails] = useState({
+    telephonySessionId: null, partyId: '', telephonyStatus: ''
   })
   // ** Hooks
   const isCallTransferred = useRef(false);
-  const isCallDetailsAdded= useRef(false)
+  const isCallDetailsAdded = useRef(false)
 
   const { RC_SERVER_URL, RC_CLIENT_ID, RC_CLIENT_SECRET, RC_JWT } =
-  ringCentralConfig;
+    ringCentralConfig;
   const dispatch = useDispatch();
   const router = useRouter();
   const store = useSelector((state) => state);
-  const platform= store.fax_logs.filter.platform;
-  
+  const platform = store.fax_logs.filter.platform;
+
   // console.log("meeting date", meetingDate)
   const { socket } = store.call_logs.filter;
 
   const userData = JSON?.parse(
     window.localStorage.getItem(authConfig.userData)
   );
-//  console.log("phoneNumberFeedbackArray", phoneNumberFeedbackArray);
+  //  console.log("phoneNumberFeedbackArray", phoneNumberFeedbackArray);
   useEffect(() => {
     if (prescriber.CallFeedback) {
       setPhoneNumberFeedbackArray(prescriber.CallFeedback.split(", "));
@@ -132,31 +132,32 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     }
   }, [disposition]);
 
- useEffect(() => {
-   getFeedback();
- }, []);
+  useEffect(() => {
+    getFeedback();
+  }, []);
 
- const getFeedback = async () => {
-   try {
-     const response = await fetch(
-       `${BASE_URL}tele-prescribers/get_call_logs_feedback?prescriberId=${prescriber.Id}`,
-       {
-         method: "GET",
-         headers: {
-           "Content-Type": "application/json",
-         },
-       }
-     );
+  const getFeedback = async () => {
+    try {
+      const response = await fetch(
+        `${BASE_URL}tele-prescribers/get_call_logs_feedback?prescriberId=${prescriber.Id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-  if (response.ok) {
-    const data = await response.json();
-    setCommentData(data)
-  } else {
-    console.error("Request failed with status:", response.status);
-  }   } catch (error) {
-     console.log("CHECK", error);
-   }
- };
+      if (response.ok) {
+        const data = await response.json();
+        setCommentData(data)
+      } else {
+        console.error("Request failed with status:", response.status);
+      }
+    } catch (error) {
+      console.log("CHECK", error);
+    }
+  };
 
   const updateTelePrescriberMeetDate = async () => {
     try {
@@ -221,10 +222,10 @@ const PrescriberCallViewRight = ({ prescriber }) => {
               duration: 2000,
             });
             window.history.back();
-          //  router.replace("/phonebook");
+            //  router.replace("/phonebook");
           }
         }
-        else{
+        else {
           toast.error("Something went wrong, please try again!", {
             duration: 2000,
           });
@@ -245,8 +246,8 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     if (isUpdated) {
       dispatch(updateDisabledPrescriber(prescriber.Id));
       socket.emit("enable_prescriber", prescriber.Id);
-          window.history.back();
-       //router.replace("/phonebook");
+      window.history.back();
+      //router.replace("/phonebook");
     }
   };
 
@@ -262,6 +263,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
           body: JSON.stringify({
             prescriberId: prescriberId,
             flagged: flag,
+            companyId: userData.companyId
           }),
         }
       );
@@ -278,31 +280,31 @@ const PrescriberCallViewRight = ({ prescriber }) => {
 
   const transferCall = async () => {
     const {
-        telephonySessionId,
-        partyId,
-        telephonyStatus
+      telephonySessionId,
+      partyId,
+      telephonyStatus
     } = callDetails;
 
     try {
-        // let tokens = await platform.auth().data()
-        // if(!tokens?.access_token){
-        //   toast.error("You are not logged in with ringcentral.", {
-        //     duration: 2000,
-        // });
-        // }
-        if ( telephonySessionId && partyId && !isCallTransferred.current && telephonyStatus == "CallConnected") {
-          const response = await axios.post(`${BASE_URL}ringcentral/transfer-call`, {
-            
-            });
+      // let tokens = await platform.auth().data()
+      // if(!tokens?.access_token){
+      //   toast.error("You are not logged in with ringcentral.", {
+      //     duration: 2000,
+      // });
+      // }
+      if (telephonySessionId && partyId && !isCallTransferred.current && telephonyStatus == "CallConnected") {
+        const response = await axios.post(`${BASE_URL}ringcentral/transfer-call`, {
 
-            if(!response.data.error){
+        });
 
-            console.log(response)
+        if (!response.data.error) {
+
+          console.log(response)
           const url = `https://platform.ringcentral.com/restapi/v1.0/account/~/telephony/sessions/${telephonySessionId}/parties/${partyId}/transfer`;
           const headers = {
             'accept': 'application/json',
             'content-type': 'application/json',
-            'Authorization': `Bearer ${response?.data?.access_token}` 
+            'Authorization': `Bearer ${response?.data?.access_token}`
           };
           const data = {
             phoneNumber: "+17039917182"
@@ -310,54 +312,54 @@ const PrescriberCallViewRight = ({ prescriber }) => {
           await axios.post(url, data, {
             headers: headers
           })
-         
-            //isCallTransferred.current = true;
-            setElapsedTime(1)
-            toast.success("Call transferred successfully.", {
-                duration: 2000,
-            });
-          }
-          else{
-            toast.error("Cannot transfer call at this moment.", {
-              duration: 2000,
-          });
-          }
-        }
 
-        else{
-          toast.error("Call Status is not connected.", {
+          //isCallTransferred.current = true;
+          setElapsedTime(1)
+          toast.success("Call transferred successfully.", {
             duration: 2000,
-        });
+          });
         }
-        
+        else {
+          toast.error("Cannot transfer call at this moment.", {
+            duration: 2000,
+          });
+        }
+      }
+
+      else {
+        toast.error("Call Status is not connected.", {
+          duration: 2000,
+        });
+      }
+
     } catch (e) {
       if (e.response.status === 409) {
         toast.error("We cannot transfer call at this state.", {
           duration: 2000,
-      });
-       }
-       else if (e.response.status === 400) {
+        });
+      }
+      else if (e.response.status === 400) {
         toast.error("We cannot transfer call at this state.", {
           duration: 2000,
-      });
-       }
+        });
+      }
       else
-      toast.error("Error during transfer call action.", {
-        duration: 2000,
-    });
-        
+        toast.error("Error during transfer call action.", {
+          duration: 2000,
+        });
+
     }
 
-}
-  const currentCallDetails=async(data)=>{
+  }
+  const currentCallDetails = async (data) => {
 
-    isCallDetailsAdded.current=true;
+    isCallDetailsAdded.current = true;
 
-    const {call} =data;
-  //  console.log(call)
-    if(call){
-    const {telephonySessionId, partyId, telephonyStatus} =call;
-    setCallDetails({telephonySessionId, partyId, telephonyStatus})
+    const { call } = data;
+    //  console.log(call)
+    if (call) {
+      const { telephonySessionId, partyId, telephonyStatus } = call;
+      setCallDetails({ telephonySessionId, partyId, telephonyStatus })
     }
   }
   const startTimer = (callDetails) => {
@@ -378,11 +380,11 @@ const PrescriberCallViewRight = ({ prescriber }) => {
     if (data && !isCallTransferred.current) {
       switch (data.type) {
         case "rc-call-init-notify":
-          if(isCallDetailsAdded.current){
+          if (isCallDetailsAdded.current) {
             setCallDetails({
-              telephonySessionId:null, partyId:'', telephonyStatus:''
+              telephonySessionId: null, partyId: '', telephonyStatus: ''
             })
-            isCallDetailsAdded.current=false;
+            isCallDetailsAdded.current = false;
           }
           // get call when user creates a call from dial
           startTimer(data);
@@ -390,25 +392,25 @@ const PrescriberCallViewRight = ({ prescriber }) => {
           break;
 
         case "rc-active-call-notify":
-          if(!isCallDetailsAdded.current && data?.call?.telephonyStatus=="CallConnected" ){
+          if (!isCallDetailsAdded.current && data?.call?.telephonyStatus == "CallConnected") {
             currentCallDetails(data)
             break;
           }
-//       console.log(data)
-// console.log(callDetails)
-//          if(callDetails.telephonySessionId==null|| (data?.call?.telephonySessionId!=callDetails.telephonySessionId && data?.call?.partyId!=callDetails.partyId) &&  data?.call?.telephonyStatus=="CallConnected")
-//           currentCallDetails(data)
+          //       console.log(data)
+          // console.log(callDetails)
+          //          if(callDetails.telephonySessionId==null|| (data?.call?.telephonySessionId!=callDetails.telephonySessionId && data?.call?.partyId!=callDetails.partyId) &&  data?.call?.telephonyStatus=="CallConnected")
+          //           currentCallDetails(data)
           break;
         case "rc-call-end-notify":
           // get call on call end event
-          
+
           endTimer();
-          if(isCallDetailsAdded.current){
-          setCallDetails({
-            telephonySessionId:null, partyId:'', telephonyStatus:''
-          })
-          isCallDetailsAdded.current=false;
-        }
+          if (isCallDetailsAdded.current) {
+            setCallDetails({
+              telephonySessionId: null, partyId: '', telephonyStatus: ''
+            })
+            isCallDetailsAdded.current = false;
+          }
           break;
         default:
           break;
@@ -566,7 +568,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
               variant="contained"
               onClick={() => onSubmitFeedbackHandler()}
               sx={{ backgroundColor: "green" }}
-             // disabled={(isSubmitDone || elapsedTime == 0) ? true : false}
+            // disabled={(isSubmitDone || elapsedTime == 0) ? true : false}
             >
               Submit
             </Button>
@@ -577,7 +579,7 @@ const PrescriberCallViewRight = ({ prescriber }) => {
             <Button
               variant="contained"
               onClick={() => setOpenFlagDialog(true)}
-           //   disabled={elapsedTime == 0 ? true : false}
+            //   disabled={elapsedTime == 0 ? true : false}
             >
               Flag Number
             </Button>
@@ -602,23 +604,23 @@ const PrescriberCallViewRight = ({ prescriber }) => {
         {/*<Grid marginLeft="10px" item key={index}>
              <h6>{phoneNumber}</h6> 
            </Grid>
-         ))}*/} 
-       {
-  commentData &&
-  commentData?.message.map((data) =>
-     (
-      <Grid key={data.call_logs_Id} paddingLeft="10px" border="1px solid gray">
-        <div style={{display:"flex", justifyContent:"space-around"}}>
-        <p><b>{data.teleMarketer_name !=null ? (data.teleMarketer_name):"N/A"} (Telemarketer)</b></p>
-        <p>
-          <b>{moment(data.call_logs_LoggedDate).local().format("YYYY-MM-DD HH:mm:ss")}</b>
-        </p>
-        </div>
-        <p><b>Comment: </b>{data?.call_logs_CallFeedback?.length > 0 ? data.call_logs_CallFeedback: "N/A"}</p>
-      </Grid>
-    )
-  )
-}
+         ))}*/}
+        {
+          commentData &&
+          commentData?.message.map((data) =>
+          (
+            <Grid key={data.call_logs_Id} paddingLeft="10px" border="1px solid gray">
+              <div style={{ display: "flex", justifyContent: "space-around" }}>
+                <p><b>{data.teleMarketer_name != null ? (data.teleMarketer_name) : "N/A"} (Telemarketer)</b></p>
+                <p>
+                  <b>{moment(data.call_logs_LoggedDate).local().format("YYYY-MM-DD HH:mm:ss")}</b>
+                </p>
+              </div>
+              <p><b>Comment: </b>{data?.call_logs_CallFeedback?.length > 0 ? data.call_logs_CallFeedback : "N/A"}</p>
+            </Grid>
+          )
+          )
+        }
 
       </Grid>
     </>

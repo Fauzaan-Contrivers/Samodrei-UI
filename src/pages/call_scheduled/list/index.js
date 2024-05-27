@@ -104,8 +104,8 @@ const CallLogs = () => {
   useEffect(() => {
     fetchData();
   }, [page, pageSize, store.call_scheduled.filter]);
-   useEffect(() => initializeSocket(), []);
-   useEffect(() => configureSocketEvents(socket), [socket]);
+  useEffect(() => initializeSocket(), []);
+  useEffect(() => configureSocketEvents(socket), [socket]);
   const fetchData = async () => {
     // try {
     //   const response = await fetch(
@@ -205,7 +205,7 @@ const CallLogs = () => {
       })
     );
   };
-// 
+  // 
   const configureSocketEvents = (socket) => {
     if (socket) {
       socket.on("disable_prescriber", (prescriberId) => {
@@ -224,7 +224,7 @@ const CallLogs = () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prescriberId, flagged: flag }),
+          body: JSON.stringify({ prescriberId, flagged: flag, companyId: userData.companyId }),
         }
       );
       console.log("DATA", await response.json());
@@ -238,14 +238,14 @@ const CallLogs = () => {
     }
   };
 
-    const onActionClick = async (prescriberId) => {
-      const updateStatus = await updatePrescriberCallStatus(prescriberId, true);
-      if (updateStatus) {
-        socket.emit("disable_prescriber", prescriberId);
-      }
-    };
-    const isActionDisabled = (prescriberId) =>
-      store.prescribers.disabledPrescribers[prescriberId];
+  const onActionClick = async (prescriberId) => {
+    const updateStatus = await updatePrescriberCallStatus(prescriberId, true);
+    if (updateStatus) {
+      socket.emit("disable_prescriber", prescriberId);
+    }
+  };
+  const isActionDisabled = (prescriberId) =>
+    store.prescribers.disabledPrescribers[prescriberId];
 
 
   const callLogsListViewColumns = [

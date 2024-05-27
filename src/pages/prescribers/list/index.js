@@ -223,7 +223,7 @@ const InvoiceList = () => {
       field: "VisitCount",
       headerName: "Visit Count",
       renderCell: ({ row }) => (
-        <Typography variant="body2">{row?.VisitCount || ""}</Typography>
+        <Typography variant="body2">{row?.VisitCount || "0"}</Typography>
       ),
     },
     {
