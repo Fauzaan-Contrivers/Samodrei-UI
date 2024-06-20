@@ -54,7 +54,7 @@ import DatePickerWrapper from "src/@core/styles/libs/react-datepicker";
 import moment from "moment";
 import {
   fetchCallLogsMeetingDate,
-  // onCallLogFilterChangeHandler,
+  onCallScheduledFilterChangeHandler,
 } from "src/store/call_scheduled";
 import { onCallLogFilterChangeHandler } from "src/store/call_logs";
 
@@ -86,8 +86,10 @@ const CustomInput = forwardRef((props, ref) => {
 /* eslint-enable */
 const CallLogs = () => {
   // ** State
+  const store = useSelector((state) => state);
+  const [tablePage, setTablePage]= useState(0)
   const [pageSize, setPageSize] = useState(10);
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(store.call_scheduled.filter.page || null);
   const [isLoading, setIsLoading] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -95,9 +97,11 @@ const CallLogs = () => {
   const [searchPhoneNumber, setSearchPhoneNumber]= useState("")
   const [callScheduledData, setCallScheduledData] = useState([]);
   const [limitExceeds, setLimitExceeds] = useState(false);
-  const store = useSelector((state) => state);
 
   useEffect(() => fetchPrescribersOnName(), [page]);
+  useEffect(
+    () => fetchPrescribersOnUpdate(),
+    [store.call_scheduled.filter.page, store.call_scheduled.filter.pageSize])
   // ** Hooks
   const dispatch = useDispatch();
   const { socket } = store.call_logs.filter;
@@ -109,11 +113,47 @@ const CallLogs = () => {
     color: theme.palette.primary.main,
   }));
 
-  useEffect(() => {
-    fetchData();
-  }, [page, pageSize, store.call_scheduled.filter]);
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //     const fetchPrescribersDataWithDebounce = debounce(() => {
+  //       dispatch(
+  //         fetchCallLogsMeetingDate({
+  //           page_num: store.call_scheduled.filter.page + 1,
+  //           page_size: store.call_scheduled.filter.page_size,
+  //         })
+  //       ).then(() => {
+  //         setIsLoading(false);
+  //       });
+  //     }, 2000);
+
+  //     fetchPrescribersDataWithDebounce();
+
+  //     return fetchPrescribersDataWithDebounce.cancel;
+  //   // fetchData();
+  // }, [store.call_scheduled.filter.page, store.call_scheduled.filter.page_size]);
    useEffect(() => initializeSocket(), []);
    useEffect(() => configureSocketEvents(socket), [socket]);
+
+ 
+   const fetchPrescribersOnUpdate = () => {
+    setIsLoading(true);
+    // console.log("store.prescribers.filter.page", store.prescribers.filter.page);
+    const fetchPrescribersDataWithDebounce = debounce(() => {
+      dispatch(
+        fetchCallLogsMeetingDate({
+          page_num: store.call_scheduled.filter.page + 1,
+          page_size: store.call_scheduled.filter.page_size,
+        })
+      ).then(() => {
+        setTablePage(store.call_scheduled.filter.page);
+        setIsLoading(false);
+      });
+    }, 2000);
+
+    fetchPrescribersDataWithDebounce();
+    return fetchPrescribersDataWithDebounce.cancel;
+  };
+
   const fetchData = async () => {
     // try {
     //   const response = await fetch(
@@ -154,15 +194,14 @@ const CallLogs = () => {
           
     const totalRecords =
       store.call_scheduled.totalRecords / store.call_scheduled.filter.page_size;
-    
 
-    if (newPageNumber <= totalRecords) {
+    if ((newPageNumber-1) <= totalRecords) {
       
-      setPage(newPageNumber);
+      setPage((newPageNumber-1));
       dispatch(
-        onCallLogFilterChangeHandler({
+        onCallScheduledFilterChangeHandler({
           filter: "page",
-          value: newPageNumber,
+          value: (newPageNumber-1),
         })
       );
       setLimitExceeds(false);
@@ -175,7 +214,7 @@ const CallLogs = () => {
   };
   const handleTeleMarkterValue = (e) => {
     dispatch(
-      onCallLogFilterChangeHandler({
+      onCallScheduledFilterChangeHandler({
         filter: "teleMarketerValue",
         value: e.target.value,
       })
@@ -421,14 +460,14 @@ const CallLogs = () => {
           phoneNumber: searchPhoneNumber
         })
       ).then(() => {
-        setPage(2);
+        setPage(store.call_scheduled.filter.page);
         setIsLoading(false);
       });
     }
     
     else {
       dispatch(
-        fetchPrescribersforPhoneLogs({
+        fetchCallLogsMeetingDate({
          page_num: parseInt(page) + 1,
           page_size: store.call_scheduled.filter.page_size,
         })
@@ -447,7 +486,7 @@ const CallLogs = () => {
   const pageSizeChangeHandler = (newPageSize) => {
 
     dispatch(
-      onCallLogFilterChangeHandler({
+      onCallScheduledFilterChangeHandler({
         filter: "page_size",
         value: newPageSize,
       })
@@ -456,7 +495,7 @@ const CallLogs = () => {
 
   const pageChangeHandler = (newPage) => {
     dispatch(
-      onCallLogFilterChangeHandler({
+      onCallScheduledFilterChangeHandler({
         filter: "page",
         value: newPage,
       })
@@ -534,9 +573,9 @@ const CallLogs = () => {
             getRowId={(row) => row?.Id}
             disableSelectionOnClick
             pageSize={store.call_scheduled.filter.page_size}
-            rowsPerPageOptions={[10, 25, 50]}
+            rowsPerPageOptions={[20, 30, 50]}
             onPageChange={(newPage) => pageChangeHandler(newPage)}
-            page={page}
+            page={tablePage}
             onSelectionModelChange={(rows) => setSelectedRow(rows)}
             onPageSizeChange={(newPageSize) =>
               pageSizeChangeHandler(newPageSize)

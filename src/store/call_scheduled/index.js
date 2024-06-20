@@ -56,7 +56,7 @@ export const callLogsMeetingSlice = createSlice({
     },
   },
   reducers: {
-    onCallLogFilterChangeHandler(state, action) {
+    onCallScheduledFilterChangeHandler(state, action) {
       state.filter[action.payload.filter] = action.payload.value;
     },
   },
@@ -71,6 +71,6 @@ export const callLogsMeetingSlice = createSlice({
   },
 });
 
-export const { onCallLogFilterChangeHandler } = callLogsMeetingSlice.actions;
+export const { onCallScheduledFilterChangeHandler } = callLogsMeetingSlice.actions;
 
 export default callLogsMeetingSlice.reducer;
