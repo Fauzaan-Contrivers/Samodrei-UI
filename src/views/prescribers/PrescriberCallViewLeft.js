@@ -256,6 +256,20 @@ const PrescriberCallViewLeft = ({ data }) => {
                         fontSize: "0.875rem",
                       }}
                     >
+                      Sample Received:
+                    </Typography>
+                    <Typography variant="body2">
+                      {data?.is_sample_received ? "Yes": "No" }
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: "flex", marginBottom: 2.7 }}>
+                    <Typography
+                      sx={{
+                        marginRight: 2,
+                        fontWeight: 500,
+                        fontSize: "0.875rem",
+                      }}
+                    >
                       Soaanz Prescriber:
                     </Typography>
                     <Typography variant="body2">
