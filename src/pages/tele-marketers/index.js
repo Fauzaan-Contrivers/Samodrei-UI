@@ -56,6 +56,7 @@ const TeleMarketers = () => {
           })
           .then((res) => {
             setTotal(res.data.users.length);
+            console.log(res.data.users);
             setRows(loadServerRows(page, res.data.users));
             setCompany(res.data.company);
             setIsLoading(false);
@@ -121,7 +122,7 @@ const TeleMarketers = () => {
       field: "id",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.id}
+          {params.row.users_id}
         </Typography>
       ),
     },
@@ -132,10 +133,11 @@ const TeleMarketers = () => {
       field: "name",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.name}
+          {params.row.users_name}
         </Typography>
       ),
     },
+
     {
       flex: 0.2,
       minWidth: 250,
@@ -143,7 +145,7 @@ const TeleMarketers = () => {
       field: "email",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.email}
+          {params.row.users_email}
         </Typography>
       ),
     },
@@ -154,9 +156,9 @@ const TeleMarketers = () => {
       field: "roleId",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.roleId === 1
+          {params.row.users_roleId === 1
             ? "Super Admin"
-            : params.row.roleId === 4
+            : params.row.users_roleId === 4
             ? "Tele-Marketer"
             : "Admin"}
         </Typography>
@@ -170,6 +172,17 @@ const TeleMarketers = () => {
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
           {params.row.company_name}
+        </Typography>
+      ),
+    },
+    {
+      flex: 0.2,
+      minWidth: 180,
+      headerName: "Team name",
+      field: "Team name",
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ color: "text.primary" }}>
+          {params.row.teamName}
         </Typography>
       ),
     },
@@ -199,7 +212,7 @@ const TeleMarketers = () => {
             <Button
               onClick={() =>
                 handleStatusUpdateHandler(
-                  params.row.id,
+                  params.row.users_id,
                   !params.row.is_active,
                   false
                 )
@@ -213,7 +226,7 @@ const TeleMarketers = () => {
             <Button
               onClick={() =>
                 handleStatusUpdateHandler(
-                  params.row.id,
+                  params.row.users_id,
                   !params.row.is_active,
                   true
                 )
@@ -274,7 +287,7 @@ const TeleMarketers = () => {
           paginationMode="server"
           onSortModelChange={handleSortModel}
           rowsPerPageOptions={[10, 25, 50]}
-          getRowId={(row) => row?.id}
+          getRowId={(row) => row?.users_id}
           onPageChange={(newPage) => setPage(newPage)}
           components={{ Toolbar: ServerSideToolbar }}
           onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -12,17 +12,33 @@ import Button from "@mui/material/Button";
 import authConfig from "src/configs/auth";
 import { BASE_URL } from "src/configs/config";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 const UserDialog = ({ open, handleClose, fields, company }) => {
-  const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
+  const [teams, setTeams] = useState([]);
+  const [selectedTeam, setSelectedTeam] = useState(""); // For storing the selected team
 
+  const userData = JSON.parse(window.localStorage.getItem(authConfig.userData));
+  const fetchTeams = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/team/all`);
+      console.log("Team name are given ", response.data);
+      setTeams(response.data.data);
+    } catch (error) {
+      console.error("Error fetching teams", error);
+    }
+  };
   const [state, setState] = useState({
     name: "",
     email: "",
     roleId: 1,
     company_name: "",
   });
-
+  useEffect(() => {
+    if (open && fields === "INVITE TELE-MARKETER") {
+      fetchTeams();
+    }
+  }, [open, fields]);
   const handleChange = (e) => {
     setState({
       ...state,
@@ -32,12 +48,18 @@ const UserDialog = ({ open, handleClose, fields, company }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const requestBody = { ...state };
+      if (fields === "INVITE TELE-MARKETER") {
+        requestBody.team_id = selectedTeam;
+      }
+
+      console.log(requestBody);
       const response = await fetch(`${BASE_URL}user/invite`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(state),
+        body: JSON.stringify(requestBody),
       });
       const data = await response.json();
       console.log("DATA", data);
@@ -175,9 +197,10 @@ const UserDialog = ({ open, handleClose, fields, company }) => {
                     variant="standard"
                   >
                     <MenuItem value={4}>TELEMARKETER</MenuItem>
+                    <MenuItem value={5}>TELEMARKETER MANAGER</MenuItem>
                   </Select>
                 </FormControl>
-                <FormControl fullWidth>
+                <FormControl fullWidth sx={{ mb: 5 }}>
                   <InputLabel id="standard-basic">SELECT COMPANY</InputLabel>
                   <Select
                     fullWidth
@@ -197,8 +220,27 @@ const UserDialog = ({ open, handleClose, fields, company }) => {
                     ))}
                   </Select>
                 </FormControl>
+                <FormControl fullWidth>
+                  <InputLabel id="team-select">SELECT TEAM</InputLabel>
+                  <Select
+                    fullWidth
+                    required
+                    label="team"
+                    id="team-select"
+                    onChange={(e) => setSelectedTeam(e.target.value)}
+                    value={selectedTeam}
+                    variant="standard"
+                  >
+                    {teams.map((team) => (
+                      <MenuItem key={team.id} value={team.id}>
+                        {team.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </FormControl>
             )}
+
             <FormControl sx={{ width: 500, padding: 5, mb: 1 }}>
               <Button type="submit" variant="contained" sx={{ mt: 1, mb: 1 }}>
                 Add

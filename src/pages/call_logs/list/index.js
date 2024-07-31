@@ -106,7 +106,7 @@ const CallLogs = () => {
         end_date: isNaN(Date.parse(endDate)) ? "" : endDate,
         call_disposition: store.call_logs.filter.disposition.join(","),
         receiver_position: store.call_logs.filter.receiverPosition.join(","),
-        phoneNumber: store.call_logs.filter.phoneNumber
+        phoneNumber: store.call_logs.filter.phoneNumber,
       })
     ).then(() => {
       setIsLoading(false);
@@ -198,6 +198,7 @@ const CallLogs = () => {
         );
       },
     },
+
     {
       flex: 0.5,
       field: "Tele_Marketer_Name",
@@ -218,6 +219,26 @@ const CallLogs = () => {
         );
       },
     },
+    {
+      flex: 0.5,
+      field: "Team Name",
+      minWidth: 250,
+      headerName: "team name",
+      renderCell: ({ row }) => {
+        return (
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Tooltip title={`${row.team_name}`}>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography
+                  sx={{ color: "red" }}
+                >{`${row.team_name}`}</Typography>
+              </Box>
+            </Tooltip>
+          </Box>
+        );
+      },
+    },
+
     {
       flex: 0.5,
       field: "CallReceiverName",
@@ -471,7 +492,11 @@ const CallLogs = () => {
       </Grid>
       <Grid item xs={12}>
         <Card>
-           <TableHeader callLogs={true} dataCSV={store.call_logs.callLogData} onClick={() => handleClickDownloadDataCSV()} /> 
+          <TableHeader
+            callLogs={true}
+            dataCSV={store.call_logs.callLogData}
+            onClick={() => handleClickDownloadDataCSV()}
+          />
           <DataGrid
             autoHeight
             pagination

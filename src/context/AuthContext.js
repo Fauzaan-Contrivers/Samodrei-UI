@@ -1,7 +1,6 @@
 // ** React Imports
 import { createContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
 // ** Next Import
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
@@ -159,6 +158,8 @@ const AuthProvider = ({ children }) => {
           authConfig.storageTokenKeyName,
           res.data.accessToken
         );
+
+        
         authUser();
       }
       if (res.data.statusCode == 403 || res.data.statusCode == 401) {
