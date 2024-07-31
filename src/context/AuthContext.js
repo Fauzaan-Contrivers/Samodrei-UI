@@ -70,8 +70,8 @@ const AuthProvider = ({ children }) => {
             const role = "";
             if (
               userData?.roleId === 1 ||
-              userData.roleId === 3 ||
-              userData.roleId === 5
+              userData?.roleId === 3 ||
+              userData?.roleId === 5
             ) {
               role = "admin";
             }
@@ -159,7 +159,6 @@ const AuthProvider = ({ children }) => {
           res.data.accessToken
         );
 
-        
         authUser();
       }
       if (res.data.statusCode == 403 || res.data.statusCode == 401) {

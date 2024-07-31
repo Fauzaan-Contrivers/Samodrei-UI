@@ -122,7 +122,7 @@ const TeleMarketers = () => {
       field: "id",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.users_id}
+          {params.row.id}
         </Typography>
       ),
     },
@@ -133,7 +133,7 @@ const TeleMarketers = () => {
       field: "name",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.users_name}
+          {params.row.name}
         </Typography>
       ),
     },
@@ -145,7 +145,7 @@ const TeleMarketers = () => {
       field: "email",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.users_email}
+          {params.row.email}
         </Typography>
       ),
     },
@@ -156,9 +156,9 @@ const TeleMarketers = () => {
       field: "roleId",
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
-          {params.row.users_roleId === 1
+          {params.row.roleId === 1
             ? "Super Admin"
-            : params.row.users_roleId === 4
+            : params.row.roleId === 4
             ? "Tele-Marketer"
             : "Admin"}
         </Typography>
@@ -212,7 +212,7 @@ const TeleMarketers = () => {
             <Button
               onClick={() =>
                 handleStatusUpdateHandler(
-                  params.row.users_id,
+                  params.row.id,
                   !params.row.is_active,
                   false
                 )
@@ -226,7 +226,7 @@ const TeleMarketers = () => {
             <Button
               onClick={() =>
                 handleStatusUpdateHandler(
-                  params.row.users_id,
+                  params.row.id,
                   !params.row.is_active,
                   true
                 )
@@ -287,7 +287,7 @@ const TeleMarketers = () => {
           paginationMode="server"
           onSortModelChange={handleSortModel}
           rowsPerPageOptions={[10, 25, 50]}
-          getRowId={(row) => row?.users_id}
+          getRowId={(row) => row?.id}
           onPageChange={(newPage) => setPage(newPage)}
           components={{ Toolbar: ServerSideToolbar }}
           onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
