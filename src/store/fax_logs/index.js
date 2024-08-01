@@ -8,10 +8,11 @@ import { apiCall } from "src/configs/utils";
 export const fetchFaxLogsData = createAsyncThunk(
   "call-logs/fetch-all-fax-logs",
   async (params) => {
+    console.log("Sending post request");
     let response = await apiCall("POST", "call-logs/fetch-all-fax-logs", {
       ...params,
-        limit: params.page_size,
-        page_num: params.page_num,
+      limit: params.page_size,
+      page_num: params.page_num,
       // status: params.status,
       // product_advocate: params.product_advocate,
       // start_date: params.start_date,
@@ -44,7 +45,7 @@ export const faxLogsSlice = createSlice({
     isLoading: false,
     totalRecords: 0,
     filter: {
-      platform:null,
+      platform: null,
       teleMarketerValue: "",
       socket: null,
       telePrescriberValue: "",
