@@ -312,12 +312,16 @@ const FlaggedNumbers = () => {
               }
             )
             .then((res) => {
-              // console.log('res.data.prescribers.length', res.data.prescribers.length);
-              // setDataCSV(res.data.prescribers);
+              console.log(
+                "res.data.prescribers.length",
+                res.data.prescribers.length
+              );
+              // setDataCSV(res.data.prescribers.length);
               // setTotal(res.data.total);
               // setRows(loadServerRows(page, res.data.prescribers));
               // setIsLoading(false);
 
+              console.log(res.data.prescribers);
               setDataCSV(res.data.prescribers);
               setTotal(res.data.total); // Set the total count here
               setRows(res.data.prescribers);
