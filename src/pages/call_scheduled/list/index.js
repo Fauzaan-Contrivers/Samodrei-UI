@@ -564,7 +564,7 @@ const CallLogs = () => {
               getRowId={(row) => row?.Id}
               disableSelectionOnClick
               pageSize={store.call_scheduled.filter.page_size}
-              rowsPerPageOptions={[20, 30, 50]}
+              rowsPerPageOptions={[50]}
               onPageChange={(newPage) => pageChangeHandler(newPage)}
               page={tablePage}
               onSelectionModelChange={(rows) => setSelectedRow(rows)}
