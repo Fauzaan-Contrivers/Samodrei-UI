@@ -376,25 +376,25 @@ const PrescriberCallViewRight = ({ prescriber }) => {
   window.addEventListener("message", (e) => {
     const data = e.data;
 
-    if (data && !isCallTransferred.current) {
+    if (data) {
       switch (data.type) {
         case "rc-call-init-notify":
-          if(isCallDetailsAdded.current){
-            setCallDetails({
-              telephonySessionId:null, partyId:'', telephonyStatus:''
-            })
-            isCallDetailsAdded.current=false;
-          }
+          // if(isCallDetailsAdded.current){
+          //   setCallDetails({
+          //     telephonySessionId:null, partyId:'', telephonyStatus:''
+          //   })
+          //   isCallDetailsAdded.current=false;
+          // }
           // get call when user creates a call from dial
           startTimer(data);
           setIsCalled(true);
           break;
 
         case "rc-active-call-notify":
-          if(!isCallDetailsAdded.current && data?.call?.telephonyStatus=="CallConnected" ){
-            currentCallDetails(data)
-            break;
-          }
+          // if(!isCallDetailsAdded.current && data?.call?.telephonyStatus=="CallConnected" ){
+          //   currentCallDetails(data)
+          //   break;
+          // }
 //       console.log(data)
 // console.log(callDetails)
 //          if(callDetails.telephonySessionId==null|| (data?.call?.telephonySessionId!=callDetails.telephonySessionId && data?.call?.partyId!=callDetails.partyId) &&  data?.call?.telephonyStatus=="CallConnected")
@@ -404,12 +404,12 @@ const PrescriberCallViewRight = ({ prescriber }) => {
           // get call on call end event
           
           endTimer();
-          if(isCallDetailsAdded.current){
-          setCallDetails({
-            telephonySessionId:null, partyId:'', telephonyStatus:''
-          })
-          isCallDetailsAdded.current=false;
-        }
+          // if(isCallDetailsAdded.current){
+          // setCallDetails({
+          //   telephonySessionId:null, partyId:'', telephonyStatus:''
+          // })
+          // isCallDetailsAdded.current=false;
+       // }
           break;
         default:
           break;
@@ -458,7 +458,6 @@ const PrescriberCallViewRight = ({ prescriber }) => {
         <div>
           <Typography variant="h6">Feedback Form</Typography>
 
-          <Button disabled={isCallTransferred.current} onClick={transferCall}>Transfer Call</Button>
         </div>
         <div>
           <Typography>Call Time: {formatElapsedTime(elapsedTime)}</Typography>
