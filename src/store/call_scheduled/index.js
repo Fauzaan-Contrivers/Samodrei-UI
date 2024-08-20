@@ -16,10 +16,10 @@ export const fetchCallLogsMeetingDate = createAsyncThunk(
         limit: params.page_size,
         page_num: params.page_num,
         Search: params.Search,
-        phoneNumber: params.phoneNumber
+        phoneNumber: params.phoneNumber,
       }
     );
-    
+
     console.log("response in store ", response.data.result.totalRecords);
     return {
       result: response.data.result.records,
@@ -52,7 +52,7 @@ export const callLogsMeetingSlice = createSlice({
       endDateRange: "",
       dates: [],
       page: 0,
-      page_size: 10
+      page_size: 50,
     },
   },
   reducers: {
@@ -71,6 +71,7 @@ export const callLogsMeetingSlice = createSlice({
   },
 });
 
-export const { onCallScheduledFilterChangeHandler } = callLogsMeetingSlice.actions;
+export const { onCallScheduledFilterChangeHandler } =
+  callLogsMeetingSlice.actions;
 
 export default callLogsMeetingSlice.reducer;

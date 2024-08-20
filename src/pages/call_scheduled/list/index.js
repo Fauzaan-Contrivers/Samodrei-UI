@@ -87,21 +87,22 @@ const CustomInput = forwardRef((props, ref) => {
 const CallLogs = () => {
   // ** State
   const store = useSelector((state) => state);
-  const [tablePage, setTablePage]= useState(0)
-  const [pageSize, setPageSize] = useState(10);
+  const [tablePage, setTablePage] = useState(0);
+  const [pageSize, setPageSize] = useState(50);
   const [page, setPage] = useState(store.call_scheduled.filter.page || null);
   const [isLoading, setIsLoading] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [namePrescriber, setNamePrescriber] = useState("");
-  const [searchPhoneNumber, setSearchPhoneNumber]= useState("")
+  const [searchPhoneNumber, setSearchPhoneNumber] = useState("");
   const [callScheduledData, setCallScheduledData] = useState([]);
   const [limitExceeds, setLimitExceeds] = useState(false);
 
   useEffect(() => fetchPrescribersOnName(), [page]);
   useEffect(
     () => fetchPrescribersOnUpdate(),
-    [store.call_scheduled.filter.page, store.call_scheduled.filter.pageSize])
+    [store.call_scheduled.filter.page, store.call_scheduled.filter.pageSize]
+  );
   // ** Hooks
   const dispatch = useDispatch();
   const { socket } = store.call_logs.filter;
@@ -131,11 +132,10 @@ const CallLogs = () => {
   //     return fetchPrescribersDataWithDebounce.cancel;
   //   // fetchData();
   // }, [store.call_scheduled.filter.page, store.call_scheduled.filter.page_size]);
-   useEffect(() => initializeSocket(), []);
-   useEffect(() => configureSocketEvents(socket), [socket]);
+  useEffect(() => initializeSocket(), []);
+  useEffect(() => configureSocketEvents(socket), [socket]);
 
- 
-   const fetchPrescribersOnUpdate = () => {
+  const fetchPrescribersOnUpdate = () => {
     setIsLoading(true);
     // console.log("store.prescribers.filter.page", store.prescribers.filter.page);
     const fetchPrescribersDataWithDebounce = debounce(() => {
@@ -191,23 +191,20 @@ const CallLogs = () => {
   };
 
   const pageNumberChangeHandler = (newPageNumber) => {
-          
     const totalRecords =
       store.call_scheduled.totalRecords / store.call_scheduled.filter.page_size;
 
-    if ((newPageNumber-1) <= totalRecords) {
-      
-      setPage((newPageNumber-1));
+    if (newPageNumber - 1 <= totalRecords) {
+      setPage(newPageNumber - 1);
       dispatch(
         onCallScheduledFilterChangeHandler({
           filter: "page",
-          value: (newPageNumber-1),
+          value: newPageNumber - 1,
         })
       );
       setLimitExceeds(false);
-      
     } else {
-            setLimitExceeds(true);
+      setLimitExceeds(true);
 
       // console.log("The page number exceeds the limit.");
     }
@@ -275,7 +272,7 @@ const CallLogs = () => {
       })
     );
   };
-// 
+  //
   const configureSocketEvents = (socket) => {
     if (socket) {
       socket.on("disable_prescriber", (prescriberId) => {
@@ -308,15 +305,14 @@ const CallLogs = () => {
     }
   };
 
-    const onActionClick = async (prescriberId) => {
-      const updateStatus = await updatePrescriberCallStatus(prescriberId, true);
-      if (updateStatus) {
-        socket.emit("disable_prescriber", prescriberId);
-      }
-    };
-    const isActionDisabled = (prescriberId) =>
-      store.prescribers.disabledPrescribers[prescriberId];
-
+  const onActionClick = async (prescriberId) => {
+    const updateStatus = await updatePrescriberCallStatus(prescriberId, true);
+    if (updateStatus) {
+      socket.emit("disable_prescriber", prescriberId);
+    }
+  };
+  const isActionDisabled = (prescriberId) =>
+    store.prescribers.disabledPrescribers[prescriberId];
 
   const callLogsListViewColumns = [
     {
@@ -440,43 +436,39 @@ const CallLogs = () => {
   const fetchPrescribersOnName = () => {
     setIsLoading(true);
     const fetchPrescribersDataWithDebounce = debounce(() => {
-    if (namePrescriber.length>0) {
-    
-      dispatch(
-        fetchCallLogsMeetingDate({
-          page_num: parseInt(page) + 1,
-          page_size: store.call_scheduled.filter.page_size,
-          Search: namePrescriber
-        })
-      ).then(() => {
-        setPage(store.call_scheduled.filter.page);
-        setIsLoading(false);
-      });
-    } else if(searchPhoneNumber.length>0){
-      dispatch(
-        fetchCallLogsMeetingDate({
-          page_num: parseInt(page) + 1,
-          page_size: store.call_scheduled.filter.page_size,
-          phoneNumber: searchPhoneNumber
-        })
-      ).then(() => {
-        setPage(store.call_scheduled.filter.page);
-        setIsLoading(false);
-      });
-    }
-    
-    else {
-      dispatch(
-        fetchCallLogsMeetingDate({
-         page_num: parseInt(page) + 1,
-          page_size: store.call_scheduled.filter.page_size,
-        })
-      ).then(() => {
-       setPage(store.call_scheduled.filter.page);
-        setIsLoading(false);
-      });
-    }
-
+      if (namePrescriber.length > 0) {
+        dispatch(
+          fetchCallLogsMeetingDate({
+            page_num: parseInt(page) + 1,
+            page_size: store.call_scheduled.filter.page_size,
+            Search: namePrescriber,
+          })
+        ).then(() => {
+          setPage(store.call_scheduled.filter.page);
+          setIsLoading(false);
+        });
+      } else if (searchPhoneNumber.length > 0) {
+        dispatch(
+          fetchCallLogsMeetingDate({
+            page_num: parseInt(page) + 1,
+            page_size: store.call_scheduled.filter.page_size,
+            phoneNumber: searchPhoneNumber,
+          })
+        ).then(() => {
+          setPage(store.call_scheduled.filter.page);
+          setIsLoading(false);
+        });
+      } else {
+        dispatch(
+          fetchCallLogsMeetingDate({
+            page_num: parseInt(page) + 1,
+            page_size: store.call_scheduled.filter.page_size,
+          })
+        ).then(() => {
+          setPage(store.call_scheduled.filter.page);
+          setIsLoading(false);
+        });
+      }
     }, 2000);
 
     fetchPrescribersDataWithDebounce();
@@ -484,7 +476,6 @@ const CallLogs = () => {
   };
 
   const pageSizeChangeHandler = (newPageSize) => {
-
     dispatch(
       onCallScheduledFilterChangeHandler({
         filter: "page_size",
@@ -504,87 +495,87 @@ const CallLogs = () => {
   return (
     <>
       <div style={{ display: "flex" }}>
-      <div style={{ marginBottom: "10px", width: "200px" }}>
-              <TextField
-                id="outlined-basic"
-                label="Go to page number"
-                variant="outlined"
-                onChange={(e) => {
-                  const newPageNumbr = e.target.value;
-                  pageNumberChangeHandler(newPageNumbr);
-                }}
-              />
-              {limitExceeds && (
-                <Typography color="error">Page limit exceeds</Typography>
-              )}
-            </div>
-            <div
-              style={{
-                marginBottom: "10px",
-                width: "200px",
-                marginLeft: "10px",
-              }}
-            >
-              <TextField
-                id="outlined-basic"
-                label="Search by Name"
-                variant="outlined"
-                onChange={(e) => {
-                  setNamePrescriber(e.target.value);
-                }}
-              />
-            </div>
-            <div
-              style={{
-                marginBottom: "10px",
-                width: "200px",
-                marginLeft: "10px",
-              }}
-            >
-              <TextField
-                id="outlined-basic"
-                label="Search by Phone Number"
-                variant="outlined"
-                onChange={(e) => {
-                  setSearchPhoneNumber(e.target.value);
-                }}
-              />
-            </div>
-
-            <Button
-              onClick={fetchPrescribersOnName}
-              variant="outlined"
-              style={{ height: "55px", position: "absolute", right: 150 }}
-            >
-              Go
-            </Button>
-          </div>
-    <Grid container spacing={6}>
-      <Grid item xs={12}>
-        <Card>
-          {/* <TableHeader onClick={() => handleClickDownloadDataCSV()} /> */}
-          <DataGrid
-            autoHeight
-            pagination
-            rows={isLoading ? [] : store.call_scheduled.callLogMeetingDate}
-            columns={columns}
-            loading={isLoading}
-            rowCount={store.call_scheduled.totalRecords}
-            getRowId={(row) => row?.Id}
-            disableSelectionOnClick
-            pageSize={store.call_scheduled.filter.page_size}
-            rowsPerPageOptions={[20, 30, 50]}
-            onPageChange={(newPage) => pageChangeHandler(newPage)}
-            page={tablePage}
-            onSelectionModelChange={(rows) => setSelectedRow(rows)}
-            onPageSizeChange={(newPageSize) =>
-              pageSizeChangeHandler(newPageSize)
-            }
-            paginationMode="server"
+        <div style={{ marginBottom: "10px", width: "200px" }}>
+          <TextField
+            id="outlined-basic"
+            label="Go to page number"
+            variant="outlined"
+            onChange={(e) => {
+              const newPageNumbr = e.target.value;
+              pageNumberChangeHandler(newPageNumbr);
+            }}
           />
-        </Card>
+          {limitExceeds && (
+            <Typography color="error">Page limit exceeds</Typography>
+          )}
+        </div>
+        <div
+          style={{
+            marginBottom: "10px",
+            width: "200px",
+            marginLeft: "10px",
+          }}
+        >
+          <TextField
+            id="outlined-basic"
+            label="Search by Name"
+            variant="outlined"
+            onChange={(e) => {
+              setNamePrescriber(e.target.value);
+            }}
+          />
+        </div>
+        <div
+          style={{
+            marginBottom: "10px",
+            width: "200px",
+            marginLeft: "10px",
+          }}
+        >
+          <TextField
+            id="outlined-basic"
+            label="Search by Phone Number"
+            variant="outlined"
+            onChange={(e) => {
+              setSearchPhoneNumber(e.target.value);
+            }}
+          />
+        </div>
+
+        <Button
+          onClick={fetchPrescribersOnName}
+          variant="outlined"
+          style={{ height: "55px", position: "absolute", right: 150 }}
+        >
+          Go
+        </Button>
+      </div>
+      <Grid container spacing={6}>
+        <Grid item xs={12}>
+          <Card>
+            {/* <TableHeader onClick={() => handleClickDownloadDataCSV()} /> */}
+            <DataGrid
+              autoHeight
+              pagination
+              rows={isLoading ? [] : store.call_scheduled.callLogMeetingDate}
+              columns={columns}
+              loading={isLoading}
+              rowCount={store.call_scheduled.totalRecords}
+              getRowId={(row) => row?.Id}
+              disableSelectionOnClick
+              pageSize={store.call_scheduled.filter.page_size}
+              rowsPerPageOptions={[50]}
+              onPageChange={(newPage) => pageChangeHandler(newPage)}
+              page={tablePage}
+              onSelectionModelChange={(rows) => setSelectedRow(rows)}
+              onPageSizeChange={(newPageSize) =>
+                pageSizeChangeHandler(newPageSize)
+              }
+              paginationMode="server"
+            />
+          </Card>
+        </Grid>
       </Grid>
-    </Grid>
     </>
   );
 };

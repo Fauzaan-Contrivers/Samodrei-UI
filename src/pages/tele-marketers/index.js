@@ -56,6 +56,7 @@ const TeleMarketers = () => {
           })
           .then((res) => {
             setTotal(res.data.users.length);
+            console.log(res.data.users);
             setRows(loadServerRows(page, res.data.users));
             setCompany(res.data.company);
             setIsLoading(false);
@@ -136,6 +137,7 @@ const TeleMarketers = () => {
         </Typography>
       ),
     },
+
     {
       flex: 0.2,
       minWidth: 250,
@@ -170,6 +172,17 @@ const TeleMarketers = () => {
       renderCell: (params) => (
         <Typography variant="body2" sx={{ color: "text.primary" }}>
           {params.row.company_name}
+        </Typography>
+      ),
+    },
+    {
+      flex: 0.2,
+      minWidth: 180,
+      headerName: "Team name",
+      field: "Team name",
+      renderCell: (params) => (
+        <Typography variant="body2" sx={{ color: "text.primary" }}>
+          {params.row.teamName}
         </Typography>
       ),
     },

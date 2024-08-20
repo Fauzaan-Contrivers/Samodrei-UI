@@ -43,6 +43,7 @@ import { useDispatch, useSelector } from "react-redux";
 import authConfig from "src/configs/auth";
 import DialogUpdateFlagNumber from "src/views/components/dialogs/DialogUpdateFlagNumber";
 import { onPrescriberFilterChangeHandler } from "src/store/prescribers";
+import { Snackbar } from "@mui/material";
 
 /* eslint-disable */
 const CustomInput = forwardRef((props, ref) => {
@@ -84,6 +85,14 @@ const FlaggedNumbers = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [dataCSV, setDataCSV] = useState(false);
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+
+  const handleApiError = (error) => {
+    const message = error.response?.data?.message || "An error occurred";
+    setSnackMessage(message);
+    setSnackOpen(true);
+  };
   //  console.log("dataCSV", dataCSV);
   // ** Hooks
   const dispatch = useDispatch();
@@ -276,25 +285,48 @@ const FlaggedNumbers = () => {
 
   const fetchTableData = useCallback(
     async (sort, column, clientId, open) => {
-      if (!open) {
-        setIsLoading(true);
-        await axios
-          .post(`${BASE_URL}tele-prescribers/get_prescriber_flagged_number`, {
-            sort,
-            column,
-            tele_marketer: store.prescribers.filter.teleMarketerValue,
-            start_date: isNaN(Date.parse(startDate)) ? "" : startDate,
-            end_date: isNaN(Date.parse(endDate)) ? "" : endDate,
-            call_disposition: store.prescribers.filter.disposition.join(","),
-            clientId,
-          })
-          .then((res) => {
-            // console.log('res.data.prescribers.length', res.data.prescribers.length);
-            setDataCSV(res.data.prescribers);
-            setTotal(res.data.prescribers.length);
-            setRows(loadServerRows(page, res.data.prescribers));
-            setIsLoading(false);
-          });
+      try {
+        if (!open) {
+          setIsLoading(true);
+          const token = localStorage.getItem("accessToken");
+          await axios
+            .post(
+              `${BASE_URL}tele-prescribers/get_prescriber_flagged_number`,
+              {
+                sort,
+                column,
+                tele_marketer: store.prescribers.filter.teleMarketerValue,
+                start_date: isNaN(Date.parse(startDate)) ? "" : startDate,
+                end_date: isNaN(Date.parse(endDate)) ? "" : endDate,
+                call_disposition:
+                  store.prescribers.filter.disposition.join(","),
+                clientId,
+                page: page + 1, // Backend expects 1-based page index
+                limit: pageSize,
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
+                },
+              }
+            )
+            .then((res) => {
+              // console.log('res.data.prescribers.length', res.data.prescribers.length);
+              // setDataCSV(res.data.prescribers);
+              // setTotal(res.data.total);
+              // setRows(loadServerRows(page, res.data.prescribers));
+              // setIsLoading(false);
+
+              setDataCSV(res.data.prescribers);
+              setTotal(res.data.total); // Set the total count here
+              setRows(res.data.prescribers);
+              setIsLoading(false);
+            });
+        }
+      } catch (error) {
+        handleApiError(error);
+        setIsLoading(false);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -384,6 +416,13 @@ const FlaggedNumbers = () => {
 
   return (
     <Grid container spacing={6}>
+      <Snackbar
+        open={snackOpen}
+        onClose={() => setSnackOpen(false)}
+        message={snackMessage}
+        autoHideDuration={3000}
+        anchorOrigin={{ horizontal: "right", vertical: "top" }}
+      />
       <Grid item xs={12}>
         <Card>
           <CardHeader title="Filters" />

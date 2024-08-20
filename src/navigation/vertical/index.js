@@ -92,6 +92,12 @@ const Navigation = () => {
       title: "Training Prescribers",
     },
     {
+      path: "/teams/list",
+      action: "read",
+      icon: ShieldOutline,
+      title: "Teams",
+    },
+    {
       path: "/tele-marketers",
       action: "read",
       icon: ShieldOutline,
@@ -109,6 +115,7 @@ const Navigation = () => {
       icon: ShieldOutline,
       title: "Call Logs",
     },
+
     {
       path: "/flagged_numbers",
       icon: ShieldOutline,
@@ -117,7 +124,7 @@ const Navigation = () => {
   ];
 
   if (userData?.roleId === 4) {
-    navigation=[]
+    navigation = [];
     navigation.push(
       {
         path: "/phonebook",
@@ -126,7 +133,7 @@ const Navigation = () => {
         icon: ShieldOutline,
         title: "Tele-Prescribers",
       },
-      
+
       {
         path: "/fax_logs/list",
         action: "read",

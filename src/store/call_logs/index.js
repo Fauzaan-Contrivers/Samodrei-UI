@@ -1,8 +1,40 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-
-// ** Axios Imports
 import axios from "axios";
-import { apiCall } from "src/configs/utils";
+import { BASE_URL, API_KEY } from "src/configs/config";
+
+// ** Directly defining apiCall function
+async function apiCall(type = "GET", appendUrl, data = {}) {
+  let URL = BASE_URL + appendUrl;
+  let reqHeaders = {};
+  reqHeaders["API-KEY"] = API_KEY;
+
+  const token = localStorage.getItem("accessToken");
+  if (token) {
+    reqHeaders["Authorization"] = `Bearer ${token}`;
+  }
+
+  if (type === "POST" || type === "PUT") {
+    reqHeaders["Content-Type"] = "application/json";
+    data = JSON.stringify(data);
+  }
+
+  try {
+    switch (type) {
+      case "GET":
+        return await axios.get(URL, { headers: reqHeaders });
+      case "DELETE":
+        return await axios.delete(URL, { headers: reqHeaders, data });
+      case "POST":
+        return await axios.post(URL, data, { headers: reqHeaders });
+      case "PUT":
+        return await axios.put(URL, data, { headers: reqHeaders });
+      default:
+        console.log("apiCallError: this type not handled here", type);
+    }
+  } catch (error) {
+    console.log("apiCall -- Catch error", appendUrl, error);
+  }
+}
 
 // ** Fetch Jobs
 export const fetchCallLogsData = createAsyncThunk(
@@ -12,16 +44,8 @@ export const fetchCallLogsData = createAsyncThunk(
       ...params,
       limit: params.page_size,
       page_num: params.page_num,
-      // status: params.status,
-      // product_advocate: params.product_advocate,
-      // start_date: params.start_date,
-      // end_date: params.end_date,
-      // meet_with: params.meet_with,
-      // prescriber: params.prescriber,
-      // lunch_meeting: params.lunch_meeting,
-      // radius: params.radius,
     });
-    console.log(response)
+    console.log(response);
     return {
       result: response.data.result.data,
       totalRecords: response.data.result.count,
@@ -52,7 +76,7 @@ export const callLogsSlice = createSlice({
       startDateRange: "",
       endDateRange: "",
       dates: [],
-      phoneNumber:""
+      phoneNumber: "",
     },
   },
   reducers: {
